@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gatcha_tower</title>
+    <link rel="stylesheet" type="text/css" href="/games/G3/Main.css">
+    <link rel="stylesheet" type="text/css" href="Main.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</style>    
+
+</head>
+
+<body>
+    <div id="Side-Menu">
+        <div id="Side-image"></div>
+        <div id="Side-Title">Gatcha_tower</div>
+        <br>
+        <button type="button" role="button" class="Open-more">More</button>
+        <a href="Settings.html"><button type="button" role="button" class="settings">Settings</button></a>
+    </div>
+    <div id="app">
+        <h1 class="Quest_Title">{{ questTitle }}</h1>
+        <div class="main">
+            <div class="main_section">{{ mainInfo }}</div>
+            <canvas class="content-canvas" ref="contentCanvas"></canvas>
+        </div>
+        <footer class="footer_section">{{ multichoice }}
+            <div id="Choice_1">{{ Choice_1 }}</div>
+            <div id="Choice_2">{{ Choice_2 }}</div>
+            <div id="Choice_3">{{ Choice_3 }}</div>
+            <div id="Choice_4">{{ Choice_4 }}</div>
+            <div id="Choice_5">{{ Choice_5 }}</div>
+        </footer>
+        <div class="Side-extra">
+            <ul class="Side-extra ul">
+                <li class="Side-extra il Side-gameplay">gameplay</li>
+                <li class="Side-extra il Side-grafics">grafics</li>
+                <li class="Side-extra il Side-more">more
+                    <ol>
+                        <li>Fist</li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+<script src="scripts.js"></script>
+
+</html>
