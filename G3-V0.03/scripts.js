@@ -3,6 +3,7 @@ const main_section = document.querySelector('.main_section');
 const main_content = document.querySelector('.content-canvas');
 const choices_section_title = document.querySelector('.choices_section_title');
 const choices_section = document.querySelectorAll('.choices_section');
+const startScreen = document.querySelector('.startParent');
 const Button_Choice1 = document.querySelector('.Sh_1');
 const Button_Choice2 = document.querySelector('.Sh_2');
 const Button_Choice3 = document.querySelector('.Sh_3');
@@ -15,6 +16,7 @@ const loadfileId = document.getElementById('loadfileId');
 const Side_Menu2 = document.getElementById('Side-Menu2');   //  Character list  (in words)
 const Side_Menu3 = document.getElementById('Side-Menu3');   //  effects    (Debuff)
 const Side_Menu4 = document.getElementById('Side-Menu4');   //  influences  (Bar)
+const Side_MenuClass = document.querySelector('.InfluencesAll')
 
 var saveFileNum = 0;    //  TODO : make it usefull
 let valueSTRING = [];
@@ -31,23 +33,29 @@ window.onload = function() {
 };
 
 // Function to start up or load the game
-function startup() {
-    // Display a yes/no prompt
-    const userConfirmed = confirm("Do you want to play from the last save?");
-
-    if (userConfirmed) {
-        console.log("User confirmed to load last save.");
-        loadGame();
-    } else {
-        console.log("User declined to load last save. Starting a new game.");
-        newGame(saveFileNum);
+function startup(userConfirmed) {
+    Title.innerHTML = 'Gatcha tower';
+    startScreen.dataset.visible = 'true';
+    Side_Menu4.dataset.visible = 'false';
+    if(!sessionStorage.getItem('LatestsaveFile')){
+        if (userConfirmed == 1) {
+            console.log("User confirmed to load last save.");
+            startScreen.dataset.visible = 'false';
+            loadGame();
+        }else if(userConfirmed == 2){
+            console.log("User declined to load last save. Starting a new game.");
+            startScreen.dataset.visible = 'false';
+            newGame(saveFileNum);
+        }
+    }else{
+        loadGame()
     }
 }
 
 // Function to load the game from localStorage
 function loadGame() {
-    let loadedSaveFile = JSON.parse(localStorage.getItem('LatestsaveFile'));
-
+    let loadedSaveFile = JSON.parse(sessionStorage.getItem('LatestsaveFile'));
+    startScreen.dataset.visible = 'false';
     if (loadedSaveFile) {
         console.log('Loaded save file:', loadedSaveFile);
         saveFile = loadedSaveFile;
@@ -62,7 +70,7 @@ function loadGame() {
 // newGame makes the prep for a new game
 function newGame(saveFileNum){
     console.log('new game');
-
+    
     let saveFile = {
         "saveFileNumber" : saveFileNum,
         "current_storyLine_progress" : 0,
@@ -476,14 +484,14 @@ function story(saveFile){
     // Save file click handler function
     function saveFileClickHandler() {
         console.log('Saving game');
-        // TODO: Implement save logic based on your requirements
+        // TODO: Implement better save logic 
 
         if (saveFileNum !== null) {
             console.log('Saving game id=1', saveFile);
             savefileId.innerHTML = "Save Successful";
             let saveFileJSON = saveFile;
             localStorage.setItem('saveFile' + saveFileNum, JSON.stringify(saveFileJSON));
-            localStorage.setItem('LatestsaveFile', JSON.stringify(LatestsaveFile));
+            sessionStorage.setItem('LatestsaveFile', JSON.stringify(LatestsaveFile));
             console.log('Save file ' + saveFileNum + ' saved');
             saveFileNum++;
             return saveFileNum;
@@ -513,7 +521,7 @@ function story(saveFile){
         } else if (saveFileNum === 'latest') {
             console.log('Loading latest game id=1');
             loadfileId.innerHTML = "Load Successful";
-            let loadedSaveFile = JSON.parse(localStorage.getItem('LatestsaveFile'));
+            let loadedSaveFile = JSON.parse(sessionStorage.getItem('LatestsaveFile'));
             console.log('Latest save file loaded');
 
             // Update saveFile with loaded data
@@ -562,7 +570,7 @@ function story(saveFile){
     let current_title = saveFile.title_progress[current_title_progress]
 
     //  make a save of latest version of saveFile
-    localStorage.setItem('LatestsaveFile', JSON.stringify(LatestsaveFile));
+    sessionStorage.setItem('LatestsaveFile', JSON.stringify(LatestsaveFile));
 
     ButtonPressed(saveFile, saveFile.Choices_Possible);    //  print current Buttons
     manageHiddenInfo(saveFile, false);  //  hides info if need be
