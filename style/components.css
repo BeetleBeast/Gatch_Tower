@@ -82,9 +82,6 @@
     grid-column: 2/9;
     grid-row: 5/9;
 }
-.inventoryContainer {
-
-}
 .inventoryItem {
     
 	border: 1px solid var(--DefaultColor0);
@@ -106,7 +103,6 @@
     font-weight: bold;
     text-transform: uppercase;
 }
-
 /* Hover styles for the inventory items */
 .inventoryItem:hover {
     background-color: var(--AlmostWhite2); /* Lighter semi-transparent white background */
@@ -134,15 +130,11 @@
 	padding: 20px;
 	padding-bottom: 20px;
 
-	
-
 	width: fit-content;
 	margin: 0 auto;
 
 	grid-column: 2/16;
 	grid-row: 8/17;
-
-
 
 	background-color: var(--mainColor)
 }
