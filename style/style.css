@@ -1,0 +1,216 @@
+/* All styles that are not used anymore */
+#text{
+	white-space: pre-wrap;
+}
+
+.Open-more{
+    color: var(--AlmostBlue);
+	background-color: var(--Black);
+	width: 5em;
+	display: block;
+	height: -moz-fit-content;
+	height: fit-content;
+	padding: 0.5em;
+	margin-left: auto;
+	margin-right: auto;
+	/* existing styles */
+	margin-top: -10px;
+	margin-bottom: 15px;
+	border: 1px solid transparent;
+}
+.Open-more:hover{
+    border: 1px solid var(--Green2);
+	cursor: pointer;
+    
+}.Open-more:active{
+    box-shadow: none;
+    transform: translateY(5px);
+}
+
+.asettings{
+	/*justify-content: flex-end;
+	/*margin-left: auto;
+	margin-right: auto;*/
+	margin-bottom: 10em;
+}
+
+.settingsEmpty{
+	color: transparent;
+	background-color: transparent;
+	border: 0px solid transparent;
+	border-color: transparent;
+	box-shadow: none;
+	
+}
+.settings:hover:not(.settingsEmpty){
+	color: var(--AlmostBlue);
+    border: 1px solid var(--Green2);
+	cursor: pointer;
+}
+
+	/* --Side Extra-- */
+
+
+.Side-more-ul[data-visible=true] > * {
+	visibility: visible;
+	opacity: 1;
+}
+.Save-ul[data-visible=true] > * {
+	visibility: visible;
+	opacity: 1;
+}
+
+.Side_Menu_Colapse{
+	content: normal;
+}
+.Side_Menu_Colapse[data-visible=false]{
+	content: none;
+	opacity: 0;
+	visibility: hidden;
+	
+}
+hr[data-visible=false]  {
+    display: none;
+}
+.child1{
+	width: 25%;
+	height:inherit;
+	top: 15px;
+	z-index: 9999999;
+	color: var(--DefaultColor0);
+	opacity: 1;
+}
+.Side-Saving{
+	z-index: inherit;
+}
+.Save-ul{
+    color: var(--AlmostRed2);
+
+	position: relative;
+	width: 90%;
+	height: 100%;
+	padding: 0;
+	margin: auto;
+	
+}
+.Save-li{
+	color: var(--Green2);
+
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	display:block;
+}.Save-li2{
+	color: var(--Green2);
+
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	display:block;
+}
+.load{
+	font-size: 2em;
+
+	
+	width: auto;
+	padding: 5px;
+	height: auto;
+}
+.Save{
+	font-size: 2em;
+
+	flex-direction: column;
+	width: auto;
+	padding: 5px;
+	height: auto;
+}
+.Button{
+	color: var(--DefaultColor0);
+}
+.Button:hover:not(.settingsEmpty){
+	cursor: pointer;
+	color: var(--AlmostPurple2);
+}
+
+.Side-gameplay{
+	opacity: 1;
+	border-left: 3px solid  var(--thirdColor);
+	border-right: 3px solid  var(--thirdColor);
+}
+.Side-grafics{
+	opacity: 1;
+	border-right: 3px solid  var(--thirdColor);
+}
+.Side-more{
+	opacity: 1;
+	
+}
+.Side-more-ul{
+	position: relative;
+	width: 80%;
+	padding: 0;
+	margin: auto;
+}
+.Side-more-li{
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+/*	table	*/
+
+.prprp{
+    margin-top: 15px;
+}
+#a_backMain{
+    border-radius: 5px;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 5px;
+    right:calc(100vw - 55%);
+    margin-left: 1%;
+    height: -moz-fit-content;
+    height: fit-content;
+    top: -50px;
+    color: var(--AlmostPurple3);
+    box-shadow: 2px 2px 10px var(--AlmostRed1), 5px 12px 20px var(--AlmostPurple1);
+    background:  var(--mainColor);
+    transition: background-color 0.2s;
+
+}
+#a_back{
+    border-radius: 5px;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 5px;
+    right:calc(100vw - 55%);
+    margin-left: 1%;
+    height: -moz-fit-content;
+    height: fit-content;
+    top: -50px;
+    color: var(--AlmostPurple3);
+    box-shadow: 2px 2px 10px var(--AlmostRed1), 5px 12px 20px var(--AlmostPurple1);
+    background:  var(--mainColor);
+    transition: background-color 0.2s;
+}
+#nav_BAck{
+    position: relative;
+    text-align: center;
+    right: 40%;
+    top: -50px;
+}
+.ApplyB{
+    color: var(--Brown);
+    padding-left: 50px;
+}
+.ApplyB:hover{
+    color: var(--Red);
+}
+#TitleS{
+    color: var(--DefaultColor0);
+}
+

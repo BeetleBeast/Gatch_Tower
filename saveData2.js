@@ -3,22 +3,16 @@
 let saveData = {
     name: "Main",
     LastSaved: "",
-    isDead: false,
-    deathReason: null,
-    LastSafeScene: "0_0", // 0_1 for chapter 0, scene 1
-    Player_character : undefined, // Was Player
     currentScene: "0_0", // 0_1 for chapter 0, scene 1
-    safeScenes : {
-        "0_0": true,
-        "0_9": true,
-        "2_0": true,
-    },
-    chapterTitles: {
-        //  chapter num : title
-        0 : "Into the new world",
-        1 : "Cave Exploration",
-        2 : "Lost in the forest",
-        3 : "Old cabbin",
+    dead : {
+        isDead: false,
+        deathReason: null,
+        LastSafeScene: "0_0", // 0_1 for chapter 0, scene 1
+        safeScenes : {
+            "0_0": true,
+            "0_9": true,
+            "2_0": true,
+        },
     },
     scenes: {
         Death : {
@@ -307,10 +301,6 @@ let saveData = {
             },
             sceneID: 16,
             ButtonTitle: "What shall you do",
-            Buttons_Hidden: [{
-                ButtonNumber: 2,
-                Default: 'hidden',
-            }],
             options: {
                 1: {ButtonNumber: 1, ButtonText: "Leave the area undisturbed", next_scene: "1_1"},
                 2: {ButtonNumber: 2, ButtonText: "Investigate the hidden alcove.", next_scene: "1_12"},
@@ -472,10 +462,6 @@ let saveData = {
             ALT_Text: null,
             sceneID: 22,
             ButtonTitle: "With careful hands, you consider the small, intricately carved wooden box half-buried in the moss. You have the option to:",
-            Buttons_Hidden: [{
-                ButtonNumber: 6,
-                Default: 'visible',
-            }],
             options: {
                 1: {ButtonNumber: 1, ButtonText: "Leave the box undisturbed and leave the alcove", next_scene: "1_6"},
                 2: {ButtonNumber: 6, ButtonText: "Pick up the box and examine its contents",
@@ -512,60 +498,66 @@ let saveData = {
             ALT_options: {},
         },
     },
-    RandomEvent : { // NOT USED YET
-        //  0 must empty, 1 to last gets all R events
-        0 : {},
-        1 : {
-            sceneName : "", sceneText : "",IsActive : false,chanceOfAcurring : 0.01,
-            buttonValues : {0:'',1:'',2:'',3:'',4:'',5:'',6:''},
+    RandomEvent : {
+        //  0 is a Test, 1 to last gets all R events
+        0 : { Name: 'Test',
+            sceneTexts : {
+                Lines: [
+                    'A dev has captured you and is about to question you!',
+                    'What will you do?',
+                ],
+                Position: 'default'
+            },
+            chance: 0.5,
+            options : {
+                1 : {ButtonNumber: 1, ButtonText: 'Run', Position: {row: '5/10', column: '5'}},
+                2 : {ButtonNumber: 2, ButtonText: 'Fight', Position: {row: '5/10', column: '5'}},
+                3 : {ButtonNumber: 3, ButtonText: 'Talk', Position: {row: '5/10', column: '5'}},
+            },
+            ALT_options : {},
+            action : [{}],
+            sites : ['ALL'],
+            allow_multiple_event: false, // if false, will be the only event to run
+            allow_original_scene : true // merge sites options && their actions
         },
-        2 : {},
-        3 : {},
-        4 : {},
     },
     Canvas : {
-        //  chapterID_sceneID : {  canvasID : [  canvas elements ]  }
         PlayerPosition : '',// chapterID_sceneID
-        map : [
+        // Map : [{  nodes: [ canvas elements ]  }]
+        Map : [
+            /*
             {
-                sceneID: "0_0",
-                canvasID: "canvas0",
+                canvasElement: '.content-canvas',
+                canvasPosition: undefined,
+                nodes: [
+                    {status: 'available', id: 1, title: 'Home', x: 50, y: 50},
+                    {status: 'completed', id: 2, title: 'Home Street', y: 350, x: 250},
+                    {status: 'locked', id: 3, title: 'Park', x: 600, y: 350}
+                ],
+                playerProgress: 'scene',
+                isClickable: true
+            },
+            */
+            {
+                canvasElement: '.Map',
+                canvasPosition: {width: 100, height: 1000},
+                nodes: [
+                    {id: 0, title: 'Bottomless-lake', status: 'locked', x: 50, y: 980},
+                    {id: 1, title: 'Cavern', status: 'completed', x: 50, y: 880},
+                    {id: 2, title: 'Base', status: 'available', x: 50, y: 780},
+                    {id: 3, title: 'Broken World', status: 'locked', x: 50, y: 680},
+                    {id: 4, title: 'Dunguon', status: 'locked', x: 50, y: 580},
+                    {id: 5, title: 'Step-up', status: 'locked', x: 50, y: 480},
+                    {id: 6, title: 'New-World', status: 'locked', x: 50, y: 380},
+                    {id: 7, title: 'Sky-Breaker', status: 'locked', x: 50, y: 280},
+                    {id: 8, title: '9-sky', status: 'locked', x: 50, y: 180},
+                    {id: 9, title: 'Heaven?', status: 'locked', x: 50, y: 80}
+                ],
+                playerProgress: 'chapter',
+                isClickable: false
             }
         ],
     },
-    Map : [
-        /*
-        {
-            canvasElement: '.content-canvas',
-            canvasPosition: undefined,
-            nodes: [
-                {status: 'available', id: 1, title: 'Home', x: 50, y: 50},
-                {status: 'completed', id: 2, title: 'Home Street', y: 350, x: 250},
-                {status: 'locked', id: 3, title: 'Park', x: 600, y: 350}
-            ],
-            playerProgress: 'scene',
-            isClickable: true
-        },
-        */
-        {
-            canvasElement: '.map-canvas',
-            canvasPosition: {width: 100, height: 1000},
-            nodes: [
-                {id: 0, title: 'Bottomless-lake', status: 'locked', x: 50, y: 980},
-                {id: 1, title: 'Cavern', status: 'completed', x: 50, y: 880},
-                {id: 2, title: 'Base', status: 'available', x: 50, y: 780},
-                {id: 3, title: 'Broken World', status: 'locked', x: 50, y: 680},
-                {id: 4, title: 'Dunguon', status: 'locked', x: 50, y: 580},
-                {id: 5, title: 'Step-up', status: 'locked', x: 50, y: 480},
-                {id: 6, title: 'New-World', status: 'locked', x: 50, y: 380},
-                {id: 7, title: 'Sky-Breaker', status: 'locked', x: 50, y: 280},
-                {id: 8, title: '9-sky', status: 'locked', x: 50, y: 180},
-                {id: 9, title: 'Heaven?', status: 'locked', x: 50, y: 80}
-            ],
-            playerProgress: 'chapter',
-            isClickable: false
-        }
-    ],
     Choices_Made : {
         Death : [],
         0 : [], 
@@ -971,18 +963,20 @@ let saveData = {
     },
 
     Items : [
-        //  { id: "PlaceHolder", Name : "PlaceHolder", DescriptionText : 'PlaceHolder', Discoverytext : "PlaceHolder", quantity : "PlaceHolder" , color : "PlaceHolder", quality : "PlaceHolder"}, choose between common/uncomon/rare/unique/Legendary}
+        //  { id: "PlaceHolder", Name : "PlaceHolder", DescriptionText : 'PlaceHolder', Discoverytext : "PlaceHolder", quantity : "PlaceHolder" , color : "PlaceHolder", quality : "PlaceHolder"}, choose between curse/common/uncomon/rare/unique/Legendary}
         { id: 1 , Name : "Soul Redeemer", Discoverytext : "You have discovered a Soul Redeemer, a legendary item that holds immense power.", quantity : 0, color : "Yellow", quality : "Legendary"},
         { id: 2 , Name : "rock", Discoverytext : "You have discovered a rock, a common item that can be used for various purposes.", quantity : 0, color : "Grey", quality : "common"},
         { id: 3 , Name : "stick", Discoverytext : "You have discovered a stick, a common item that can be used for various purposes.", quantity : 0, color : "Grey", quality : "common"},
         { 
             id: 4 ,
             Name : "green gemstone",
+            DevElementName: 'Item_Gemstone_Green',
             DescriptionText : '',
             Discoverytext : "~You have found an uncommon green gemstone nestled within the intricately carved wooden box. Its hue is vibrant and captivating, catching the dim light with a mesmerizing sparkle. This discovery adds a unique and valuable treasure to your journey through the mossy passage.",
             quantity : 0,
             color : "green",
-            quality : "uncommon"},
+            quality : "uncommon"
+        },
         { id: 5 , Name : "red gemstone", DescriptionText : '', Discoverytext : "You have discovered a red gemstone, an uncommon item that can be used for various purposes.", quantity : 0, color : "Green", quality : "uncommon"},
         { id: 6 , Name : "blue gemstone", DescriptionText : '', Discoverytext : "You have discovered a blue gemstone, an uncommon item that can be used for various purposes.", quantity : 0, color : "Green", quality : "uncommon"},
         { id: 7 , Name : "brown gemstone", DescriptionText : '', Discoverytext : "You have discovered a brown gemstone, an uncommon item that can be used for various purposes.", quantity : 0, color : "Green", quality : "uncommon"},
@@ -993,7 +987,7 @@ let saveData = {
     Inventory : [
         //  ID number : {"Name" : Name of item ,"quantity" : 0,"quality" : "common"}
         //   { id: 0 , Name : "PlaceHolder", quantity : 0, quality : "common"},
-        { id: 1 , Name : "Soul Redeemer", quantity : 1, quality : "Legendary"},
+        { id: 1 , Name : "Soul Redeemer", quantity : 1, color: "Red", quality : "curse"},
 
     ],
 }

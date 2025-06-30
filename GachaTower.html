@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacha Tower</title>
+    <link rel="icon" href="./GT_assets/img/Icon/main/web_icon.svg" type="image/icon type">  <!-- links icon to website-->
+    
+    <link rel="stylesheet" href="./style.css">
+    
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/components.css">
+    <link rel="stylesheet" href="style/layout.css">
+    <link rel="stylesheet" href="./style/overlayContent.css">
+    <link rel="stylesheet" href="./style/sideBar.css">
+    <link rel="stylesheet" href="./style/startScreen.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><!--Redacted--><!--paint like protest-->
+    <link href="https://fonts.googleapis.com/css2?family=Alike+Angular&family=Foldit:wght@100..900&family=Fondamento:ital@0;1&family=Protest+Revolution&family=Redacted+Script:wght@300;400;700&display=swap" rel="stylesheet">    
+</head>
+<body>
+    <div class="container">
+        <div class="content-wrapper">
+            <div id="Side-Menu" class="cell Side-Menu_Class"></div>
+            <div class="cell Title"></div>
+            <div class="cell MapParent"><canvas class="Map"></canvas></div>
+            <div class="cell app"></div>
+            <div class="cell Side-extra"></div>
+            <div class="cell Objectives"></div>
+            <div class="cell Loot"></div>
+            <div class="cell Inventory"></div>
+        </div>
+        </div>
+    </div>
+</body>
+<script src="./saveData2.js"></script>
+
+<script src="./HtmlContentInjector.js"></script> <!-- script module to inject Html -->
+<script src="./TextHandler.js"></script> <!--  script module for Text display for All -->
+<script src="./map.js"></script> <!-- script module for map inside GameScripts and story -->
+<script src="./QTE.js"></script> <!-- script module for QTE inside GameScripts and story -->
+<script src="./Player.js"></script> <!-- script module for Player inside GameScripts-->
+
+<script src="./GameScript.js"></script>
+
+<script src="./story.js"></script>
+
+<script src="./ActionEffectHandlers.js"></script> <!-- script module for effects inside story -->
+<script src="./REncounter.js"></script> <!-- script module for random encounter inside story -->
+</html>

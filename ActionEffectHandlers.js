@@ -47,14 +47,16 @@ const effectHandlers = {
     Confusion: ({ ALT_Text, ALT_Name, saveData }) => {
         // change text to confused text
         console.log('activate confusion')
-        addTextFullFeature({
-            textBlock : ALT_Text,
-            elementId : '.main_section',
-            speed : 35,
+        typeText({
+            text : ALT_Text,
+            MainElementID : '.main_section',
+            options: {
+                speed : 35,
+            }
         })
-        addTextFullFeature({
-            textBlock : ALT_Name,
-            elementId : '.Quest_Title',
+        typeText({
+            text : ALT_Name,
+            MainElementID : '.Quest_Title',
         })
         if ( saveData.CurrentDebuff_Effects.filter(effect => effect !== 'confused') ) saveData.CurrentDebuff_Effects.push('Confused');
         ButtonRender(saveData, true, false); //  re-render buttons

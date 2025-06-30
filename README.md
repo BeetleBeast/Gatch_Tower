@@ -1,40 +1,139 @@
-gatsha_tower
+# 📘 Gatsha Tower — Game Design Overview & Development Notes
 
+---
 
-tower defence 
+## 🎮 Game Concept
 
-OR
+**Title:** *Gatsha Tower*  
+**Genre:** Tower Defense / Tower Power-Up Hybrid  
+**Platform:** PC / Mobile (APK build planned)  
 
-tower power up
+**Core Mechanics:**
 
+- Progress through a tower where each floor represents a chapter.
+- Optional secret floors for exploration.
+- Decision-based storytelling and varied gameplay mechanics.
 
+---
 
+## 📖 Narrative & Storytelling
 
+- **Compelling Storyline**  
+  Craft an immersive narrative with memorable characters, plot twists, and meaningful choices.
 
-make some place restore effects
-every action wich makes movement use fatigue    5%
+- **Interactive Choices**  
+  Player decisions must impact the story. Branching paths increase replayability.
 
- inventory side menu when press item for more options
+- **Rich Descriptions**  
+  Use vivid language to describe locations, characters, and events.
 
+- **Surprise and Discovery**  
+  Hide secrets and include unexpected events. Reveal lore gradually to maintain curiosity.
 
+---
 
+## 🧱 Gameplay & Systems
 
- Compelling Storyline: Focus on developing a strong, immersive narrative for your game. Craft intriguing characters, interesting plot twists, and meaningful choices for the player to make. A captivating story will keep players invested and eager to see what happens next.
+### 🧠 Player Mechanics
 
-Interactive Choices: Offer meaningful choices that impact the outcome of the game. Players should feel that their decisions matter and shape the story. Branching storylines based on choices can add replay value and increase player engagement.
+- Input handling: Keyboard, mouse, and touch support.
+- Movement actions consume **Fatigue (5%)**.
+- Side inventory menu; **press item for more options**.
 
-Rich Descriptions: Use vivid and descriptive language to paint a picture of the game world. Describe locations, characters, and events in detail to help players visualize the scenes and feel immersed in the environment.
+### 💢 Combat & Interaction
 
-Engaging Gameplay Mechanics: Incorporate interesting gameplay mechanics that go beyond simple decision-making. This could include puzzles, challenges, resource management, or character development. Variety in gameplay keeps things fresh and prevents monotony.
+- Enemy system with spawning, pathfinding (A*), targeting logic.
+- AI using behavior trees or state machines.
+- Combat includes hit detection, damage calculation, and cooldowns.
+- Optional spell/weapon logic.
 
-Character Development: Allow for character progression and growth throughout the game. Let players develop relationships with NPCs (non-player characters) or customize their own character's abilities and traits.
+### 💼 Inventory & Loot
 
-Surprise and Discovery: Include surprises, hidden secrets, and unexpected events to keep players intrigued. Unveil layers of the story gradually to maintain suspense and curiosity.
+- Full inventory system for pickups, gear, and consumables.
+- **Loot screen** to view and collect items.
+- Economy: Gold/premium currency, shop system, price balancing.
 
-Dynamic World: Make the game world feel alive and responsive to player actions. Events should unfold based on the player's choices, creating a dynamic and personalized experience.
+### 🧭 Quests & Objectives
 
-Balanced Challenge: Provide a balanced level of challenge to keep players engaged without becoming frustrated. Gradually increase difficulty or complexity to maintain interest.
+- Track objectives and progress.
+- Rewards tied to quest completion.
+- Structure: Linear, branching, or open-ended.
 
-Atmospheric Sound and Music: Even in a text-based game, ambient sound effects or music can enhance the atmosphere and emotional impact of key moments.
+### 📈 Leveling / Progression
 
-Iterate and Playtest: Continuously refine and playtest your game. Solicit feedback from players to identify areas for improvement and polish the experience.
+- Player XP, skill trees, stat upgrades.
+- Unlockables tied to progression and exploration.
+
+### 💾 Save/Load System
+
+- Save system using LocalStorage, IndexedDB, or cloud sync.
+- Support for autosave and manual saves.
+- Save different types of text content.
+
+---
+
+## 🎨 UI / UX / Audio
+
+- **Text Display**
+
+  - Support multiple text styles.
+  - Auto-progress text (no click required).
+  - Tap/click anywhere to continue text when necessary.
+
+- **Audio / Visuals**
+
+  - Add sound effects and background music for atmosphere.
+  - Implement **screen shake** for damage or events.
+  - Add **restore effects** for healing or recovery events.
+
+---
+
+## 🏗️ Level Design
+
+- Each **chapter = one floor** in the tower.
+- Include **secret floors** for optional exploration.
+- Simplify **cave area** for first-time visit; allow revisits with deeper content.
+
+---
+
+## 🧪 Testing & Polish
+
+- Playtest frequently.
+- Iterate based on player feedback.
+- Balance difficulty with progression to avoid frustration.
+
+---
+
+## ✅ TODO List
+
+- [ ] Add enemy system with AI and combat logic.
+- [ ] Implement multiple text styles and save them.
+- [ ] Create a loot screen tied to inventory system.
+- [ ] Build full player controller (movement, interaction).
+- [ ] Add touch controls (mobile support).
+- [ ] Generate and test APK build for Android.
+- [ ] Simplify cave level for first encounter.
+
+- [ ] Remake the settings menu. ( only 1 instead of 3)
+- [ ] add better flavour text.
+- [ ] add a better intro.
+
+- [ ] add a way to make text and buttons print inbetween each other.
+- [ ] charackter maker is broken ( text and dsecription are seperated ).
+
+---
+
+## 🐞 FIXMEs
+
+- [ ] fix the REncounter bug that leaves thext behind
+- [ ] fix a bug where the buttons sometimes don't work.
+
+---
+
+## 🔄 Notes for Iteration
+
+- Keep the game world dynamic and reactive.
+- Layer in surprises and secrets for replay value.
+- Test emotional beats using music/sound during key moments.
+
+#SelfMade

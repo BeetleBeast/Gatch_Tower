@@ -1,0 +1,42 @@
+/* ---- Containers ---- */
+body {
+	position: relative;
+    display: flex;
+	text-align: center;
+    overflow: hidden;
+    background-color:var(--DarkBlue);
+	height: 100vh;
+}
+.container {
+	
+    flex: 1; /* Container takes up all available space */
+	position: relative;
+}
+.content-wrapper {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 8 columns */
+    grid-template-rows: repeat(8, 1fr);    /* 8 rows */
+    width: 100vw;
+    height: 100vh;
+    gap: 2px;
+    background-color: var(--DarkBlue);
+
+    flex: 1; /* Flex container for app and side-extra */
+    position: relative; /* Relative positioning for absolute children */
+}
+.cell {
+    color: white;
+    display: grid;
+}
+.main{
+	z-index: 5;
+	padding-top: 5px;
+	position: relative;
+	top: 0;
+	height: 100%;
+	width: 100%;
+
+	display: grid;
+	grid-template-columns: repeat(16, 1fr); /* 8 columns */
+    grid-template-rows: repeat(16, 1fr);    /* 8 rows */
+}
