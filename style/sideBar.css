@@ -4,7 +4,6 @@
     grid-column: 1 / 1;
     grid-row: 1 / 9;
     position: relative;
-	/*width: 15em;*/
 	background-color: var(--side-Color);
 	border-right: 2px solid var(--RedBorder);
 	text-align: center;
@@ -25,7 +24,6 @@
     position: absolute;
 	top: 0;
 	right: 0;
-	/*width: 35px;*/
     color: var(--DefaultColor0);
     padding: 5px 10px; /* Adjust padding for button size */
     margin: 5px;
@@ -123,12 +121,11 @@
     /*justify-content: flex-end; /* this will align the elements to the bottom */
 }
 .settings{
-	display: flex;
+    display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
     color: var(--AlmostBlue);
 	background-color: rgb(41, 34, 34);
-	display: block;
 	width: 5em;
 	height: 2.5em;
 	padding: none;
