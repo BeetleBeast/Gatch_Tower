@@ -1,0 +1,190 @@
+/* ---- Title ---- */
+.Title {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 5px;
+}
+/* ---- Map ---- */
+.MapParent {
+    grid-row: 2/7;
+    grid-column: 2;
+}
+.map-canvas {
+	background-color: var(--DarkBlue);
+	overflow: hidden; /* Prevents overflow of content */
+}
+#tooltip {
+	/* Canvas Tooltip */
+	position: absolute;
+	padding: 4px 8px;
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	font-size: 12px;
+	border-radius: 4px;
+	pointer-events: none;
+	visibility: hidden;
+	z-index: 1000;
+}
+/* ----  Main section ---- */
+.app {
+    grid-row: 1/7;
+    grid-column: 3/7;
+
+	flex: 1; /* Main content takes up remaining space */
+	display: block;
+	
+	flex-direction: column;
+	z-index: 5;
+	
+}
+.Quest_Title{
+    color: var(--DefaultColor0);
+	z-index: auto;
+	position: relative;
+	top: 0px;
+	text-align: center;
+	float: none;
+	margin-bottom: 0;
+	box-sizing:content-box;
+	padding: .5em;
+	font-family: "Fondamento", cursive;
+	font-weight: 400;
+	font-style: normal;
+
+}
+.main_section{
+    color: var(--DefaultColor0);
+	text-align: center;
+	font-size: large;
+	margin: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+	word-break: keep-all;
+
+	grid-column: 1/17;
+	grid-row: 3/13;
+
+}
+/* ---- overlay-content ---- */
+
+/* ---- Objectives ---- */
+.Objectives {
+    grid-column: 2/4;
+    grid-row: 1/5;
+}
+/* ---- Loot ---- */
+.Loot {
+    grid-column: 4/9;
+    grid-row: 1/5;
+}
+/* ---- Inventory ---- */
+.Inventory {
+    grid-column: 2/9;
+    grid-row: 5/9;
+}
+.inventoryContainer {
+
+}
+.inventoryItem {
+    
+	border: 1px solid var(--DefaultColor0);
+	color: var(--DefaultColor0);
+	padding: 10px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--AlmostWhite1); /* Semi-transparent white background */
+    border-radius: 8px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+	margin: auto 15px;
+
+    /* Additional styles for a cleaner appearance */
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Hover styles for the inventory items */
+.inventoryItem:hover {
+    background-color: var(--AlmostWhite2); /* Lighter semi-transparent white background */
+    box-shadow: 0 4px 8px var(--AlmostBlack2); /* Add box shadow on hover for depth effect */
+}
+.pages {
+    display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    row-gap: 30px;
+}
+.page {
+    /*width: calc(25% - 10px); /* Adjust based on desired grid layout */
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    row-gap: 30px;
+}
+/* ---- Buttons ---- */
+.choices_section{
+	position: absolute;
+    color: var(--DefaultColor0);
+	z-index: auto;
+	text-align: center;
+	padding: 20px;
+	padding-bottom: 20px;
+
+	
+
+	width: fit-content;
+	margin: 0 auto;
+
+	grid-column: 2/16;
+	grid-row: 8/17;
+
+
+
+	background-color: var(--mainColor)
+}
+.choices_section_choices{
+	display: flex;
+	text-align: center;
+	justify-content: center; /* Center content horizontally */
+	align-items: center; /* Center content vertically */
+	/* flex-wrap: wrap; /* Allow wrapping of buttons if needed */
+	gap: 30px; /* Spacing between buttons */
+	color: var(--DefaultColor0);
+	background-color: var(--mainColor)
+}
+.Choices {
+	display: none; /* Initially hidden, adjust visibility dynamically */
+	padding: auto 5px;
+	cursor: pointer;
+	font-size: 16px;
+    color: var(--blue);
+
+    /*
+        float: left;
+        width: auto 2em;
+        height: auto;
+        padding: auto 5px;
+        text-align: center;
+        margin-left: 5em;
+        margin-right: 5em;
+    */
+}
+.Choices.visible {
+	display: inline-block; /* Only show visible buttons */
+    color: var(--blue);
+}
+.Choices:hover{
+	text-decoration: underline;
+	cursor: pointer;
+}
+.Sh_1{
+	color: var(--beige);
+	
+}
+.Sh_1:hover{
+	color: var(--Red);
+}

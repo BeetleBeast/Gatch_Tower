@@ -1,0 +1,28 @@
+.startscreen{
+	text-align: center;
+	font-size: large;
+	padding: 5px;
+	padding-left: 1.5em;
+	padding-right: 1.5em;
+	background-color: var(--DefaultColor2);
+	color: var(--Gold);
+	border: 1px solid var(--DefaultColor6);
+	
+}
+.startscreen:hover{
+	border: 1px solid var(--DefaultColor9);
+	cursor: pointer;
+	transition-duration: 0.2s;
+}
+.startParentParent{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.startParent{
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.startParent:hover .startscreen:not(:hover) {
+    opacity: 0.5;
+}

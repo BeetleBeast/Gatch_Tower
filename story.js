@@ -6,18 +6,22 @@ function Render_Scene(saveData, isNew = false) {
     if ( isNew ) impromptuSave(saveData) /* save the game from latest version of saveData */
     saveData = JSON.parse(sessionStorage.getItem('TempLatestSave'));
 
+    // Count Time
+    startForcedDelay(0.6)
     // Render content in order
 
     // --- UI Rendering Main ---
-    ButtonRender(saveData, !saveData.CurrentDebuff_Effects.filter(effect => effect === 'confused')); // 1. Button's and teir Visibility, Text's Visibility, Item's Visibility and actions, 
-    populateText(saveData); // 2. Populate text in main section
+    if ( !tryRandomEncounter(true) ) {
+        ButtonRender( !saveData.CurrentDebuff_Effects.filter(effect => effect === 'confused')); // 1. Button's and teir Visibility, Text's Visibility, Item's Visibility and actions, 
+        populateText(saveData); // 2. Populate text in main section
+    }
     // --- UI Rendering Side-Menu ---
     // GameCicle // 3. day & night cicle
     character_Description(saveData, saveData.Choices_Made[saveData.currentScene.split('_')[0] || 0]); // 4. Character description if applicable
-    Side_Menu3.dataset.visible =  saveData.isDead ? 'false' : 'true'; // 5. Side menu ( show or hide the effects (debuffs) bar )
+    GlobalQuerySelect.Side_Menu3.dataset.visible =  saveData.dead.isDead ? 'false' : 'true'; // 5. Side menu ( show or hide the effects (debuffs) bar )
     Effect_Bar_progress(saveData, saveData.Debuff_SpashText_Final); // 6. Effect bar if applicable
     // --- UI Rendering Map ---
-    if (saveData.currentScene.split('_')[0] >= 1) saveData.Map.forEach(MapList => CreateMap(MapList));
+    if (saveData.currentScene.split('_')[0] >= 1) saveData.Canvas.Map.forEach(MapList => CreateMap(MapList));
     // --- UI Rendering Inventory ---
     populateInventory(saveData, 1); // 8. Inventory ( only first page )
     //DisplayDebuffTextWithColors(saveData,)
@@ -25,23 +29,29 @@ function Render_Scene(saveData, isNew = false) {
 }
 function impromptuSave(saveData) {
     //  make a save of latest version of saveData
+    let currentdate = new Date();
+    const datetime = currentdate.getDate() + "/" + (currentdate.getMonth()+1)+ "/" +
+        currentdate.getFullYear() + " | " + currentdate.getHours() + ":" + 
+        currentdate.getMinutes() +":" + currentdate.getSeconds();
     if(!ResetFile){
         let SaveForest = JSON.parse(localStorage.getItem('SaveForest') || '{}');
         SaveForest.section0 = saveData;
+        saveData['LastSaved'] = datetime;
         SaveForest.DefaultSaveData = saveData; // optionally keep DefaultSaveData updated
         sessionStorage.setItem('TempLatestSave',JSON.stringify(saveData));
         localStorage.setItem('SaveForest', JSON.stringify(SaveForest));
     }
 }
-function ButtonRender(saveData, ISALT = false, revealInfo = false) {
+function ButtonRender( ISALT = false, REncounter = []) {
     let FreshsaveData = JSON.parse(sessionStorage.getItem('TempLatestSave'));
     const container = document.querySelector('.choices_section_choices');
-    const buttonValues = getButtonValues(FreshsaveData, ISALT);
+    const GrandContainer = document.querySelector('.main');
+    const buttonValues = getButtonValues(FreshsaveData, REncounter, ISALT);
 
     // Clear previously created dynamic buttons (those beyond preset .Sh_1 to .Sh_7)
     container.querySelectorAll('div[class^="Sh_"]').forEach(btn => {
         const value = parseInt(btn.className.split('_')[1]);
-        if (value > 7) btn.remove();
+        if (value >= 8) btn.remove();
     });
 
     for (const buttonValue of buttonValues) {
@@ -49,14 +59,17 @@ function ButtonRender(saveData, ISALT = false, revealInfo = false) {
         if (buttonValue.Value <= 7 ) {
             button = document.querySelector('.Sh_' + buttonValue.Value);
         }
-        if (buttonValue.Value > 7 ) {
+        if (buttonValue.Value >= 8 ) {
             button = document.createElement('div');
-            button.classList.add('Sh_' + buttonValue.Value);
-            container.appendChild(button);
+            button.classList.add('Choices', 'Sh_' + buttonValue.Value);
+            buttonValue.Position ?  GrandContainer.appendChild(button) : container.appendChild(button);
         }
         if (button) {            
             button.innerHTML = buttonValue.Text;
             button.style.display = 'inline-block';
+            button.style.row = buttonValue.Position?.row;
+            button.style.column = buttonValue.Position?.column;
+            if (buttonValue.Position) button.classList.add('cell');
 
             const handler = ClickHandler(buttonValue.Value, FreshsaveData);
             button.removeEventListener("click", button.handlerReference);
@@ -74,14 +87,38 @@ function ButtonRender(saveData, ISALT = false, revealInfo = false) {
  * @returns values inside the button(s) of the current scene
  * @description This function retrieves the button values from the saveData object for the current scene.
  */
-function getButtonValues(saveData, ISALT = false) {
+function getButtonValues(saveData, REncounter, ISALT = false) {
     const buttonValues = [];
-    const options = saveData.scenes[saveData.currentScene][ISALT ? 'ALT_options' : 'options'];
+    let options = saveData.scenes[saveData.currentScene][ISALT ? 'ALT_options' : 'options'];
+    if (REncounter.Name !== undefined) {
+        for (const key in REncounter.options) {
+            if (REncounter.options[key]?.ButtonText) {
+                // If button number conflicts, assign a new number
+                const buttonNumber = Math.max(1,...Object.values(options).map(opt => opt?.ButtonNumber || 1)) + 1;
+                const existingOption = Object.values(options).find(opt => opt?.ButtonNumber === buttonNumber);
+                if (!existingOption) {
+                    const newKey = Object.keys(options).length;
+                    options[newKey+1] = {
+                        ButtonNumber: buttonNumber,
+                        ButtonText: REncounter.options[key]?.ButtonText,
+                        Position: {
+                            row: REncounter.options[key]?.Position?.row,
+                            column: REncounter.options[key]?.Position?.column,
+                        }
+                    };
+                }
+            }
+        }
+    }
     for (const key in options) {
         if ( options[key]?.ButtonText ) {
             buttonValues.push({
                 Value: options[key]?.ButtonNumber,
                 Text: options[key]?.ButtonText,
+                Position: {
+                    row: options[key]?.Position?.row,
+                    column: options[key]?.Position?.column,
+                }
             });
         }
     }
@@ -91,28 +128,34 @@ function ClickHandler(buttonValue, saveData) {
     return () => {
         console.log('Button ' + buttonValue + ' pressed'); // Log button press
         if (!isCurrentlyPrinting[".main_section"]) {
-            // stopTyping = false;
-            if (buttonValue === 1) {
-                saveData.Choices_Made[saveData.currentScene.split('_')[0]].pop();
-                console.log( 'ClickHandler Back button ', saveData.Choices_Made[saveData.currentScene.split('_')[0]])
-                previousScene(saveData);
-            } else {
-                saveData.Choices_Made[saveData.currentScene.split('_')[0]].push(buttonValue);
-                console.log( 'ClickHandler Forward button ', saveData.Choices_Made[saveData.currentScene.split('_')[0]])
-                nextScene(saveData);
+            if (!ForcedDelay.isActive) {
+                // stopTyping = false;
+                if (buttonValue === 1) {
+                    saveData.Choices_Made[saveData.currentScene.split('_')[0]].pop();
+                    console.log( 'ClickHandler Back button ', saveData.Choices_Made[saveData.currentScene.split('_')[0]])
+                    previousScene(saveData);
+                } else {
+                    saveData.Choices_Made[saveData.currentScene.split('_')[0]].push(buttonValue);
+                    console.log( 'ClickHandler Forward button ', saveData.Choices_Made[saveData.currentScene.split('_')[0]])
+                    nextScene(saveData);
+                }
             }
         } else {
             // stopTyping = true;
             console.log('ClickHandler printImmediately, scene ', saveData.currentScene.split('_')[1]);
-            addTextFullFeature({
-                textBlock : saveData.scenes[saveData.currentScene].sceneText,
-                elementId : '.main_section',
-                printImmediately : true,
+            typeText({
+                text : saveData.scenes[saveData.currentScene].sceneText,
+                MainElementID : '.main_section',
+                options: {
+                    printImmediately : true,
+                }
             })
-            addTextFullFeature({
-                textBlock : saveData.scenes[saveData.currentScene].chapterTitle,
-                elementId : '.Quest_Title',
-                printImmediately : true,
+            typeText({
+                text : saveData.scenes[saveData.currentScene].chapterTitle,
+                MainElementID : '.Quest_Title',
+                options: {
+                    printImmediately : true,
+                }
             })
             isCurrentlyPrinting[".main_section"] = false;
             
@@ -183,21 +226,23 @@ function manageHiddenInfo({
                 const button = document.querySelector('.Sh_' + CountedBtn.BtnID);
                 if (button) {
                     button.style.display = MakeVisible ? "block" : "none";
-                    saveData.Uncoverded.HiddenButton.find(item => item.sceneID === saveData.scenes[saveData.currentScene].sceneID)[CountedBtn.BtnID] = MakeVisible;
+                    saveData.Uncoverded.HiddenButton.find(item => item.sceneID === saveData.scenes[saveData.currentScene].sceneID).Show = MakeVisible;
                 }
             }) :
             document.querySelector('.Sh_' + FirstScanBtn.BtnID).style.display = FirstScanBtn.Show ? "block" : "none"
     }
     if(TextID !== undefined){
         if(!saveData.Uncoverded.HiddenText[TextID]) {
-            addTextFullFeature({
-                elementId : '.main_section',
-                textBlock : saveData.scenes[saveData.currentScene]?.ALT_Text['Hidden'],
-                printImmediately: true,
-                tempColorDuration:  1,
-                addSpan : true,
-                replace : false,
-                textAndColorArray : { word : 'ALL', color : 'blue'},
+            typeText({
+                MainElementID : '.main_section',
+                text : saveData.scenes[saveData.currentScene]?.ALT_Text['Hidden'],
+                options: {
+                    printImmediately: true,
+                    tempColorDuration:  1,
+                    secondaryElementId : true,
+                    replace : false,
+                    textAndColorArray : { word : 'ALL', color : 'blue'},
+                }
             })
             saveData.Uncoverded.HiddenText[TextID] = true;
         }
@@ -206,18 +251,22 @@ function manageHiddenInfo({
         //  add the item to the inventory and show the text if it is not already discovered
         if (itemDiscoveryText && !saveData.Uncoverded.Items[ItemID]) {
             addItemToInventory(saveData, ItemID, 1);
-            addTextFullFeature({
-                elementId : '.main_section',
-                textBlock : itemDiscoveryText.Discoverytext,
-                printImmediately: true,
-                tempColorDuration:  1,
-                addSpan : true,
-                replace : false,
-                textAndColorArray : { word : 'ALL', color : itemDiscoveryText.color},
+            typeText({
+                MainElementID : '.main_section',
+                text : itemDiscoveryText.Discoverytext,
+                options: {
+                    printImmediately: true,
+                    tempColorDuration:  1,
+                    secondaryElementId : true,
+                    replace : false,
+                    textAndColorArray : { word : 'ALL', color : itemDiscoveryText.color},
+                    secondaryElementIdTitle: itemDiscoveryText.DevElementName
+                }
             })
             saveData.Uncoverded.Items[ItemID] = true;
         }
     }
+    sessionStorage.setItem('TempLatestSave', JSON.stringify(saveData));
     return saveData;
 }
 function damageAndDeath(amount, method, instaKill = false) {
@@ -231,8 +280,8 @@ function damageAndDeath(amount, method, instaKill = false) {
 function handleDeath(reason = "unknown") {
     console.warn(`Player died: ${reason}`);
 
-    saveData.isDead = true;
-    saveData.deathReason = reason;
+    saveData.dead.isDead = true;
+    saveData.dead.deathReason = reason;
 
     // Store where the player died
     saveData.AtDeathScreen = {
@@ -243,7 +292,7 @@ function handleDeath(reason = "unknown") {
 
     const deathScene = saveData.scenes["Death"];
     deathScene.sceneText = `You died because ${reason}`;
-    deathScene.options[1].next_scene = saveData.LastSafeScene;
+    deathScene.options[1].next_scene = saveData.dead.LastSafeScene;
 
     // Reset health if needed
     if (typeof character?.Resurrect === "function") {
@@ -270,38 +319,37 @@ function InventoryItemClickedHandler(item_id){
 }
 function character_Description(saveData, Choices_Made){
     //  check wat in Side-Menu2 is, if not the same as character_Description_Text_Final replace it with It
-    Side_Menu2.dataset.visible = saveData.isDead ? 'false' : 'true'; //  show or hide the character description
-    if (Side_Menu2.innerHTML !== saveData.character_Description_Text_Final && ( saveData.currentScene.split('_')[1] >= 3 || saveData.currentScene.split('_')[0] >=1 )){
-        Side_Menu2.innerHTML = saveData.character_Description_Text_Final;
+    GlobalQuerySelect.Side_Menu2.dataset.visible = saveData.dead.isDead ? 'false' : 'true'; //  show or hide the character description
+    if (GlobalQuerySelect.Side_Menu2.innerHTML !== saveData.character_Description_Text_Final && ( saveData.currentScene.split('_')[1] >= 3 || saveData.currentScene.split('_')[0] >=1 )){
+        GlobalQuerySelect.Side_Menu2.innerHTML = saveData.character_Description_Text_Final;
         console.log('saveData.character_Description_Text_Final', saveData.character_Description_Text_Final);
     }
 }
 function Effect_Bar_progress(saveData, CurrentDebuffBar){
     //  check wat in Side-Menu4 is, if not the same as Debuff_SpashText_Final replace it with It 
-    Side_Menu4.dataset.visible = saveData.isDead ? 'false' : 'true'; //  show or hide the debuff bar
-    if (Side_Menu4.innerHTML !== saveData.Debuff_SpashText_Final) {
-        Side_Menu4.innerHTML = saveData.Debuff_SpashText_Final;
+    GlobalQuerySelect.Side_Menu4.dataset.visible = saveData.dead.isDead ? 'false' : 'true'; //  show or hide the debuff bar
+    if (GlobalQuerySelect.Side_Menu4.innerHTML !== saveData.Debuff_SpashText_Final) {
+        GlobalQuerySelect.Side_Menu4.innerHTML = saveData.Debuff_SpashText_Final;
         console.log('CurrentDebuffBar', saveData.Debuff_SpashText_Final);
     }
 }
 function populateInventory(saveData,pageNumber) {
     // Function to populate inventory grid based on current page
     let number = 1;
+    Inventory_Content(pageNumber);
     const inventoryItems = saveData.Inventory;
     const pageSize = 16; // Number of items per page (adjust based on grid size)
 
-    const pageContainer = document.getElementById(`page${pageNumber}`);
+    const pageContainer = document.querySelector(`.page${pageNumber}`);
     pageContainer.innerHTML = ''; // Clear previous items
 
     const startIndex = (pageNumber - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, inventoryItems.length);
     const itemsToShow = inventoryItems.slice(startIndex, endIndex);
-
     itemsToShow.forEach(item => {
         const itemElement = document.createElement('div');
         itemElement.classList.add('inventoryItem');
         itemElement.textContent = `${item.Name} x${item.quantity}`;
-
         itemElement.id = `item-${number} itemType-${item.id}`;
 
         // Add click event listener to each item
@@ -313,7 +361,7 @@ function populateInventory(saveData,pageNumber) {
         pageContainer.appendChild(itemElement);
         number++;
     });
-    if (saveData.isDead) document.getElementById('inventory').style.display = 'none'; // Hide inventory if player is dead
+    if (saveData.dead.isDead) GlobalQuerySelect.Inventory.style.display = 'none'; // Hide inventory if player is dead
 }
 function addItemToInventory(saveData, itemId, newQuantity = 1) {
     // Find the item in Items by itemId
@@ -342,10 +390,12 @@ function addItemToInventory(saveData, itemId, newQuantity = 1) {
 }
 function section_title_progress(current_section_title) {
     // choices_section_title.innerHTML = current_section_title;// print current scection title
-    addTextFullFeature({
-        textBlock : current_section_title,
-        elementId : '.choices_section_title', // force error correct is elementId : '.choices_section_title',
-        printImmediately: true,
+    typeText({
+        text : current_section_title,
+        MainElementID : '.choices_section_title', // force error correct is elementId : '.choices_section_title',
+        options: {
+            printImmediately: true,
+        }
     })
     console.log('current_section_title', current_section_title);
 }
@@ -363,20 +413,22 @@ function populateText(saveData) {
 
 }
 function title_progress(current_title,current_title_progress) {
-    addTextFullFeature({
-        textBlock : current_title,
-        elementId : '.Quest_Title',
+    typeText({
+        text : current_title,
+        MainElementID : '.Quest_Title',
     })
     console.log('current_title',current_title);
     console.log('current_title_progress', current_title_progress);
 }
 function scene_progress(currentSceneText,currentSceneName) {
-    addTextFullFeature({
-        textBlock : currentSceneText,
-        elementId : '.main_section',
-        speed : 35,
+    typeText({
+        text : currentSceneText,
+        MainElementID : '.main_section',
+        options: {
+            speed : 35,
+        }
     })
-    saveData.DeathReason = undefined;
+    saveData.dead.deathReason = undefined;
     console.log('currentSceneName', currentSceneName);
     console.log('currentSceneText', currentSceneText);
 }
@@ -387,9 +439,9 @@ function navigateStory(saveData, { direction = 'next', level = 'scene'}) {
         scene = parseInt(scene);
     }
     // death handling
-    if (saveData.isDead) {
-        const [safeChapter, safeScene] = saveData.LastSafeScene.split('_').map(Number);
-        saveData.currentScene = saveData.LastSafeScene || "0_0";
+    if (saveData.dead.isDead) {
+        const [safeChapter, safeScene] = saveData.dead.LastSafeScene.split('_').map(Number);
+        saveData.currentScene = saveData.dead.LastSafeScene || "0_0";
         Object.keys(saveData.Choices_Made).forEach((chapterKey) => {
             const chapterNum = Number(chapterKey);
             if (chapterNum > safeChapter) {
@@ -399,15 +451,15 @@ function navigateStory(saveData, { direction = 'next', level = 'scene'}) {
                 saveData.Choices_Made[chapterKey] = saveData.Choices_Made[chapterKey].slice(0, safeScene);
             }
         });
-        saveData.isDead = false;
-        saveData.deathReason = null;
+        saveData.dead.isDead = false;
+        saveData.dead.deathReason = null;
         saveData.AtDeathScreen = ''
         clearButtonContent();
         Render_Scene(saveData, true);
         return;
     }
     // SaveScene handling
-    if (saveData.currentScene == saveData.safeScenes?.[saveData.currentScene]) saveData.LastSafeScene = `${chapter}_${scene}`;
+    if (saveData.currentScene == saveData.dead.safeScenes?.[saveData.currentScene]) saveData.dead.LastSafeScene = `${chapter}_${scene}`;
 
     let lastChoiceIndex = saveData.Choices_Made[chapter].length - 1;
     let LastButtonPressed = direction === 'next' ? saveData.Choices_Made[chapter][lastChoiceIndex] : 1;
@@ -519,15 +571,17 @@ function characterMaker(saveData, lastChoiceIndex, value, valueS){
     const charachterDefining = new Function('value', 'valueSTRING', `return \`${templateString}\`;`)(value, valueSTRING);
 
     //  Display text to Side Menu
-    Side_Menu2.innerHTML = charachterDefining;
+    GlobalQuerySelect.Side_Menu2.innerHTML = charachterDefining;
 
-    addTextFullFeature({
-        elementId: '.Side-Menu2', 
-        textBlock: charachterDefining, 
-        textAndColorArray: { word : valueSTRING, color : valueCOLOR},
-        replace : true,
+    typeText({
+        MainElementID: '.Side-Menu2', 
+        text: charachterDefining, 
+        options: {
+            textAndColorArray: { word : valueSTRING, color : valueCOLOR},
+            replace : true,
+        }
     })
-    saveData.character_Description_Text_Final = Side_Menu2.innerHTML;
+    saveData.character_Description_Text_Final = GlobalQuerySelect.Side_Menu2.innerHTML;
 }
 function performSceneAction(actionObj, saveData) {
     // get chapter and scene

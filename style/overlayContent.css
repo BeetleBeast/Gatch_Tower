@@ -1,0 +1,268 @@
+/* ---- SE container ---- */
+.Side-extra {
+    grid-column: 2/9;
+    grid-row: 1/9;
+
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--AlmostBlack3);
+    z-index: 9999999;
+    
+    padding: auto 5px;
+    border-radius: 5px;
+    
+    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-out;
+    visibility: hidden; /* Initially hide side-extra */
+    opacity: initial;
+}
+.Side-extra , .parent{
+    background-color: var(--thirdColor);
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.Side-extra[data-visible=true] * {
+	visibility: visible;
+	opacity: 1;
+}
+[data-visible=true] {
+	opacity: 1;
+	visibility: visible; 
+    content: normal;
+}
+.parent{
+	z-index: 9999999;
+	position: relative;
+    flex-direction: row;
+
+	opacity: 1;
+	margin: 0;
+    padding: 0;
+	text-align: center;
+	color: var(--DefaultColor0);
+	
+    transition: opacity 0.5s ease-in-out;
+}
+.parentLoad {
+
+}
+.parent_Settings {
+
+}
+.parent_Info {
+
+}
+/* ---- SE Settings content ---- */
+.Restart{
+	height: fit-content;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+#reset {
+    
+}
+
+/* ---- SE Info content ---- */
+
+/* ---- SE Load content ---- */
+/* ---- SE Load container ---- */
+.tabletable {
+    display: flex;
+    border: 2px solid var(--DefaultColor9);
+    background-color: var(--side-Color);
+    align-items: center;
+    justify-content:flex-start;
+    flex-direction: column;
+	height: 75%;
+	width: 50%;
+    margin-bottom: 20px;
+}
+.Allsection{
+    border: .1px solid;
+    border-color: var(--AlmostPurple4);
+    border-radius: 5px;
+    padding: 20px;
+	width: 95%;
+	height: 95%;
+}
+/* ---- SE Load table tr ---- */
+.trSection{
+border: 1px solid var(--mainColor);
+width: 200%;
+}
+.trSection:hover:not(.disable){
+	background-color: var(--AlmostBlack2);
+}
+.sectionNULL{
+    border-bottom: 1px solid;
+    border-color: var(--DefaultColor0);
+    
+}
+.section0{
+    width: -moz-fit-content;
+    width: fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+	border: 1px solid var(--DefaultColor0);
+}
+.section1{
+    width: -moz-fit-content;
+    width: fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+	border: 1px solid var(--DefaultColor0);
+}
+.section2{
+    width: -moz-fit-content;
+    width: fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+	border: 1px solid var(--DefaultColor0);
+}
+.section3{
+    height: -moz-fit-content;
+    height: fit-content;
+	border: 1px solid var(--DefaultColor0);
+}
+.section4{
+	height: -moz-fit-content;
+    height: fit-content;
+	border: 1px solid var(--DefaultColor0);
+}
+.sectionSetting{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+/* ---- SE Load table td ---- */
+.disable{
+    cursor:not-allowed;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: 'Orbitron', sans-serif;
+    text-decoration: none;
+    animation: none;
+    transition: none;
+}
+/* ---- SE Load table Head ---- */
+.Num1{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+}
+.SaveGameH{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+}
+.load_gameSH{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+}
+.Th_NameH{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+    width: 300px;
+}
+.Del_gameH{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+}
+/* ---- SE Load table td ---- */
+button:active:not(.Section0_load_game, .Btn-backforward,.disable,.settingsEmpty){
+    box-shadow: none;
+    transform: translateY(5px);
+}
+/* Num1 */
+/* SaveGame */
+/* Load_game */
+.BtnTable{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    border: 1px solid transparent;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 5px;
+
+    text-align: center;
+}
+.BtnTable:hover:not(.disable, .pagesLG){
+    border-color: var(--AlmostPurple2);
+    animation: biggier .5s linear forwards;
+}
+/* Th_Name */
+.Th_Name{
+    background-color: transparent;
+    color: var(--AlmostPurple2);
+    
+    border-radius: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding: 20px;
+    width: 300px;
+}
+/* Del_game */
+.DEl:hover{
+    border-color: var(--Red);
+    color: var(--Red);
+}
+/* ---- SE Load table sectionSetting ---- */
+/* Page selection */
+.thick-arrow-left-SG, .thick-arrow-right-SG {
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--Black);
+    border-left: 0;
+    border-top: 0;
+    color: transparent;
+    background-color: transparent;
+    padding: 0%;
+    vertical-align: middle; /* Align arrows vertically within button */
+    transform: rotate(135deg); /* Adjust rotation angle for left arrow */
+    cursor: pointer;
+}
+.thick-arrow-right-SG {
+    transform: rotate(315deg); /* Adjust rotation angle for right arrow */
+}
+
+/* Name selection */
+.nameChangeLabel{
+	color: var(--mainColor);/*TODO: werk here fix it */
+}
+#nameChangeIn{
+	background-color: transparent;
+	border: 2px solid var(--mainColor);
+	width: 3em;
+	height: -moz-fit-content;
+	height: fit-content;
+	padding-left: 15px;
+	padding-right: 15px;
+	color: var(--DefaultColor0);
+}

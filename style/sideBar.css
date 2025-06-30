@@ -1,0 +1,152 @@
+/* ---- Side Bar ---- */
+/* ---- SB container --- */
+#Side-Menu {
+    grid-column: 1 / 1;
+    grid-row: 1 / 9;
+    position: relative;
+	/*width: 15em;*/
+	background-color: var(--side-Color);
+	border-right: 2px solid var(--RedBorder);
+	text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* this will create space between the elements */
+	transition: width 0.3s ease;
+}
+.Side-Menu_Class{
+	font-family: "Protest Revolution", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+/* ---- SB colapse Btn ---- */
+#Side-Menu_ColapseButton {
+	z-index: 500;
+	display: block;
+    position: absolute;
+	top: 0;
+	right: 0;
+	/*width: 35px;*/
+    color: var(--DefaultColor0);
+    padding: 5px 10px; /* Adjust padding for button size */
+    margin: 5px;
+    border: 1px solid var(--DefaultColor9);
+	border-right: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+#Side-Menu_ColapseButton:hover {
+    border-color: var(--DefaultColor10);
+    background-color: var(--DefaultColor10);
+}
+/* Styles for the thick arrows (left and right) */
+.thick-arrow-left, .thick-arrow-right {
+    width: 15px;
+    height: 15px;
+    border: 5px solid var(--DefaultColor11);
+    border-left: 0;
+    border-top: 0;
+    
+    vertical-align: middle; /* Align arrows vertically within button */
+    transform: rotate(135deg); /* Adjust rotation angle for left arrow */
+    cursor: pointer;
+}
+.thick-arrow-right {
+    transform: rotate(315deg); /* Adjust rotation angle for right arrow */
+}
+#Side-Menu_ColapseButton:enabled{
+	padding: 8px 5px; /* Adjust padding for button size */
+}
+/* ---- SB 1 ---- */
+.Side-Menu1{
+	margin: auto 5px;
+	padding: auto 5px;
+	margin-top: 5px;
+}
+#Side-image{
+	/*background-image:;*/
+	display: block;
+}
+#Side-Title{
+	text-align: center;
+	font-size: 25px;
+	padding-top: 6%;
+	color: var(--Gold);
+	display: block;
+}
+/* ---- SB 2 ---- */
+.Side-Menu2 {
+	height: 100%;
+	text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* this will create space between the elements */
+	color: var(--DefaultColor0);
+	margin-bottom: 15px;
+}
+/* ---- SB 3 ---- */
+.Side-Menu3 {
+	height: 100%;
+	text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* this will create space between the elements */
+	color: var(--DefaultColor0);
+}
+/* ---- SB 4 ---- */
+.Side-Menu4 {
+	height: 100%;
+	text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* this will create space between the elements */
+	color: var(--DefaultColor0);
+	margin-bottom: 3em;
+	margin-top: 15px;
+}
+.Side-Influences{
+	width: 100%;
+	height: 5px;
+	background-color: var(--DefaultColor12);
+}
+.Side-Influences_Bar{
+	width: 50%;
+	height: 5px;
+	background-color: var(--Control);
+
+}
+/* ---- SB 5 ---- */
+.bottom-links {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    /*justify-content: flex-end; /* this will align the elements to the bottom */
+}
+.settings{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    color: var(--AlmostBlue);
+	background-color: rgb(41, 34, 34);
+	display: block;
+	width: 5em;
+	height: 2.5em;
+	padding: none;
+	bottom: 10px;
+	border: 1px solid transparent;
+}
+.SettingsLOW{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	align-items: baseline;
+    /*justify-content: flex-end; /* this will align the elements to the bottom */
+}
+#side-Title{
+    /* existing styles */
+	margin-bottom: 50px;
+}
+.BtnInfo {
+    width: 80%;
+}
