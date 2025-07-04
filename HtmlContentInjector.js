@@ -1,7 +1,7 @@
 // HtmlContentInjector.js
 // Function to create the initial elements and content for the game
 function StartUp_Content() {
-    const main = document.querySelector('.choices_section'); // changed .main to .app
+    const main = document.querySelector('.main'); // changed .main to .app
     const startParentParent = document.createElement('div');
     const startParent = document.createElement('div');
     const continueBtn = document.createElement('button');
@@ -10,6 +10,9 @@ function StartUp_Content() {
     const settingsBtn = document.createElement('button');
 
     startParentParent.classList.add('startParentParent');
+    main.style.display = 'flex';
+    main.style.justifyContent = 'center';
+    main.style.alignItems = 'center';
 
     startParent.classList.add('startParent');
     startParent.dataset.visible = 'true';
@@ -48,6 +51,14 @@ function StartUp_Content() {
 
     SetLoadingScreen(false)
     return GlobalQuerySelect;
+}
+function removeStartUpContent() {
+    const main = document.querySelector('.main');
+    const startParentParent = main.querySelector('.startParentParent');
+    main.style.display = 'flexbox';
+    main.style.justifyContent = 'unset';
+    main.style.alignItems = 'unset';
+    if (startParentParent) startParentParent.remove();
 }
 function Side_Menu(Influences, GlobalQuerySelect) {
     const Side_Menu = document.querySelector('#Side-Menu');
@@ -166,7 +177,7 @@ function Title_Section(GlobalQuerySelect) {
     GlobalQuerySelect.Title = document.querySelector('.Quest_Title');
     return GlobalQuerySelect;
 }
-function Main_Section_Content(GlobalQuerySelect) {
+function Main_Section_Content1(GlobalQuerySelect) {
     const app = document.querySelector('.app');
 
     const main = document.createElement('div');
@@ -209,6 +220,54 @@ function Main_Section_Content(GlobalQuerySelect) {
     GlobalQuerySelect.Button_Choice7 = document.querySelector('.Sh_7');
     return GlobalQuerySelect;
 }
+function TextBlock_Content(GlobalQuerySelect, amountOfBlocks = 1, DefaultButtons = 7, interactionBlock = true) {
+    const app = document.querySelector('.app');
+    const main = document.createElement('div');
+
+    main.classList.add('main');
+    if (interactionBlock) {
+        const blocks = InteractionBlock(amountOfBlocks, undefined, DefaultButtons);
+        main.append( ...blocks);
+        GlobalQuerySelect.InteractionBlock = blocks;
+        GlobalQuerySelect.TextBlock = document.querySelector('.TextBlock');
+        GlobalQuerySelect.BtnBlock = document.querySelectorAll('.BtnBlock');
+    }
+    app.appendChild( main );
+
+    
+    GlobalQuerySelect.app = document.querySelector('.app');
+    return GlobalQuerySelect;
+}
+function InteractionBlock(amountOfBlocks, blockIndex, DefaultButtons = 7) {
+    if (blockIndex === undefined) {
+        const InteractionBlockELements = [];
+        for (let i = 0; i < amountOfBlocks; i++) {
+            const InteractionBlock = document.createElement('div');
+            const TextBlock = document.createElement('div'); // main_section
+            const BtnBlock = document.createElement('div'); // choices_section & choices_section_choices
+
+            TextBlock.classList.add('TextBlock', `Block_${i}`);
+            BtnBlock.classList.add('BtnBlock', `Block_${i}`);
+            InteractionBlock.classList.add(`InteractionBlock`, `Block_${i}`);
+
+            InteractionBlock.append( TextBlock, BtnBlock);
+            InteractionBlockELements.push(InteractionBlock);
+        }
+        return InteractionBlockELements;
+    } else {
+        const InteractionBlock = document.createElement('div');
+        const TextBlock = document.createElement('div');
+        const BtnBlock = document.createElement('div'); 
+
+        TextBlock.classList.add('TextBlock', `Block_${blockIndex}`);
+        BtnBlock.classList.add('BtnBlock', `Block_${blockIndex}`);
+        InteractionBlock.classList.add(`InteractionBlock`, `Block_${blockIndex}`);
+        InteractionBlock.dataset.block = blockIndex;
+
+        InteractionBlock.append( TextBlock, BtnBlock );
+        return InteractionBlock;
+    }
+}
 function Inventory_Content(amountOfPages = 0) {
     const Inventory = document.querySelector('.Inventory');
     const inventoryContainer = document.createElement('div');
@@ -227,7 +286,7 @@ function Inventory_Content(amountOfPages = 0) {
     pages.append( ...pageElements );
     inventoryContainer.appendChild( pages );
     Inventory.appendChild( inventoryContainer );
-    console.log('Inventory.hasChildNodes',Inventory.hasChildNodes(inventoryContainer))
+    if (DebugMode) console.log('Inventory.hasChildNodes',Inventory.hasChildNodes(inventoryContainer))
 
     GlobalQuerySelect.Inventory = inventoryContainer;
     GlobalQuerySelect.inventoryItem = document.querySelector('.inventoryItem');
@@ -238,9 +297,9 @@ function Inventory_Content(amountOfPages = 0) {
  */
 function SettingsOverlay(number = null) {
     if (!number || number === null) {
-    console.error('no number given.');
-    return;
-    }
+        console.warn('no number given.');
+        return;
+    } else if (DebugMode) console.log('SettingsOverlay number', number);
     const GrandParent = document.querySelector('.Side-extra');
     const isVisible = GrandParent.dataset.visible === 'true';
     let parent = document.createElement('div');
@@ -291,7 +350,6 @@ function SettingsOverlay(number = null) {
             }
             break;
     }
-    console.log('SettingsOverlay : ',number);
     if (!parentDeath_Flag) {
         GrandParent.appendChild(parent);
         if(GrandParent.querySelector('.parentLoad')) LoadedSaves()

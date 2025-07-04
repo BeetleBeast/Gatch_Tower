@@ -58,17 +58,18 @@ function tryRandomEncounter(Testing= false) {
 
     if (!chosenEvent.allow_multiple_event) {
         triggerRandomEvent(chosenEvent);
+        return true;
     } else {
 
         const remainingEvents = possibleEvents.filter(ev => ev !== chosenEvent);
         const chosenSecondEvent = pickRandomWeighted(remainingEvents);
         if ( !chosenSecondEvent || chosenSecondEvent.Name === "NoEvent") {
-            triggerRandomEvent(chosenEvent);
+            return false;
         } else {
             triggerRandomEvent([chosenEvent, chosenSecondEvent]);
+            return true;
         }
     }
-    return false;
 }
 function parseScene(sceneStr) {
     const [major, minor] = sceneStr.split('_').map(Number);
@@ -103,26 +104,40 @@ function pickRandomWeighted(events) {
 
 function triggerRandomEvent(event) {
     let saveData = JSON.parse(sessionStorage.getItem('TempLatestSave'));
-    if(Array.isArray(event)) {
-        for (const Name of event){
-            console.log( Name.sceneTexts.Lines);
-            console.log(`\n Encounter: ${ Name.Name}`);
+    if (DebugMode) {
+        if(Array.isArray(event)) {
+            for (const Name of event){
+                console.log( Name.sceneTexts.Lines);
+                console.log(`\n Encounter: ${ Name.Name}`);
+            }
+        } else {
+            console.log( event.sceneTexts.Lines);
+            console.log(`\n Encounter: ${ event.Name}`);
         }
-    } else {
-        console.log( event.sceneTexts.Lines);
-        console.log(`\n Encounter: ${ event.Name}`);
     }
 
 
     // Add the text to the page
 
     const currentTitle = saveData.scenes[saveData.currentScene].chapterTitle;
-    const currentSceneText = saveData.scenes[saveData.currentScene].sceneText;
-    
+    const currentSceneText = saveData.scenes[saveData.currentScene].sceneTexts;
+    const sceneID = saveData.scenes[saveData.currentScene].sceneID;
+
+    // add the buttons to the page
+    populateButton( false, event)
+
+    const TextBlockParent = [`.Block_R${event.REventID}` , `.Block_0`] // `.Block_${sceneID}`
     if(event.allow_original_scene) {
         typeText({
             MainElementID : '.Quest_Title',
-            text : currentTitle,
+            sceneTexts: { 
+                Lines: currentTitle,
+                Position: 'default' // default to center
+            },
+            options: {
+                secondaryElement: false,
+
+            }
         })
     }
     // first event then normal scene text
@@ -130,30 +145,35 @@ function triggerRandomEvent(event) {
     eventList.push(event);
     for (const scene of eventList) {
         typeText({
-            MainElementID : '.main_section',
-            text : scene.sceneTexts.Lines,
+            MainElementID : '.TextBlock',
+            sceneTexts: {
+                Lines: scene.sceneTexts.Lines,
+                Position: scene.sceneTexts.Position,
+            },
             options: {
-                position: scene.sceneTexts.Position,
                 printImmediately: false,
                 tempColorDuration:  1,
-                secondaryElementId : true,
-                replace: true,
+                secondaryElement : true,
                 textAndColorArray : { word : 'ALL', color : 'blue'},
+                replace: false,
+                MainElementBlock: TextBlockParent[0]
             }
         })
     }
     if ( event.allow_original_scene ) {
         typeText({
-            MainElementID : '.main_section',
-            text : '~'+currentSceneText,
+            MainElementID : '.TextBlock',
+            sceneTexts: {
+                Lines: '~'+currentSceneText.Lines,
+                Position: currentSceneText.Position // default to Left
+            },
             options: {
-                printImmediately: true,
-                secondaryElementId : false
+                printImmediately: false,
+                secondaryElement : true,
+                replace: false,
+                MainElementBlock: TextBlockParent[1]
             }
         })
     }
-    
-    // add the buttons to the page
-    ButtonRender( false, event)
     return true;
 }

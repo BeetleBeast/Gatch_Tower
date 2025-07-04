@@ -18,7 +18,10 @@ let saveData = {
         Death : {
             chapterTitle: "Death",
             sceneName: "DeathScreen0",
-            sceneText: "You died because ",
+            sceneTexts: {
+                Lines: [ "You died because "],
+                Position: 1, // default to Left
+            },
             ALT_Text: null,
             sceneID: -1,
             ButtonTitle: "",
@@ -34,7 +37,10 @@ let saveData = {
         "0_0": {
             chapterTitle: "Into the new world",
             sceneName: "Start",
-            sceneText: "You wake up in a dark cave, the damp air clinging to your skin as you grope for any semblance of direction. The sound of distant rumbling echoes through the cavern, urging you to explore. With each step, the path twists and turns, revealing ancient ruins and forgotten passages. As you navigate this mysterious labyrinth, the weight of uncertainty presses upon you, yet a flicker of curiosity ignites within.",
+            sceneTexts: {
+                Lines: [ "You wake up in a dark cave, the damp air clinging to your skin as you grope for any semblance of direction. The sound of distant rumbling echoes through the cavern, urging you to explore. With each step, the path twists and turns, revealing ancient ruins and forgotten passages. As you navigate this mysterious labyrinth, the weight of uncertainty presses upon you, yet a flicker of curiosity ignites within."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 0,
             ButtonTitle: "",
@@ -46,7 +52,10 @@ let saveData = {
         "0_1": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining0",
-            sceneText: "Gazing into the rippling surface of a subterranean pool, you catch a glimpse of your own reflection amidst the murky depths. The dim light barely illuminates your features, leaving much to the imagination. Who is this figure staring back at you? The lines of gender blur in the wavering distortion, leaving only a sense of mystery in its wake...",
+            sceneTexts: {
+                Lines: [ "Gazing into the rippling surface of a subterranean pool, you catch a glimpse of your own reflection amidst the murky depths. The dim light barely illuminates your features, leaving much to the imagination. Who is this figure staring back at you? The lines of gender blur in the wavering distortion, leaving only a sense of mystery in its wake..."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 1,
             ButtonTitle: "", 
@@ -59,7 +68,10 @@ let saveData = {
         "0_2": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining1",
-            sceneText: "In the dim cavern, Your eyes glimmer like precious gems, reflecting the faint light with an entrancing allure. With each glance, you discern a depth of color, ranging from the azure depths of a tranquil ocean to the earthy warmth of sunlit forests.",
+            sceneTexts: {
+                Lines: [ "In the dim cavern, Your eyes glimmer like precious gems, reflecting the faint light with an entrancing allure. With each glance, you discern a depth of color, ranging from the azure depths of a tranquil ocean to the earthy warmth of sunlit forests."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 2,
             ButtonTitle: "", 
@@ -82,7 +94,10 @@ let saveData = {
         "0_3": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining2",
-            sceneText: "Amidst the shadows, Your hair dances in the gentle breeze, its texture hinting at a story of its own. Whether cascading in ebony rivers, catching the light in shimmering silver strands, or ablaze with the fiery hues of a setting sun, each tress adds to Your mystique",
+            sceneTexts: {
+                Lines: [ "Amidst the shadows, Your hair dances in the gentle breeze, its texture hinting at a story of its own. Whether cascading in ebony rivers, catching the light in shimmering silver strands, or ablaze with the fiery hues of a setting sun, each tress adds to Your mystique"],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 3,
             ButtonTitle: "", 
@@ -105,7 +120,10 @@ let saveData = {
         "0_4": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining3",
-            sceneText: "Your skin, bathed in the flickering light, revealed a complexion that seemed to hold stories untold. As you observe closely, you notice nuances of color, from the palest porcelain to the richest ebony, each hue adding depth to Your enigmatic presence.",
+            sceneTexts: {
+                Lines: [ "Your skin, bathed in the flickering light, revealed a complexion that seemed to hold stories untold. As you observe closely, you notice nuances of color, from the palest porcelain to the richest ebony, each hue adding depth to Your enigmatic presence."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 4,
             ButtonTitle: "", 
@@ -128,7 +146,10 @@ let saveData = {
         "0_5": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining4",
-            sceneText: "Your stature, silhouetted against the cavern walls, commands attention with a presence that is both formidable and intriguing. As you study them further, you discern the subtle contours of Your frame, which may lean towards a delicate grace or exude a powerful strength, leaving an indelible impression in the depths of the cavern.",
+            sceneTexts: {
+                Lines: [ "Your stature, silhouetted against the cavern walls, commands attention with a presence that is both formidable and intriguing. As you study them further, you discern the subtle contours of Your frame, which may lean towards a delicate grace or exude a powerful strength, leaving an indelible impression in the depths of the cavern."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 5,
             ButtonTitle: "",
@@ -151,7 +172,10 @@ let saveData = {
         "0_6": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining5",
-            sceneText: "Your attire, a reflection of your journey through the rugged terrain, appears weathered and worn, bearing the marks of your passage through the cave's unforgiving landscape. You notice that your clothing carries either the rugged authenticity of a seasoned traveler, marked by dirt and grime, or the pristine cleanliness that hints at your recent arrival, untouched by the trials of the cavern.",
+            sceneTexts: {
+                Lines: [ "Your attire, a reflection of your journey through the rugged terrain, appears weathered and worn, bearing the marks of your passage through the cave's unforgiving landscape. You notice that your clothing carries either the rugged authenticity of a seasoned traveler, marked by dirt and grime, or the pristine cleanliness that hints at your recent arrival, untouched by the trials of the cavern."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             ButtonTitle: "",
             sceneID: 6,
@@ -168,7 +192,10 @@ let saveData = {
         "0_7": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining6",
-            sceneText: "Gazing into the rippling waters of the cave's puddle, the figure contemplates their gender, recognizing it as a deeply personal truth. Whether they perceive themselves as aligning with the feminine or masculine, their identity crystallizes as a reflection of their inner self, not merely a narrative waiting to be written.",
+            sceneTexts: {
+                Lines: [ "Gazing into the rippling waters of the cave's puddle, the figure contemplates their gender, recognizing it as a deeply personal truth. Whether they perceive themselves as aligning with the feminine or masculine, their identity crystallizes as a reflection of their inner self, not merely a narrative waiting to be written."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 7,
             ButtonTitle: "",
@@ -185,7 +212,10 @@ let saveData = {
         "0_8": {
             chapterTitle: "Into the new world",
             sceneName: "charachterDefining7",
-            sceneText: "As the light begins to dim within the cavern, the figure gazes into the fading reflections of the puddle, contemplating their essence. In the obscurity, their species becomes shrouded in uncertainty, a mysterious aspect of their being that defies classification. Their identity transcends the confines of known races, leaving their true nature obscured in the fading light.",
+            sceneTexts: {
+                Lines: [ "As the light begins to dim within the cavern, the figure gazes into the fading reflections of the puddle, contemplating their essence. In the obscurity, their species becomes shrouded in uncertainty, a mysterious aspect of their being that defies classification. Their identity transcends the confines of known races, leaving their true nature obscured in the fading light."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 8,
             ButtonTitle: "",
@@ -197,20 +227,27 @@ let saveData = {
         "0_9": {
             chapterTitle: "Into the new world",
             sceneName: "seekExit",
-            sceneText: "Navigating the damp walls of the cavern, you seek an exit, fingers tracing the rough texture in search of escape. With each step, your determination grows, fueled by the desire to break free from the confines of this underground labyrinth.",
+            sceneTexts: {
+                Lines: [ "Navigating the damp walls of the cavern, you seek an exit, fingers tracing the rough texture in search of escape. With each step, your determination grows, fueled by the desire to break free from the confines of this underground labyrinth."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 9,
             ButtonTitle: "",
             options: {
                 1: {ButtonNumber: 1, ButtonText: "Previously"},
-                2: {ButtonNumber: 7, ButtonText: "Next"}
+                2: {ButtonNumber: 7, ButtonText: "Next", next_scene: "1_0"}
             },
             ALT_options: {}
         },
         "1_0": {
             chapterTitle: "Cave Exploration",
             sceneName: "seekExit0",
-            sceneText: "As you wander through the cave's labyrinth like passages, you encounter a variety of pathways, each offering its own unique allure. One path is adorned with vibrant green moss, another lined with glittering crystals, while another disappears into shadowed depths. Further along, you find yourself following the course of an underground stream, and eventually, you stumble upon a cavern illuminated by bioluminescent fungi. Each pathway beckons with its own mysteries, inviting you to explore deeper into the heart of the cave's secrets.",
+            ChapterAcessPoint: true,
+            sceneTexts: {
+                Lines: [ "As you wander through the cave's labyrinth like passages, you encounter a variety of pathways, each offering its own unique allure. One path is adorned with vibrant green moss, another lined with glittering crystals, while another disappears into shadowed depths. Further along, you find yourself following the course of an underground stream, and eventually, you stumble upon a cavern illuminated by bioluminescent fungi. Each pathway beckons with its own mysteries, inviting you to explore deeper into the heart of the cave's secrets."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 10,
             ButtonTitle: "",
@@ -227,7 +264,10 @@ let saveData = {
         "1_1": {
             chapterTitle: "Cave Exploration",
             sceneName: "The Mossy Passage",
-            sceneText: "The current area is enveloped in a verdant embrace, with lush green moss covering every surface. The air is cool and fresh, carrying the earthy scent of vegetation. Shafts of dim light filter through the canopy above, casting dappled patterns on the moss-covered ground.",
+            sceneTexts: {
+                Lines: [ "The current area is enveloped in a verdant embrace, with lush green moss covering every surface. The air is cool and fresh, carrying the earthy scent of vegetation. Shafts of dim light filter through the canopy above, casting dappled patterns on the moss-covered ground."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 11,
             ButtonTitle: "",
@@ -240,7 +280,10 @@ let saveData = {
         "1_2": {
             chapterTitle: "Cave Exploration",
             sceneName: "The Crystal Tunnel",
-            sceneText: "In this area, the walls sparkle with the mesmerizing glow of crystals, illuminating the surroundings with a soft, ethereal light. The air feels charged with energy, and the ground beneath your feet shimmers with crystalline formations. Every step echoes softly in the cavernous space, creating a sense of wonder and awe.",
+            sceneTexts: {
+                Lines: [ "In this area, the walls sparkle with the mesmerizing glow of crystals, illuminating the surroundings with a soft, ethereal light. The air feels charged with energy, and the ground beneath your feet shimmers with crystalline formations. Every step echoes softly in the cavernous space, creating a sense of wonder and awe."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 12,
             ButtonTitle: "",
@@ -253,7 +296,10 @@ let saveData = {
         "1_3": {
             chapterTitle: "Cave Exploration",
             sceneName: "The Shadowed Corridor",
-            sceneText: "As you navigate this area, darkness presses in from all sides, enveloping you in an oppressive gloom. The air feels heavy and stifling, and the sound of your own footsteps echoes eerily in the silence. Shapes shift and morph in the shadows, playing tricks on your senses and heightening your sense of unease.",
+            sceneTexts: {
+                Lines: [ "As you navigate this area, darkness presses in from all sides, enveloping you in an oppressive gloom. The air feels heavy and stifling, and the sound of your own footsteps echoes eerily in the silence. Shapes shift and morph in the shadows, playing tricks on your senses and heightening your sense of unease."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 13,
             ButtonTitle: "",
@@ -266,7 +312,10 @@ let saveData = {
         "1_4": {
             chapterTitle: "Cave Exploration",
             sceneName: "The Subterranean Stream",
-            sceneText: "Here, the area is defined by the presence of a crystal-clear stream that meanders through the cavern. The sound of rushing water fills the air, accompanied by the gentle drip of stalactites above. The walls are slick with moisture, and patches of bioluminescent fungi cast a soft, eerie glow on the surroundings.",
+            sceneTexts: {
+                Lines: [ "Here, the area is defined by the presence of a crystal-clear stream that meanders through the cavern. The sound of rushing water fills the air, accompanied by the gentle drip of stalactites above. The walls are slick with moisture, and patches of bioluminescent fungi cast a soft, eerie glow on the surroundings."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 14,
             ButtonTitle: "",
@@ -279,7 +328,10 @@ let saveData = {
         "1_5": {
             chapterTitle: "Cave Exploration",
             sceneName: "The Fungal Grove",
-            sceneText: "In this area, the cavern is alive with the soft glow of bioluminescent fungi, casting an otherworldly light on the surroundings. The air is thick with the earthy scent of mushrooms, and strange shapes loom in the shadows. The ground beneath your feet is spongy with fungal growth, adding to the surreal atmosphere of the grove.",
+            sceneTexts: {
+                Lines: [ "In this area, the cavern is alive with the soft glow of bioluminescent fungi, casting an otherworldly light on the surroundings. The air is thick with the earthy scent of mushrooms, and strange shapes loom in the shadows. The ground beneath your feet is spongy with fungal growth, adding to the surreal atmosphere of the grove."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Text: null,
             sceneID: 15,
             ButtonTitle: "",
@@ -292,12 +344,16 @@ let saveData = {
         "1_6": {
             chapterTitle: "Cave Exploration",
             sceneName: "Mossy1",
-            sceneText: "As you traverse the mossy passage, you stumble upon a hidden alcove where a delicate flower blooms amidst the verdant foliage. Its petals shimmer with an otherworldly glow, emitting a faint, melodic hum. The flower seems to beckon to you, offering a sense of peace and serenity amidst the chaos of the cave.",
+            sceneTexts: {
+                Lines: [ "As you traverse the mossy passage, you stumble upon a hidden alcove where a delicate flower blooms amidst the verdant foliage. Its petals shimmer with an otherworldly glow, emitting a faint, melodic hum. The flower seems to beckon to you, offering a sense of peace and serenity amidst the chaos of the cave."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: "Finding an exit?",
             ALT_Text: {
                 default : "As you traverse the mossy passage, you stumble upon a hidden alcove where a delicate flower blooms amidst the verdant foliage. Its petals shimmer with an otherworldly glow, emitting a faint, melodic hum. The flower seems to beckon to you, offering a sense of peace and serenity amidst the chaos of the cave.",
                 Hidden : "~You have discovered a hidden alcove nestled within the mossy passage, its entrance partially obscured by verdant foliage.",
-                Confusion : ""
+                Confusion : "",
+                Position: '1' // AKA default ( Left )
             },
             sceneID: 16,
             ButtonTitle: "What shall you do",
@@ -316,16 +372,16 @@ let saveData = {
                             type: 'DeBuffParentFunction',
                             effect: 'Pacified',
                             strength: '20',
-                            target: '.choices_section'
+                            target: '.BtnBlock'
                         },
                         {
                             type: 'DeBuffParentFunction',
                             effect: 'Confusion',
                             strength: '20',
-                            target: '.choices_section'
+                            target: '.BtnBlock'
                         }]
                 },
-                4: {ButtonNumber: 4, ButtonText: "Continue exploring the passage", next_scene: "1_11"},
+                4: {ButtonNumber: 4, ButtonText: "Continue exploring the passage", next_scene: "2_0"},
                 5: {ButtonNumber: 5, ButtonText: "Sit quietly and observe the surroundings",
                     next_scene: false,
                     action: [{
@@ -364,7 +420,10 @@ let saveData = {
         "1_7": {
             chapterTitle: "Cave Exploration",
             sceneName: "Crystal1",
-            sceneText: "In the heart of the crystal tunnel, you discover a shimmering pool of water, its surface reflecting the myriad hues of the surrounding crystals. As you approach, you notice a faint figure standing at the water's edge, its form obscured by the dancing light.",
+            sceneTexts: {
+                Lines: [ "In the heart of the crystal tunnel, you discover a shimmering pool of water, its surface reflecting the myriad hues of the surrounding crystals. As you approach, you notice a faint figure standing at the water's edge, its form obscured by the dancing light."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 17,
@@ -389,7 +448,10 @@ let saveData = {
         "1_8": {
             chapterTitle: "Cave Exploration",
             sceneName: "Shadowed1",
-            sceneText: "Within the shadowed corridor, you come across a series of ancient runes etched into the cavern walls, their meanings lost to time. As you study the intricate symbols, you sense a faint stirring in the darkness, as if the very shadows themselves are alive with unseen energy.",
+            sceneTexts: {
+                Lines: [ "Within the shadowed corridor, you come across a series of ancient runes etched into the cavern walls, their meanings lost to time. As you study the intricate symbols, you sense a faint stirring in the darkness, as if the very shadows themselves are alive with unseen energy."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 18,
@@ -407,7 +469,10 @@ let saveData = {
         "1_9": {
             chapterTitle: "Cave Exploration",
             sceneName: "Subterranean1",
-            sceneText: "Along the banks of the subterranean stream, you encounter a family of glowing fish, their scales shimmering with iridescent light as they dart through the crystal-clear waters. They seem to be communicating with one another through a series of intricate patterns and movements, creating a mesmerizing display of aquatic ballet.",
+            sceneTexts: {
+                Lines: [ "Along the banks of the subterranean stream, you encounter a family of glowing fish, their scales shimmering with iridescent light as they dart through the crystal-clear waters. They seem to be communicating with one another through a series of intricate patterns and movements, creating a mesmerizing display of aquatic ballet."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 19,
@@ -425,7 +490,10 @@ let saveData = {
         "1_10": {
             chapterTitle: "Cave Exploration",
             sceneName: "Fungal1",
-            sceneText: "Deep within the fungal grove, you stumble upon a cluster of luminous mushrooms, their caps pulsating with a soft, ethereal light. As you approach, you feel a sense of peace wash over you, as if the mushrooms are emitting a calming energy that soothes your weary soul.",
+            sceneTexts: {
+                Lines: [ "Deep within the fungal grove, you stumble upon a cluster of luminous mushrooms, their caps pulsating with a soft, ethereal light. As you approach, you feel a sense of peace wash over you, as if the mushrooms are emitting a calming energy that soothes your weary soul."],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 20,
@@ -443,7 +511,10 @@ let saveData = {
         "1_11": {
             chapterTitle: "Cave Exploration",
             sceneName: "Mossy2",
-            sceneText: "placeholder",
+            sceneTexts: {
+                Lines: [ "placeholder"],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 21,
@@ -457,7 +528,10 @@ let saveData = {
         "1_12": {
             chapterTitle: "Cave Exploration",
             sceneName: "Mossy1_hidden_enclove",
-            sceneText: "You have found a hidden alcove tucked away within the mossy passage, concealed by lush greenery. Inside, the alcove opens into a small chamber adorned with shimmering crystals that reflect the dim light filtering through cracks in the ceiling. The air is cool and refreshing, carrying a faint hint of earthiness and mystery. Amidst the crystals, you spot a glimmering object half-buried in the moss—a small, intricately carved wooden box",
+            sceneTexts: {
+                Lines: [ "You have found a hidden alcove tucked away within the mossy passage, concealed by lush greenery. Inside, the alcove opens into a small chamber adorned with shimmering crystals that reflect the dim light filtering through cracks in the ceiling. The air is cool and refreshing, carrying a faint hint of earthiness and mystery. Amidst the crystals, you spot a glimmering object half-buried in the moss—a small, intricately carved wooden box"],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 22,
@@ -480,20 +554,46 @@ let saveData = {
             },
             ALT_options: {},
         },
-        "2_0": {
+        "2_0": { // start of the real game 
             chapterTitle: "Lost in the forest",
-            sceneName: "FreshAir",
-            sceneText: `As the protagonist emerged from the cave's mouth, shrouded in the embrace of night's thick veil, a sense of urgency seized their heart. With every step into the darkness, the chilling embrace of uncertainty tightened its grip. The moon, a mere sliver in the sky, cast feeble light upon the rugged terrain, barely illuminating the path ahead. Each shadow seemed to whisper secrets of hidden dangers, urging caution with every hesitant footfall.
-                The wilderness stretched out before them, an endless expanse of tangled undergrowth and looming silhouettes of trees. The rustle of leaves and the distant howl of unseen creatures served as eerie companions on their journey. With no destination in sight, the need for shelter gnawed at their very core, urging them onward in search of refuge from the unforgiving night.
-                Their senses heightened, attuned to every sound and movement in the darkness, they pressed forward, driven by the primal instinct for survival. The cool night air kissed their skin, carrying the scent of damp earth and ancient secrets. In the distance, a faint glow beckoned—a beacon of hope amidst the vast unknown.
-                With determination etched upon their features, they forged ahead, guided by the flickering light, their quest for shelter a silent prayer in the wilderness of the night.`,
+            sceneName: "DarkCavern",
+            ChapterAcessPoint: true,
+            sceneTexts: {
+                Lines: [
+                    `Light spilled from a crack above—sunlight`,
+                    `~You see paths leading to dark corridors`,
+                    `~You hear a strange sound comming from the depths`,
+                ],
+                Position: '1' // AKA default ( Left )
+            },
             ALT_Name: null,
-            ALT_Text: null,
+            ALT_Text: {
+                Hidden : [
+                    '~You hear a distant unclear sound comming from the light',
+                    '~maybe a bird?'
+                ],
+                Position: 1 // center
+            },
             sceneID: 23,
             ButtonTitle: "",
             options: {
-                1: {ButtonNumber: 1, ButtonText: "Previously"},
-                2: {ButtonNumber: 7, ButtonText: "Next"},
+                2: {ButtonNumber: 2, ButtonText: "Go to the sound", next_scene: false}, duration: '0:30',
+                3: {ButtonNumber: 7, ButtonText: "Observe the light", next_scene: false, duration: '0:02',
+                    action: [{
+                        type: 'manageHiddenInfo',
+                        show: 'true',
+                        textID: 2,
+                        Btn: [{
+                            BtnID: 7,
+                            IsVisible: true,
+                        }]
+                    },{
+                        type: 'BuffParentFunction',
+                        effect: 'Fear',
+                        strength: 1,
+                        target: '.BtnBlock'
+                    }
+                    ]},
             },
             ALT_options: {},
         },
@@ -501,18 +601,26 @@ let saveData = {
     RandomEvent : {
         //  0 is a Test, 1 to last gets all R events
         0 : { Name: 'Test',
+            REventID: 0,
             sceneTexts : {
                 Lines: [
                     'A dev has captured you and is about to question you!',
-                    'What will you do?',
+                    '~What will you do?',
                 ],
-                Position: 'default'
+                Position: 1, // center
+                Coloring: { // TODO: make it work with the new system
+                    Background: ['Default'],
+                    Color: ['blue'], // TODO: make custom possible
+                    duration: ['0:05'],
+                    Onlysnipet: false,
+                    snipet: '',
+                }
             },
             chance: 0.5,
             options : {
-                1 : {ButtonNumber: 1, ButtonText: 'Run', Position: {row: '5/10', column: '5'}},
-                2 : {ButtonNumber: 2, ButtonText: 'Fight', Position: {row: '5/10', column: '5'}},
-                3 : {ButtonNumber: 3, ButtonText: 'Talk', Position: {row: '5/10', column: '5'}},
+                1 : {ButtonNumber: 1, ButtonText: 'Run', Position: 1, next_scene: 'DeadEnd'},
+                2 : {ButtonNumber: 2, ButtonText: 'Fight', Position: 1, next_scene: 'DeadEnd'},
+                3 : {ButtonNumber: 3, ButtonText: 'Talk', Position: 1, next_scene: 'DeadEnd'},
             },
             ALT_options : {},
             action : [{}],
@@ -571,11 +679,12 @@ let saveData = {
         8 : [],
         9 : [],
     },
-    Uncoverded : {
+    Uncovered : {
         //  type of hidden piece : {    ID of said piece    }
         HiddenText : {
             0 : false,
             1 : true,
+            2 : false,
         },
         HiddenButton : [
             {
@@ -586,6 +695,10 @@ let saveData = {
                 BtnID: 6,
                 Show: true,
                 sceneID : 22,
+            },{
+                BtnID: 7,
+                Show: true,
+                sceneID: 23,
             }
         ],
         Items : {

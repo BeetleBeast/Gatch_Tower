@@ -23,7 +23,7 @@ const ActionHandlers = {
     },
     createElement: ({ tag }) => {
         if (tag) {
-            main_section.appendChild(document.createElement(tag));
+            document.querySelector('.TextBlock').appendChild(document.createElement(tag));
         }
     },
     manageHiddenInfo: ({ saveData, textID, itemID, Btn}) => {
@@ -46,20 +46,29 @@ const effectHandlers = {
         },
     Confusion: ({ ALT_Text, ALT_Name, saveData }) => {
         // change text to confused text
-        console.log('activate confusion')
+        if (DebugMode) console.log('activate confusion')
         typeText({
-            text : ALT_Text,
-            MainElementID : '.main_section',
+            MainElementID : '.TextBlock',
+            sceneTexts: {
+                Lines: ALT_Text,
+                Position: 2 // default to center
+            },
             options: {
                 speed : 35,
             }
         })
         typeText({
-            text : ALT_Name,
             MainElementID : '.Quest_Title',
+            sceneTexts: {
+                Lines: ALT_Name,
+                Position: 2 // default to center
+            },
+            options:{
+                secondaryElement: false,
+            }
         })
         if ( saveData.CurrentDebuff_Effects.filter(effect => effect !== 'confused') ) saveData.CurrentDebuff_Effects.push('Confused');
-        ButtonRender(saveData, true, false); //  re-render buttons
+        populateButton(true); //  re-render buttons
     },
     Weakened : () => {},
     Slowed : () => {},

@@ -29,14 +29,12 @@ body {
     display: grid;
 }
 .main{
-	z-index: 5;
-	padding-top: 5px;
+	display: flexbox;
+    flex-direction: column;
 	position: relative;
+	z-index: 5;
 	top: 0;
 	height: 100%;
 	width: 100%;
-
-	display: grid;
-	grid-template-columns: repeat(16, 1fr); /* 8 columns */
-    grid-template-rows: repeat(16, 1fr);    /* 8 rows */
+    padding-top: 2em;
 }

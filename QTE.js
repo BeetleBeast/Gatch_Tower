@@ -171,38 +171,40 @@ async function runQTESequence(amountQTE = 1, duration = 2000, Input = 'Space', c
     // Create a countdown before starting the QTE sequence
     // TODO: Make it visible to the player
     if (countDown > 0) {
-        console.log(`Starting QTE sequence in ${countDown} seconds...`);
+        if (DebugMode) console.log(`Starting QTE sequence in ${countDown} seconds...`);
         for (let i = countDown; i > 0; i--) {
-            console.log(i);
+            if (DebugMode) console.log(i);
             await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
         }
     }
     // Start the QTE sequence
-    console.log("Starting QTE sequence with " + amountQTE + " QTEs.");
+    if (DebugMode) console.log("Starting QTE sequence with " + amountQTE + " QTEs.");
     for (let i = 0; i < amountQTE; i++) {
         results.push(await startBarQTE(duration, Input, CustomPosition[i]));
     }
     // Process the results of the QTE sequence
-    console.log("QTE Results:", results);
+    if (DebugMode) console.log("QTE Results:", results);
     let combo = 0;
     results.forEach(r => {
         if (r === 'Perfect!') combo += 2;
         else if (r === 'Success') combo += 1;
         else combo = 0; // reset combo
     });
-    console.log("Combo score:", combo);
+    if (DebugMode) console.log("Combo score:", combo);
     // Display the final result based on the QTE results
     const successCount = results.filter(r => r !== 'Fail').length;
-    if (successCount === results.length) {
-        if (successCount === 1) { console.log("Player succeeded in 1 QTE, not applying bonus effects."); return;}
-        console.log("Player succeeded in all QTEs! adding combo score:", combo);
-        // Trigger success animation or effect ( add multiplier score depending on the amount of QTEs )
-    } else if (successCount > 0) {
-        console.log("Player succeeded in some QTEs.");
-        // Trigger partial success effect
-    } else {
-        console.log("Player failed all QTEs.");
-        // Trigger failure effect ( Crittical Failure )
+    if (DebugMode) {
+        if (successCount === results.length) {
+            if (successCount === 1) { console.log("Player succeeded in 1 QTE, not applying bonus effects."); return;}
+            console.log("Player succeeded in all QTEs! adding combo score:", combo);
+            // Trigger success animation or effect ( add multiplier score depending on the amount of QTEs )
+        } else if (successCount > 0) {
+            console.log("Player succeeded in some QTEs.");
+            // Trigger partial success effect
+        } else {
+            console.log("Player failed all QTEs.");
+            // Trigger failure effect ( Crittical Failure )
+        }
     }
 }
 

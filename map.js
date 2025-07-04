@@ -31,7 +31,7 @@ function ChangeStatus(nodes, ID = [], status = []) {
         const nodeIndex = updatedNodes.findIndex(node => node.id === id);
         if (nodeIndex !== -1) {
             updatedNodes[nodeIndex].status = status[index];
-            console.log(`Updated node ${id} status to: ${status[index]}`);
+            if (DebugMode) console.log(`Updated node ${id} status to: ${status[index]}`);
         } else {
             console.warn(`Node with ID ${id} not found`);
         }

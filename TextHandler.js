@@ -49,7 +49,21 @@ async function handlePrintImmediately(element, textBlock, elementId) {
     previousText[elementId] = textBlock;
     return previousText[elementId];
 }
-// utility: Print Charackters Slowly
+/**
+ * Prints text character by character with a typewriter effect
+ * @param {Object} params - Configuration object for the typing animation
+ * @param {string} params.textBlock - The text content to be typed out
+ * @param {string} params.elementId - Unique identifier for the target element
+ * @param {HTMLElement} params.element - The DOM element where text will be displayed
+ * @param {number} params.speed - Base delay in milliseconds between each character
+ * @param {HTMLElement} params.cursor - Optional cursor element to show typing position
+ * @param {Object} params.currentTypingToken - Token tracking object to manage typing interruptions
+ * @param {string} params.token - Unique token for this specific typing session
+ * @param {string} params.output - Accumulated output string (default: empty string)
+ * @param {Object} params.replace - Configuration for text replacement behavior
+ * @param {boolean} params.replace.anew - Whether to append to existing text or replace entirely
+ * @param {string} params.replace.PastText - Previous text to preserve when appending
+ */
 async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, currentTypingToken, token, output = '', replace = { anew : false, PastText : ''}}) {
     const formattedText = formatText(textBlock);
     for (let i = 0; i < formattedText.length; i++) {
@@ -70,6 +84,37 @@ async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, cur
     }
     if ( cursor ) element.removeChild(cursor); // Remove cursor after typing
 }
+async function FadePrint( 
+    el, textList, MainElementID,
+    TimeSettings = { totalRevealTime : 200} ,
+    TokenSettings = { currentTypingToken, token },
+    Position = 1
+    ) {
+    clearCursor();
+    const formattedText = formatText(textList);
+
+    el.style.opacity = 0;
+    el.offsetHeight = 'undefined';
+    if (el) el.innerHTML = formattedText;
+    if ( Position != 'default') el.parentElement.dataset.position = Position;
+    // Apply animation
+    
+    el.style.animation = `${600}ms linear ${TimeSettings.totalRevealTime}ms 1 normal forwards running fadeIn`;
+
+
+    if (TokenSettings.currentTypingToken[MainElementID] !== TokenSettings.token) {
+        // If player clicked while printing
+        handlePrintImmediately( el, textList );
+        return;
+    }
+
+    // Wait for animation to finish
+    await new Promise(resolve => setTimeout(resolve, TimeSettings.totalRevealTime));
+
+    if (isCurrentlyPrinting) isCurrentlyPrinting[MainElementID] = false;
+    if (previousText) previousText[MainElementID] = textList;
+    return previousText?.[MainElementID];
+};
 // utility: word coloring
 function applyWordColoring(element, textBlock, textAndColorArray) {
     let remainingText = textBlock;
@@ -99,7 +144,8 @@ function clearCursor() {
     document.querySelectorAll('.fake-cursor').forEach(c => c.remove());
 }
 function clearSpan(elementId) {
-    document.querySelectorAll(`.Extra-Span-${[elementId]}`).forEach(c => c.remove());
+    const elementName = elementId.replace(/\./g, '');
+    document.querySelectorAll('span',`${[elementName]}`).forEach(c => c.remove());
 }
 // Utility: Create a fake blinking cursor
 function createFakeCursor() {
@@ -108,94 +154,58 @@ function createFakeCursor() {
     cursor.innerHTML = '|';
     return cursor;
 }
-// Core Function to simulate slow typing effect for text
-/*
-async function addTextFullFeature({
-    elementId,
-    textBlock,
-    textAndColorArray = {word : [], color : []}, // array of { word: string, color: string }
-    speed = 200, 
-    printImmediately = false, 
-    replace = true,
-    addSpan = false,
-    tempColorDuration = 0,
-    defaultColor = 'azure',
-}) {
-    // TODO: 1. add sound to it just start when isCurrentlyPrinting is true and it will work
-    
-    // Set-up Token & cursor
-    const token = GenRateToken();
-    let cursor;
-    currentTypingToken[elementId] = token;
-    // Set-up element
-    const element = addSpan ? document.createElement('span') : document.querySelector(elementId);
-    if(addSpan) {
-        element.classList.add(`Extra-Span-${[elementId]}`);
-        document.querySelector(elementId).appendChild(element);
-    }
-
-    if (replace) element.innerHTML = ''; // Clear the content for replacement
-    if (!replace && previousText[elementId] !== undefined ) element.innerHTML = previousText[elementId];
-    const SaveForest =  JSON.parse(localStorage.getItem('SaveForest'));
-    const saveData = SaveForest['section0'];
-    const PrintBoolian = (printImmediately || saveData.Settings.SlowTyping === false || ( previousText[elementId] === textBlock ))
-
-    isCurrentlyPrinting[elementId] = true;
-
-    // Clear old cursors
-    clearCursor();
-    // Set text color based on death
-    setElementColor( element, elementId, defaultColor );
-    
-    // If the word "ALL" is found in the textAndColorArray, set the color to textBlock instead of the word
-    if (textAndColorArray.word == 'ALL') element.style.color = textAndColorArray.color;
-    // If printing immediately or slow typing disabled or previous typing is the same
-    if (PrintBoolian) {
-        handlePrintImmediately( element, textBlock, elementId );
-        clearCursor();
-    }
-    // Handle text and color array
-    if (textAndColorArray.word.length > 0 && textAndColorArray.word != 'ALL') {
-        applyWordColoring( element, textBlock, textAndColorArray );
-        return;
-    }
-    // Create Fake cursor
-    if (!printImmediately) {
-        cursor = createFakeCursor(); // Create a fake cursor
-        if (textAndColorArray.color.length == 0) {
-            element.appendChild(cursor)
-            // const typingSound = new Audio('path/to/typing-sound.mp3'); // Replace with actual sound file path when implemented
-        }
-    }
-    // Slow typing character by character
-    if (!PrintBoolian) await PrintCharSlow({ textBlock, elementId, element, speed, cursor, currentTypingToken, token })
-    // Typing finished, clear token
-    if (currentTypingToken[elementId] === token) {
-        previousText[elementId] = textBlock;
-        delete currentTypingToken[elementId];
-        clearSpan(elementId);
-        isCurrentlyPrinting[elementId] = false;
-    }
-    // Reset color after a delay if tempColorDuration is greater than 0
-    if(tempColorDuration > 0) setTimeout(() => element.style.color = defaultColor, tempColorDuration * 1000);
-}
-*/
 // utility: prepareElement
-function prepareElement(elementId, secondaryElementId, SpanTitle, position = { row: 0, col: 0 }) {
-    const element = secondaryElementId ? document.createElement('span') : document.querySelector(elementId);
-    if (position) {
-        element.style.gridRow = position.row;
-        element.style.gridColumn = position.col;
-        element.classList.add('cell');
+function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock, StringText, AmountOfText, position = 'default') {
+    const elementName = elementId.split('.');
+    const MainElementBlockName = MainElementBlock?.replace(/\./g, '');
+
+    if (elementId == '.Quest_Title' || elementId.includes('.Side-Menu')) secondaryElement = false;
+
+    const containerSelector = MainElementBlock ? `${elementId}${MainElementBlock}` : (elementId)
+    const targetElement = secondaryElement ? document.querySelector(containerSelector) : document.querySelector(elementId);
+
+    if (!targetElement) {
+        console.warn(`Element not found for selector: ${elementId}`);
+        return null;
     }
-    if(secondaryElementId) {
-        SpanTitle 
-        ? element.classList.add(`${SpanTitle}`)
-        : element.classList.add(`Extra-Span-[${elementId}]`)
-        document.querySelector(elementId).appendChild(element);
+
+    if(secondaryElement) {
+        const spanList = [];
+        for (let i = 0; i < AmountOfText; i++) {
+            const span = document.createElement('span');
+
+            const dynamicClass = `span_${i}`;
+            span.classList.add('Text_Lines',MainElementBlockName || '',dynamicClass);
+            if (SpanTitle) span.classList.add(`${SpanTitle}`);
+            targetElement.appendChild(span);
+            spanList.push(span);
+        }
+        return spanList;
     }
-    return element;
+    return targetElement;
 }
+function getTextBlockDetails(MainElementBlock) {
+    let block, EventScene, blockClean, querySelectorString,querySelectorString2, TextBlock, text, IsScene;
+
+    if (MainElementBlock?.includes('Block')) {
+        [block, EventScene] = MainElementBlock.split('_');
+        blockClean = block.replace(/\./g, '');
+        text = blockClean.includes('Text') ? blockClean.replace(('Text','')) : blockClean;
+        querySelectorString = `.Text${blockClean}.${blockClean}_${EventScene}`;
+        querySelectorString2 = [`Text${blockClean}`,`${blockClean}_${EventScene}`]
+        TextBlock = document.querySelector(querySelectorString2);
+        IsScene = !EventScene?.includes('R');
+    }
+    return {
+        block,
+        EventScene,
+        blockClean,
+        querySelectorString,
+        TextBlock,
+        IsScene
+    };
+}
+
 /**
  * Enhanced text typing function - Remake of addTextFullFeature with improved structure
  * 
@@ -208,26 +218,28 @@ function prepareElement(elementId, secondaryElementId, SpanTitle, position = { r
  * - Integration with save system settings
  * 
  * @param {Object} params - Configuration object
- * @param {string} params.MainElementID - CSS selector for the target element (e.g., '.main_section', '#dialog')
+ * @param {string} params.MainElementID - CSS selector for the target element (e.g., '.TextBlock', '#dialog')
  * @param {string[]} params.text - Array of text strings to display (currently expects single string in array)
  * @param {Object} params.options - Optional configuration settings
  * @param {Object} params.options.textAndColorArray - Word coloring configuration
  * @param {string[]} params.options.textAndColorArray.word - Array of words to color, or 'ALL' for entire text
  * @param {string[]} params.options.textAndColorArray.color - Array of colors corresponding to words
- * @param {number} params.options.speed - Typing speed in milliseconds between characters (default: 200)
+ * @param {number} params.options - Typing speed in milliseconds between characters (default: 200)
+ * @param {Object} params.options.TimeSettings - Object containing duration, cycleSpeed, and delayPerChar
+ * @param {Object} params.options.totalRevealTime - delay for the whole text to apear (default: fade(200),scramble(200) )
+ * @param {Object} params.options.cycleSpeed - delay for each charackter found used it EFFECT scramble (default: 25)
+ * @param {Object} params.options.delayPerChar - delay for each Charachter dependay on effect default is defferent: (default: scramble(1),type(200))
  * @param {boolean} params.options.printImmediately - Skip animation and show text instantly (default: false)
- * @param {Object} params.options.Position - Position Configuration
- * @param {Object} params.options.Position.row - express the position row in a String?
- * @param {Object} params.options.Position.column - express the position column in a String?
+ * @param {Object} params.options.Position - Position Configuration for the element (default: 'bottom')
  * @param {boolean} params.options.replace - Clear existing content before typing (default: true)
- * @param {boolean} params.options.secondaryElementId - Create a new span element instead of using main element (default: false)
+ * @param {boolean} params.options.secondaryElement - Create a new span element instead of using main element (default: false)
  * @param {number} params.options.tempColorDuration - Duration in seconds to show temporary color before reverting (default: 0)
  * @param {string} params.options.defaultColor - Default text color (default: 'azure')
  * 
  * @example
  * // Basic usage
  * typeText({
- *     MainElementID: '.main_section',
+ *     MainElementID: '.TextBlock',
  *     text: ['Hello, welcome to Gatsha Tower!']
  * });
  * 
@@ -267,7 +279,7 @@ function prepareElement(elementId, secondaryElementId, SpanTitle, position = { r
  *     MainElementID: '.container',
  *     text: ['Additional information...'],
  *     options: {
- *         secondaryElementId: true,
+ *         secondaryElement: true,
  *         speed: 50,
  *         defaultColor: 'lightblue'
  *     }
@@ -292,19 +304,32 @@ function prepareElement(elementId, secondaryElementId, SpanTitle, position = { r
  * @see formatText - Text formatting utility for spaces and line breaks
  */
 // Remake of addTextFullFeature
-async function typeText({ MainElementID, text = [], options = {} }) {
+async function typeText({ 
+    MainElementID, 
+    sceneTexts = {},
+    options = {} 
+}) {
     const {
         textAndColorArray = {word : [], color : []}, // array of { word: string, color: string }
+        tempColorDuration = 0,
+
         speed = 200, 
         printImmediately = false, 
         replace = true,
-        position =  { row: 0, col: 0 },
-        secondaryElementId = false,
-        secondaryElementIdTitle = null,
-        tempColorDuration = 0,
+        position =  'bottom',
+
+        secondaryElement = true,
+        secondaryElementTitle = null,
+        MainElementBlock = null,
+        
         defaultColor = 'azure',
-        TimeSettings = { totalRevealTime: 500, cycleSpeed: 25, delayPerChar: 1 }
+        TimeSettings = { totalRevealTime: 200, cycleSpeed: 25, delayPerChar: 1 },
+        EFFECT = 'fade'
     } = options;
+    const {
+        Lines = [],
+        Position = 1,
+    } = sceneTexts;
 
     // Set-up Token & cursor
     const token = GenRateToken();
@@ -313,50 +338,76 @@ async function typeText({ MainElementID, text = [], options = {} }) {
     let cursor;
     let TokenSettings = { currentTypingToken, token, elementId: MainElementID};
     // Set-up element
-    const el = prepareElement(MainElementID, secondaryElementId, secondaryElementIdTitle, position);
+    let {
+        block,
+        EventScene,
+        blockClean,
+        querySelectorString,
+        TextBlock,
+        IsScene 
+    } = getTextBlockDetails(MainElementBlock);
+    const text = Lines; 
+    const StringText = typeof text === "object" ? Object.values(text) : [text];
+    const AmountOfText = StringText.length;
+    const el = prepareElement(MainElementID, secondaryElement, secondaryElementTitle,MainElementBlock,StringText,AmountOfText, position);
     // Set-up flag
     isCurrentlyPrinting[MainElementID] = true;
-    
-    // replace text or not
-    if (replace) el.innerHTML = ''; // Clear the content for replacement
-    if (!replace && previousText[MainElementID] !== undefined ) el.innerHTML = previousText[MainElementID];
-    // set-up text
-    const editedColor = setElementColor( el, MainElementID, defaultColor );
-    const StringText = typeof text === "object" ? Object.values(text) : [text];
-    printText({
-        StringText,
+    if (el) printText({
+        StringText,replace,
         printImmediately, previousText, MainElementID, TimeSettings,
         textAndColorArray, el,
-        cursor,
-        editedColor, TokenSettings,
+        cursor,defaultColor,
+        TokenSettings,
         currentTypingToken, token,
         tempColorDuration,
+        EFFECT,MainElementBlock,Position
     });
 }
 // utility: printText
 async function printText({
-    StringText,
+    StringText,replace,
     printImmediately, previousText, MainElementID, TimeSettings,
     textAndColorArray, el,
-    cursor,
-    editedColor, TokenSettings,
+    cursor,defaultColor,
+    TokenSettings,
     currentTypingToken, token,
-    tempColorDuration, 
+    tempColorDuration,
+    EFFECT,MainElementBlock,Position
     }) {
-    for (let textList of StringText) {
+    for (let i=0;i< StringText.length;i++){
+        const textList = StringText[i];
+        if (textList.length == 0) continue;
+        let DeltaEl;
+        if (el[i]) {
+            DeltaEl = el[i];
+        } else if (MainElementBlock) {
+            DeltaEl = document.createElement('span');
+            DeltaEl.classList.add('TextBlock', `TextBlock_${i}`);
+            el.appendChild(DeltaEl);
+        } else {
+            DeltaEl = el;
+            if( replace ) el.innerHTML = '';
+            // clearSpan(DeltaEl); // Clear the content for replacement
+        }
+        // replace text or not
+        if (!replace && previousText[MainElementID] !== undefined ) DeltaEl.innerHTML = previousText[MainElementID];
+        // set-up text
+        const editedColor = setElementColor( DeltaEl, MainElementID, defaultColor );
         const PrintBoolian = GetPrintBoolian(printImmediately, previousText, MainElementID, textList, TimeSettings);
         // Handle text and color array
-        if (textList.length == 0) return;
-        if (PrintcolorArray(textAndColorArray, el, MainElementID, textList, PrintBoolian) === true) return;
-        if (!printImmediately && MainElementID === '.main_section') { cursor = createFakeCursor(); el.appendChild(cursor); }
-        PrintBoolian 
-        ? handlePrintImmediately( el, textList, MainElementID )
-        // : await PrintCharSlow({ textBlock: textList, elementId: MainElementID, element: el, speed, cursor, currentTypingToken, token, replace })
-        : await textAnimation(textList, el, editedColor, TokenSettings, TimeSettings);
+        if (PrintcolorArray(textAndColorArray, DeltaEl, MainElementID, textList, PrintBoolian) === true) return;
+        if (!printImmediately && MainElementID === '.TextBlock' && EFFECT !== 'fade') { cursor = createFakeCursor(); DeltaEl.appendChild(cursor); }
+        if (PrintBoolian) {
+            handlePrintImmediately( DeltaEl, textList, MainElementID )
+        } else {
+            if (EFFECT === 'type') await PrintCharSlow({ textBlock: textList, elementId: MainElementID, element: DeltaEl, speed, cursor, currentTypingToken, token, replace });
+            if (EFFECT === 'fade') await FadePrint( DeltaEl, textList, MainElementID, TimeSettings, TokenSettings, Position );
+            if( EFFECT === 'scramble') await textAnimation(textList, DeltaEl, editedColor, TokenSettings, TimeSettings);
+        }
         // Typing finished, clear token
         clearToken(currentTypingToken, MainElementID, token, textList);
         // Reset color after delay
-        if(tempColorDuration > 0) setTimeout(() => el.style.color = editedColor, tempColorDuration * 1000);
+        if(tempColorDuration > 0) setTimeout(() => DeltaEl.style.color = editedColor, tempColorDuration * 1000);
     }
 }
 // utility: PrintcolorArray
@@ -388,7 +439,6 @@ function clearToken(currentTypingToken, elementId, token, text) {
     if (currentTypingToken[elementId] === token) {
     previousText[elementId] = text;
     delete currentTypingToken[elementId];
-    clearSpan(elementId);
     isCurrentlyPrinting[elementId] = false;
     return previousText && isCurrentlyPrinting;
 }
@@ -490,4 +540,14 @@ async function textAnimation( text, element, color = 'azure',
             element.style.color = color;
         }
     }, TimeSettings.cycleSpeed);
+}
+function clearText() {
+    document.querySelectorAll('.TextBlock').forEach(el => {
+        el.textContent = ''
+    });
+}
+function clearButtonText() {
+    document.querySelectorAll('.Choices').forEach(el => {
+        el.innerHTML = '';
+    });
 }

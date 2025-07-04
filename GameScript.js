@@ -15,47 +15,44 @@ let ForcedDelay = {
     intervalId: null
 }; // in seconds ( makes the user wait to click again )
 
+
+const DebugMode = true; // Set to true to enable debug mode
+
+
 // Function to start up the game
-window.onload = function () {
+window.onload = () => {
     startup(undefined)
     setEventListener()
 };
-// Clean up and remove start screen
-function removeStartUpContent() {
-    const main = document.querySelector('.main');
-    const startParentParent = main.querySelector('.startParentParent');
-
-    if (startParentParent) {
-        startParentParent.remove();
-    }
-}
-
 // Function to start up or load the game
 function startup(userConfirmed) {
     SetLoadingScreen(true);
-    userConfirmed === 1 ? console.log('Continue story') : console.log('start new story');
-    Title_Section(GlobalQuerySelect);
-    Main_Section_Content(GlobalQuerySelect);
-    GlobalQuerySelect.Title.innerHTML = 'Gatcha tower';
-    if (userConfirmed !== 1 && userConfirmed !== 2) StartUp_Content();
-    let SaveForest = JSON.parse(localStorage.getItem('SaveForest')|| '{}');
-    let TempLatestSave = JSON.parse(sessionStorage.getItem('TempLatestSave'));
-    //load_S.dataset.visible = 'false';
+    if (DebugMode) userConfirmed === 1 ? console.log('Continue story') : console.log('start new story');
+    if (userConfirmed !== 1 && userConfirmed !== 2) {
+        Title_Section(GlobalQuerySelect);
+        TextBlock_Content(GlobalQuerySelect, undefined, undefined, false);
+        GlobalQuerySelect.Title.innerHTML = 'Gatcha tower';
+        StartUp_Content();
+    }
+    const TempLatestSave = JSON.parse(sessionStorage.getItem('TempLatestSave'));
     if ( TempLatestSave == null) {
         if (userConfirmed === 1) {
-            console.log("User confirmed to load last save.");
+            if (DebugMode) console.log("User confirmed to load last save.");
             removeStartUpContent();
             loadLatestGame(0);
+            return;
         }else if(userConfirmed === 2){
-            console.log("User declined to load last save. Starting a new game.");
+            if (DebugMode) console.log("User declined to load last save. Starting a new game.");
             removeStartUpContent();
             newGame();
+            return;
         }
     }else{
-        console.log('checking last Session')
+        if (DebugMode) console.log('checking last Session')
         removeStartUpContent();
-        loadLatestGame(1)
+        loadLatestGame(1);
     }
+    //load_S.dataset.visible = 'false';
 }
 /**
  * Loads and displays saved game data from localStorage.
@@ -116,20 +113,36 @@ function LoadedSaves() {
 */
 function setEventListener(){
     // Add event listener for Side Menu Colapse Button click
+    if (GlobalQuerySelect.Side_Menu_ColapseButton?.dataset.listenerAdded) {
+        GlobalQuerySelect.Side_Menu_ColapseButton.removeEventListener('click', Side_Menu_ColapseButtonClickHandler);
+    }
     GlobalQuerySelect.Side_Menu_ColapseButton?.addEventListener("click", Side_Menu_ColapseButtonClickHandler);
     GlobalQuerySelect.Side_Menu_ColapseButton?.setAttribute('data-listener-added', 'true');
 
-
-    
-    GlobalQuerySelect.BtnLoad?.addEventListener("click", () => SettingsOverlay(1));
+    // Add event listener for Side Menu Btn Load click
+    if (GlobalQuerySelect.BtnLoad?.dataset.listenerAdded) {
+        GlobalQuerySelect.BtnLoad.removeEventListener('click', handleLoadClick);
+    }
+    GlobalQuerySelect.BtnLoad?.addEventListener("click", handleLoadClick);
     GlobalQuerySelect.BtnLoad?.setAttribute('data-listener-added', 'true');
-    
-    GlobalQuerySelect.BtnInfo?.addEventListener("click", () => SettingsOverlay(2));
-    GlobalQuerySelect.BtnInfo?.setAttribute('data-listener-added', 'true'); // Make openSettings 2 
-    
-    GlobalQuerySelect.BtnSettings?.addEventListener("click", () => SettingsOverlay(3));
+
+    // Add event listener for Side Menu Btn Info click
+    if (GlobalQuerySelect.BtnInfo?.dataset.listenerAdded) {
+        GlobalQuerySelect.BtnInfo.removeEventListener('click', handleInfoClick);
+    }
+    GlobalQuerySelect.BtnInfo?.addEventListener("click", handleInfoClick);
+    GlobalQuerySelect.BtnInfo?.setAttribute('data-listener-added', 'true');
+
+    // Add event listener for Side Menu Btn Settings click
+    if (GlobalQuerySelect.BtnSettings?.dataset.listenerAdded) {
+        GlobalQuerySelect.BtnSettings.removeEventListener('click', handleSettingsClick);
+    }
+    GlobalQuerySelect.BtnSettings?.addEventListener("click", handleSettingsClick);
     GlobalQuerySelect.BtnSettings?.setAttribute('data-listener-added', 'true');
 }
+const handleLoadClick = () => SettingsOverlay(1);
+const handleInfoClick = () => SettingsOverlay(2);
+const handleSettingsClick = () => SettingsOverlay(3);
 
 // Function to load the game from localStorage
 function loadLatestGame(userConfirmed) {
@@ -142,7 +155,7 @@ function loadLatestGame(userConfirmed) {
         }else if(userConfirmed == 1){
             saveData = TempLatestSave;
         }
-        console.log('Loaded save file:', saveData);
+        if (DebugMode) console.log('Loaded save file:', saveData);
         clearButtonContent();
         ResetEffectBarToDefault(saveData);
         // Call the mergeDefaultProperties function to ensure saveData has all expected properties
@@ -166,7 +179,6 @@ function loadLatestGame(userConfirmed) {
 
 // newGame makes the prep for a new game
 function newGame(){
-    console.log('new game');
     let SaveForest = JSON.parse(localStorage.getItem('SaveForest')|| '{}');
     if (!SaveForest || Object.keys(SaveForest).length === 0) {
         SaveForest = {
@@ -180,7 +192,6 @@ function newGame(){
     try{saveData.Player_character = Player;}
     catch(error){console.log('Can\'t set player because ',error);}
     
-    //console.log('SaveForest:',JSON.parse(SaveForest))
     localStorage.setItem('SaveForest', JSON.stringify(SaveForest));
     sessionStorage.setItem('TempLatestSave', JSON.stringify(saveData));
 
@@ -273,37 +284,16 @@ function openSettings(number) {
     parent.dataset.visible = !isVisible;
 }
 function ResetFileClickHandler(){
-    console.log('Resetting File?')
+    if (DebugMode) console.log('Resetting File Btn clicked');
     let confirmed = confirm('Do you want to reset the game( all unsaved actions will be lost! ).');
     if (confirmed){
         sessionStorage.removeItem('TempLatestSave');
-        console.log('Removed LatestsaveFile! id=809')
+        if (DebugMode) console.log('Removed LatestsaveFile! id=809')
         ResetFile = true;
         window.location.reload();
     }else{
         return;
     }
-}
-// Function to clear button content
-function clearButtonContent() {
-    GlobalQuerySelect.choices_section_title.innerHTML = "";
-    [
-        document.querySelector('.Sh_1'),
-        document.querySelector('.Sh_2'),
-        document.querySelector('.Sh_3'),
-        document.querySelector('.Sh_4'),
-        document.querySelector('.Sh_5'),
-        document.querySelector('.Sh_6'),
-        document.querySelector('.Sh_7')
-    ].forEach(button => {
-        button.innerHTML = "";
-        button.style.display = 'none';
-    });
-    const container = document.querySelector('.choices_section_choices');
-    container.querySelectorAll('div[class^="Sh_"]').forEach(btn => {
-        const value = parseInt(btn.className.split('_')[1]);
-        if (value > 7) btn.remove();
-    });
 }
 function ResetEffectBarToDefault(saveData) {
     const barIds = ['Pain', 'Fatigue', 'Fear', 'Stress', 'Trauma', 'Addiction', 'Sickness', 'Bleed'];
@@ -358,19 +348,19 @@ function saveGame(NumSection){
         sectionSpanName.textContent = `${saveData['name']} | ${datetime}`;
         saveData['LastSaved'] = datetime;
         sectionSpanName.style.color = 'yellow';
-        console.log('still default name')
+        if (DebugMode) console.log('still default name')
     } else {
         sectionSpanName.textContent = `${NewName} | ${datetime}`;
         saveData['LastSaved'] = datetime;
         saveData['name'] = NewName;
-        console.log('new name')
+        if (DebugMode) console.log('new name')
     }
     SaveForest[`section${NumSection}`] = saveData;
     SaveForest['section0'] = saveData;
     SaveForest.DefaultSaveData = saveData;
     localStorage.setItem('SaveForest', JSON.stringify(SaveForest));
     sessionStorage.setItem('TempLatestSave', JSON.stringify(saveData));
-    console.log(`Saving game ${saveData['name']}`);
+    if (DebugMode) console.log(`Saving game ${saveData['name']}`);
 }
 function loadGame(NumSection) {
     let SaveForest = JSON.parse(localStorage.getItem('SaveForest') || '{}');
@@ -380,7 +370,7 @@ function loadGame(NumSection) {
         return;
     }
     if (CurrentPageNumber == 1) {
-        console.log('Loading game id=0', NumSection);
+        if (DebugMode) console.log('Loading game id=0', NumSection);
         removeStartUpContent();
         openSettings(1);
         clearButtonContent();
@@ -403,7 +393,7 @@ function deleteGame(NumSection) {
         document.querySelector(`.Section${NumSection}_load_game`).disabled = true;
         document.querySelector(`.Section${NumSection}_load_game`).classList.add('disable');
 
-        console.log(`Deleting game ${NumSection}`);
+        if (DebugMode) console.log(`Deleting game ${NumSection}`);
     } else {
         console.warn(`No saved game found in section${NumSection} to delete.`);
     }

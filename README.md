@@ -106,27 +106,28 @@
 
 ## ✅ TODO List
 
-- [ ] Add enemy system with AI and combat logic.
+- [ ] make navigateStory actually usable instead of being a pain in the ass.
+
 - [ ] Implement multiple text styles and save them.
+- [ ] add better flavour text.
+
 - [ ] Create a loot screen tied to inventory system.
+
+- [ ] Simplify cave level for first encounter.
+
+- [ ] add a better intro.
+
+- [ ] Add enemy system with AI and combat logic.
+
+### Far Future
+
 - [ ] Build full player controller (movement, interaction).
 - [ ] Add touch controls (mobile support).
 - [ ] Generate and test APK build for Android.
-- [ ] Simplify cave level for first encounter.
-
-- [ ] Remake the settings menu. ( only 1 instead of 3)
-- [ ] add better flavour text.
-- [ ] add a better intro.
-
-- [ ] add a way to make text and buttons print inbetween each other.
-- [ ] charackter maker is broken ( text and dsecription are seperated ).
 
 ---
 
 ## 🐞 FIXMEs
-
-- [ ] fix the REncounter bug that leaves thext behind
-- [ ] fix a bug where the buttons sometimes don't work.
 
 ---
 
@@ -135,5 +136,3 @@
 - Keep the game world dynamic and reactive.
 - Layer in surprises and secrets for replay value.
 - Test emotional beats using music/sound during key moments.
-
-#SelfMade

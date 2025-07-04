@@ -4,6 +4,22 @@
     grid-row: 1;
     min-height: 5px;
 }
+.Quest_Title{
+    color: var(--DefaultColor0);
+    z-index: auto;
+    position: relative;
+    top: 0px;
+    text-align: center;
+    float: none;
+    margin-bottom: 0;
+    box-sizing:content-box;
+    padding: .5em;
+    font-family: "Fondamento", cursive;
+    font-weight: 400;
+    font-style: normal;
+    border-right: solid 2px var(--DefaultColor0);
+    border-bottom: solid 2px var(--DefaultColor0);
+}
 /* ---- Map ---- */
 .MapParent {
     grid-row: 2/7;
@@ -26,6 +42,10 @@
 	z-index: 1000;
 }
 /* ----  Main section ---- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 .app {
     grid-row: 1/7;
     grid-column: 3/7;
@@ -37,35 +57,159 @@
 	z-index: 5;
 	
 }
-.Quest_Title{
+.InteractionBlock {
+	display: flexbox;
+    flex-direction: column;
+	position: relative;
+	z-index: 5;
+	top: 0;
+    
+}
+.TextBlock { /* main_section */
+    color: var(--DefaultColor0);
+	font-size: large;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+	word-break: keep-all;
+    flex: 1;
+}
+.BtnBlock { /* choices_section_choices && choices_section */
+	
     color: var(--DefaultColor0);
 	z-index: auto;
-	position: relative;
-	top: 0px;
 	text-align: center;
-	float: none;
-	margin-bottom: 0;
-	box-sizing:content-box;
-	padding: .5em;
-	font-family: "Fondamento", cursive;
-	font-weight: 400;
-	font-style: normal;
+	padding: 20px;
+	padding-bottom: 20px;
 
+	width: fit-content;
+	
+
+    display: flex;
+    flex-direction: column;
+	background-color: var(--mainColor);
+    /*
+    display: flex;
+    text-align: center;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    /* flex-wrap: wrap; /* Allow wrapping of buttons if needed */
+    gap: 30px; /* Spacing between buttons */
+    /*
+    color: var(--DefaultColor0);
+    background-color: var(--mainColor)
+    */
 }
 .main_section{
     color: var(--DefaultColor0);
 	text-align: center;
 	font-size: large;
-	margin: auto;
     white-space: pre-wrap;
     word-wrap: break-word;
 	word-break: keep-all;
-
-	grid-column: 1/17;
-	grid-row: 3/13;
-
+    flex: 1;
 }
-/* ---- overlay-content ---- */
+#text{
+	white-space: pre-wrap;
+}
+/* Position 1  default left */
+[data-position="1"] { 
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.BtnBlock[data-position="1"] {
+    margin: 0 auto;
+}
+.Choices[data-position="1"] {
+    margin-left: 5em;
+    width: 0;
+}
+.TextBlock[data-position="1"] {
+    text-align: left;
+    margin-left: 2em;
+}
+/* Position 2 Long Text*/
+[data-position="2"] { 
+    margin-top: 20em;
+    padding: 0;
+}
+
+.BtnBlock[data-position="2"] {
+    margin: 0;
+}
+.Choices[data-position="2"] {
+    margin-left: 0;
+    width: auto;
+}
+.TextBlock[data-position="2"] {
+    text-align: center;
+    margin-left: 0;
+}
+.InteractionBlock[data-position="2"] {
+    display: flex;
+    align-items: baseline;
+    text-align: left;
+    left: 2em;
+}
+.BtnBlock[data-position="3"] { /*  Position 3 buttons row */
+    flex-direction: row;
+}
+
+/* ---- Buttons ---- */
+.choices_section{
+	position: absolute;
+    color: var(--DefaultColor0);
+	z-index: auto;
+	text-align: center;
+	padding: 20px;
+	padding-bottom: 20px;
+
+	width: fit-content;
+	margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+	background-color: var(--mainColor)
+}
+.choices_section_choices{
+	display: flex;
+	text-align: center;
+	justify-content: center; /* Center content horizontally */
+	align-items: center; /* Center content vertically */
+	/* flex-wrap: wrap; /* Allow wrapping of buttons if needed */
+	gap: 30px; /* Spacing between buttons */
+	color: var(--DefaultColor0);
+	background-color: var(--mainColor)
+}
+.Choices {
+	display: none; /* Initially hidden, adjust visibility dynamically */
+	padding: auto 5px;
+	cursor: pointer;
+	font-size: 16px;
+    color: var(--blue);
+
+
+    float: left;
+    width: auto 2em;
+    height: auto;
+    text-align: center;
+    
+}
+.Choices.visible {
+	display: inline-block; /* Only show visible buttons */
+    color: var(--blue);
+}
+.Choices:hover{
+	text-decoration: underline;
+	cursor: pointer;
+}
+.Sh_1,.Btn_1{
+	color: var(--beige);
+	
+}
+.Sh_1:hover,.Btn_1:hover{
+	color: var(--Red);
+}
 
 /* ---- Objectives ---- */
 .Objectives {
@@ -120,63 +264,4 @@
 	flex-direction: row;
 	flex-wrap: wrap;
     row-gap: 30px;
-}
-/* ---- Buttons ---- */
-.choices_section{
-	position: absolute;
-    color: var(--DefaultColor0);
-	z-index: auto;
-	text-align: center;
-	padding: 20px;
-	padding-bottom: 20px;
-
-	width: fit-content;
-	margin: 0 auto;
-
-	grid-column: 2/16;
-	grid-row: 8/17;
-
-	background-color: var(--mainColor)
-}
-.choices_section_choices{
-	display: flex;
-	text-align: center;
-	justify-content: center; /* Center content horizontally */
-	align-items: center; /* Center content vertically */
-	/* flex-wrap: wrap; /* Allow wrapping of buttons if needed */
-	gap: 30px; /* Spacing between buttons */
-	color: var(--DefaultColor0);
-	background-color: var(--mainColor)
-}
-.Choices {
-	display: none; /* Initially hidden, adjust visibility dynamically */
-	padding: auto 5px;
-	cursor: pointer;
-	font-size: 16px;
-    color: var(--blue);
-
-    /*
-        float: left;
-        width: auto 2em;
-        height: auto;
-        padding: auto 5px;
-        text-align: center;
-        margin-left: 5em;
-        margin-right: 5em;
-    */
-}
-.Choices.visible {
-	display: inline-block; /* Only show visible buttons */
-    color: var(--blue);
-}
-.Choices:hover{
-	text-decoration: underline;
-	cursor: pointer;
-}
-.Sh_1{
-	color: var(--beige);
-	
-}
-.Sh_1:hover{
-	color: var(--Red);
 }
