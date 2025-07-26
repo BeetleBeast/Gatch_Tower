@@ -154,7 +154,14 @@ function triggerRandomEvent(event) {
                 printImmediately: false,
                 tempColorDuration:  1,
                 secondaryElement : true,
-                textAndColorArray : { word : 'ALL', color : 'blue'},
+                // textAndColorArray : { word : 'ALL', color : 'blue'},
+                Coloring : { 
+                    Color : scene.sceneTexts.Coloring.Color || ['blue'],
+                    duration: scene.sceneTexts.Coloring.duration || 1,
+                    Background : scene.sceneTexts.Coloring.Background || [],
+                    Onlysnipet : scene.sceneTexts.Coloring.Onlysnipet || false,
+                    snipet : scene.sceneTexts.Coloring.snipet || [],
+                },
                 replace: false,
                 MainElementBlock: TextBlockParent[0]
             }

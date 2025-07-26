@@ -399,11 +399,13 @@ let saveData = {
                     },
                     {
                         type: 'manageHiddenInfo',
-                        show: 'true',
-                        textID: 0,
+                        text: [{
+                            textID: 0,
+                            visible: false
+                        }],
                         Btn: [{
                             BtnID: 2,
-                            IsVisible: false,
+                            visible: false,
                         }]
                     }],
                 }
@@ -542,9 +544,14 @@ let saveData = {
                     next_scene: false,
                     action: [{
                         type: 'manageHiddenInfo',
-                        show: 'true',
-                        textID: 1,
-                        itemID: 4,
+                        text: [{
+                            textID: 1,
+                            visible: true
+                        }],
+                        item:{
+                            itemID: 4,
+                            visible: false,
+                        },
                         Btn: [{
                             BtnID: 6,
                             IsVisible: true,
@@ -572,28 +579,73 @@ let saveData = {
                     '~You hear a distant unclear sound comming from the light',
                     '~maybe a bird?'
                 ],
-                Position: 1 // center
+                Position: 1, // center
+                Coloring: {
+                    Color: ["var(--GreyedOut)"],
+                    duration: 0,
+                }
             },
             sceneID: 23,
             ButtonTitle: "",
             options: {
-                2: {ButtonNumber: 2, ButtonText: "Go to the sound", next_scene: false}, duration: '0:30',
+                2: {ButtonNumber: 2, ButtonText: "Go to the sound", next_scene: '2_1', duration: '0:30'},
                 3: {ButtonNumber: 7, ButtonText: "Observe the light", next_scene: false, duration: '0:02',
                     action: [{
                         type: 'manageHiddenInfo',
-                        show: 'true',
-                        textID: 2,
+                        text: [{
+                            textID: 2,
+                            visible: false
+                        }],
                         Btn: [{
                             BtnID: 7,
-                            IsVisible: true,
+                            visible: true,
                         }]
-                    },{
+                    },
+                    {
                         type: 'BuffParentFunction',
                         effect: 'Fear',
                         strength: 1,
                         target: '.BtnBlock'
                     }
                     ]},
+            },
+            ALT_options: {},
+        },
+        "2_1": {
+            chapterTitle: "Lost in the forest",
+            sceneName: "CavernClimbing",
+            sceneTexts: {
+                Lines: [
+                    `Deeper in the cave, the air grew warmer, the silence broken by a distant sound.`,
+                    `~Light flickered through narrow cracks, guiding the way.`,
+                ],
+                Position: '1' // AKA default ( Left )
+            },
+            ALT_Name: null,
+            ALT_Text: null,
+            sceneID: 24,
+            ButtonTitle: "",
+            options: {
+                2: {ButtonNumber: 2, ButtonText: "Continue", next_scene: "2_2", duration: '1:30'}
+            },
+            ALT_options: {},
+        },
+        "2_2": {
+            chapterTitle: "Lost in the forest",
+            sceneName: "FistEnemySpotted",
+            sceneTexts: {
+                Lines: [
+                    `After an hour of crawling through tight, crumbling passages, the player emerged into a vast open cavern.`,
+                    `~Fresh air rushed in, and ahead—blinding light marked the exit, just 200 meters away.`,
+                ],
+                Position: '1' // AKA default ( Left )
+            },
+            ALT_Name: null,
+            ALT_Text: null,
+            sceneID: 24,
+            ButtonTitle: "",
+            options: {
+                2: {ButtonNumber: 2, ButtonText: "Observe", next_scene: false, duration: '0:05'}
             },
             ALT_options: {},
         },
@@ -608,12 +660,9 @@ let saveData = {
                     '~What will you do?',
                 ],
                 Position: 1, // center
-                Coloring: { // TODO: make it work with the new system
-                    Background: ['Default'],
-                    Color: ['blue'], // TODO: make custom possible
-                    duration: ['0:05'],
-                    Onlysnipet: false,
-                    snipet: '',
+                Coloring: {
+                    Color: ['blue'],
+                    duration: 1,
                 }
             },
             chance: 0.5,
@@ -624,7 +673,7 @@ let saveData = {
             },
             ALT_options : {},
             action : [{}],
-            sites : ['ALL'],
+            sites : ['<2_0'],
             allow_multiple_event: false, // if false, will be the only event to run
             allow_original_scene : true // merge sites options && their actions
         },
@@ -678,33 +727,6 @@ let saveData = {
         7 : [],
         8 : [],
         9 : [],
-    },
-    Uncovered : {
-        //  type of hidden piece : {    ID of said piece    }
-        HiddenText : {
-            0 : false,
-            1 : true,
-            2 : false,
-        },
-        HiddenButton : [
-            {
-                BtnID: 2,
-                Show: false,
-                sceneID: 16,
-            },{
-                BtnID: 6,
-                Show: true,
-                sceneID : 22,
-            },{
-                BtnID: 7,
-                Show: true,
-                sceneID: 23,
-            }
-        ],
-        Items : {
-            0 : false,
-            4 : false,
-        },
     },
     character_Description_Text: {
         // scene number : { charachterDefining : "Text"}

@@ -49,78 +49,41 @@ async function handlePrintImmediately(element, textBlock, elementId) {
     previousText[elementId] = textBlock;
     return previousText[elementId];
 }
-/**
- * Prints text character by character with a typewriter effect
- * @param {Object} params - Configuration object for the typing animation
- * @param {string} params.textBlock - The text content to be typed out
- * @param {string} params.elementId - Unique identifier for the target element
- * @param {HTMLElement} params.element - The DOM element where text will be displayed
- * @param {number} params.speed - Base delay in milliseconds between each character
- * @param {HTMLElement} params.cursor - Optional cursor element to show typing position
- * @param {Object} params.currentTypingToken - Token tracking object to manage typing interruptions
- * @param {string} params.token - Unique token for this specific typing session
- * @param {string} params.output - Accumulated output string (default: empty string)
- * @param {Object} params.replace - Configuration for text replacement behavior
- * @param {boolean} params.replace.anew - Whether to append to existing text or replace entirely
- * @param {string} params.replace.PastText - Previous text to preserve when appending
- */
-async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, currentTypingToken, token, output = '', replace = { anew : false, PastText : ''}}) {
-    const formattedText = formatText(textBlock);
-    for (let i = 0; i < formattedText.length; i++) {
-        if (currentTypingToken[elementId] !== token) {
-            // If player clicked while printing
-            handlePrintImmediately( element, textBlock );
-            return;
-        }
-        let char = formattedText[i];
-        output += char;
-        element.innerHTML = replace.anew ? replace.PastText + output : output;
-        if (cursor && element) element.appendChild(cursor); // Append cursor after each character
-        // add a longer pause after dot or comma
-        const delayDuration = (char === '.' || char === ',') ? 400 : speed;
-        // typingSound.currentTime = 0; // Reset sound to start
-        // typingSound.play().catch(() => {}); // Play typing sound
-        await new Promise(resolve => setTimeout(resolve, delayDuration)); // Delay next letter
-    }
-    if ( cursor ) element.removeChild(cursor); // Remove cursor after typing
-}
-async function FadePrint( 
-    el, textList, MainElementID,
-    TimeSettings = { totalRevealTime : 200} ,
-    TokenSettings = { currentTypingToken, token },
-    Position = 1
-    ) {
-    clearCursor();
-    const formattedText = formatText(textList);
-
-    el.style.opacity = 0;
-    el.offsetHeight = 'undefined';
-    if (el) el.innerHTML = formattedText;
-    if ( Position != 'default') el.parentElement.dataset.position = Position;
-    // Apply animation
-    
-    el.style.animation = `${600}ms linear ${TimeSettings.totalRevealTime}ms 1 normal forwards running fadeIn`;
-
-
-    if (TokenSettings.currentTypingToken[MainElementID] !== TokenSettings.token) {
-        // If player clicked while printing
-        handlePrintImmediately( el, textList );
-        return;
-    }
-
-    // Wait for animation to finish
-    await new Promise(resolve => setTimeout(resolve, TimeSettings.totalRevealTime));
-
-    if (isCurrentlyPrinting) isCurrentlyPrinting[MainElementID] = false;
-    if (previousText) previousText[MainElementID] = textList;
-    return previousText?.[MainElementID];
-};
 // utility: word coloring
 function applyWordColoring(element, textBlock, textAndColorArray) {
     let remainingText = textBlock;
     for (let i = 0; i < textAndColorArray.word.length; i++) {
         const word = textAndColorArray.word[i];
         const color = textAndColorArray.color[i];
+        const index = remainingText.indexOf(word);
+        if (index !== -1) {
+            element.append(document.createTextNode(remainingText.substring(0, index)));
+            const span = document.createElement("span");
+            span.textContent = word;
+            span.style.color = color;
+            element.append(span);
+            remainingText = remainingText.substring(index + word.length);
+        }
+    }
+    if (remainingText.length > 0) {
+        element.append(document.createTextNode(remainingText));
+    }
+}
+function applyColoring(element, text, Coloring ) {
+    /*
+        textAndColorArray = { word : [], color : [] }
+        Coloring = {
+            Onlysnipet : false,
+            Color : [],
+            snipet : [],
+            Background : [],
+            duration : [],
+        },
+    */
+    let remainingText = text;
+    for (let i = 0; i < Coloring.snipet.length; i++) {
+        const word = Coloring.snipet[i];
+        const color = Coloring.Color[i];
         const index = remainingText.indexOf(word);
         if (index !== -1) {
             element.append(document.createTextNode(remainingText.substring(0, index)));
@@ -155,7 +118,7 @@ function createFakeCursor() {
     return cursor;
 }
 // utility: prepareElement
-function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock, StringText, AmountOfText, position = 'default') {
+function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock, StringText) {
     const elementName = elementId.split('.');
     const MainElementBlockName = MainElementBlock?.replace(/\./g, '');
 
@@ -171,7 +134,7 @@ function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock
 
     if(secondaryElement) {
         const spanList = [];
-        for (let i = 0; i < AmountOfText; i++) {
+        for (let i = 0; i < StringText.length; i++) {
             const span = document.createElement('span');
 
             const dynamicClass = `span_${i}`;
@@ -184,148 +147,183 @@ function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock
     }
     return targetElement;
 }
-function getTextBlockDetails(MainElementBlock) {
-    let block, EventScene, blockClean, querySelectorString,querySelectorString2, TextBlock, text, IsScene;
-
-    if (MainElementBlock?.includes('Block')) {
-        [block, EventScene] = MainElementBlock.split('_');
-        blockClean = block.replace(/\./g, '');
-        text = blockClean.includes('Text') ? blockClean.replace(('Text','')) : blockClean;
-        querySelectorString = `.Text${blockClean}.${blockClean}_${EventScene}`;
-        querySelectorString2 = [`Text${blockClean}`,`${blockClean}_${EventScene}`]
-        TextBlock = document.querySelector(querySelectorString2);
-        IsScene = !EventScene?.includes('R');
-    }
-    return {
-        block,
-        EventScene,
-        blockClean,
-        querySelectorString,
-        TextBlock,
-        IsScene
-    };
-}
-
 /**
- * Enhanced text typing function - Remake of addTextFullFeature with improved structure
+ * Enhanced Text Typing System for Gatch Tower
  * 
- * This function provides a comprehensive text typing system with support for:
- * - Slow character-by-character typing animation
- * - Immediate text printing (skip animation)
- * - Word-specific coloring
- * - Temporary color effects
- * - Secondary element creation (spans)
- * - Integration with save system settings
+ * A comprehensive text animation engine that provides multiple display effects for game dialogue,
+ * narrative text, and UI elements. Supports typewriter effects, fade animations, scramble effects,
+ * and advanced text styling with color highlighting.
  * 
- * @param {Object} params - Configuration object
- * @param {string} params.MainElementID - CSS selector for the target element (e.g., '.TextBlock', '#dialog')
- * @param {string[]} params.text - Array of text strings to display (currently expects single string in array)
- * @param {Object} params.options - Optional configuration settings
- * @param {Object} params.options.textAndColorArray - Word coloring configuration
- * @param {string[]} params.options.textAndColorArray.word - Array of words to color, or 'ALL' for entire text
- * @param {string[]} params.options.textAndColorArray.color - Array of colors corresponding to words
- * @param {number} params.options - Typing speed in milliseconds between characters (default: 200)
- * @param {Object} params.options.TimeSettings - Object containing duration, cycleSpeed, and delayPerChar
- * @param {Object} params.options.totalRevealTime - delay for the whole text to apear (default: fade(200),scramble(200) )
- * @param {Object} params.options.cycleSpeed - delay for each charackter found used it EFFECT scramble (default: 25)
- * @param {Object} params.options.delayPerChar - delay for each Charachter dependay on effect default is defferent: (default: scramble(1),type(200))
- * @param {boolean} params.options.printImmediately - Skip animation and show text instantly (default: false)
- * @param {Object} params.options.Position - Position Configuration for the element (default: 'bottom')
- * @param {boolean} params.options.replace - Clear existing content before typing (default: true)
- * @param {boolean} params.options.secondaryElement - Create a new span element instead of using main element (default: false)
- * @param {number} params.options.tempColorDuration - Duration in seconds to show temporary color before reverting (default: 0)
- * @param {string} params.options.defaultColor - Default text color (default: 'azure')
+ * CORE FEATURES:
+ * - Multiple animation effects: 'type', 'fade', 'scramble'
+ * - Token-based interruption system (click to skip)
+ * - Word-specific color highlighting
+ * - Secondary element creation (dynamic spans)
+ * - Save system integration for user preferences
+ * - Mobile and desktop compatibility
+ * 
+ * INTEGRATION WITH GAME SYSTEMS:
+ * - Respects SaveForest.section0.Settings.SlowTyping user preference
+ * - Changes text color to red if player is dead (SaveForest.section0.dead.isDead)
+ * - Maintains text history to prevent re-typing identical content
+ * - Supports game's narrative branching system
+ * 
+ * @param {Object} config - Main configuration object
+ * @param {string} config.MainElementID - CSS selector for target element (e.g., '.TextBlock', '#dialog')
+ * @param {Object} config.sceneTexts - Text content and positioning
+ * @param {string[]} config.sceneTexts.Lines - Array of text strings to display
+ * @param {number} config.sceneTexts.Position - Element positioning (default: 1)
+ * @param {Object} config.options - Animation and styling options
+ * 
+ * OPTIONS BREAKDOWN:
+ * @param {boolean} config.options.printImmediately - Skip all animations, show text instantly
+ * @param {boolean} config.options.replace - Clear existing content before typing (default: true)
+ * @param {boolean} config.options.secondaryElement - Create new span elements instead of using main element
+ * @param {string} config.options.secondaryElementTitle - CSS class for created spans
+ * @param {string} config.options.MainElementBlock - Additional selector for element targeting
+ * 
+ * COLORING SYSTEM:
+ * @param {Object} config.options.Coloring - Advanced text coloring configuration
+ * @param {string[]} config.options.Coloring.Color - Colors to apply to text/words
+ * @param {string[]} config.options.Coloring.Background - Background colors (future feature)
+ * @param {number} config.options.Coloring.duration - Seconds to show temporary color before reverting
+ * @param {boolean} config.options.Coloring.Onlysnipet - If true, only color specific words; if false, color entire text
+ * @param {string[]} config.options.Coloring.snipet - Specific words to highlight when Onlysnipet is true
+ * 
+ * ANIMATION EFFECTS:
+ * @param {string} config.options.EFFECT - Animation type: 'type' | 'fade' | 'scramble'
+ *   - 'type': Classic typewriter effect, character by character
+ *   - 'fade': Smooth fade-in animation
+ *   - 'scramble': Random characters that resolve to final text
+ * 
+ * TIMING CONTROLS:
+ * @param {Object} config.options.TimeSettings - Fine-grained timing control
+ * @param {number} config.options.TimeSettings.totalRevealTime - Total animation duration in ms
+ * @param {number} config.options.TimeSettings.cycleSpeed - Update frequency for scramble effect (ms)
+ * @param {number} config.options.TimeSettings.delayPerChar - Delay between characters for type/scramble effects
+ * 
+ * @param {string} config.options.defaultColor - Default text color (default: 'azure')
+ * 
+ * @returns {Promise<void>} Resolves when all text animations complete
  * 
  * @example
- * // Basic usage
- * typeText({
+ * // Basic dialogue text with typewriter effect
+ * await typeText({
  *     MainElementID: '.TextBlock',
- *     text: ['Hello, welcome to Gatsha Tower!']
+ *     sceneTexts: {
+ *         Lines: ['Welcome to Gatsha Tower, brave adventurer...'],
+ *         Position: 1
+ *     },
+ *     options: {
+ *         EFFECT: 'type',
+ *         TimeSettings: { delayPerChar: 50 }
+ *     }
  * });
  * 
  * @example
- * // With custom options
- * typeText({
+ * // Highlighted words with fade effect
+ * await typeText({
  *     MainElementID: '.dialog_box',
- *     text: ['The ancient door creaks open...'],
+ *     sceneTexts: {
+ *         Lines: ['The ancient door glows with magical energy.']
+ *     },
  *     options: {
- *         speed: 100,
- *         defaultColor: 'gold',
- *         tempColorDuration: 3,
- *         textAndColorArray: {
- *             word: ['ancient', 'door'],
- *             color: ['red', 'brown']
+ *         EFFECT: 'fade',
+ *         Coloring: {
+ *             Onlysnipet: true,
+ *             snipet: ['ancient', 'magical'],
+ *             Color: ['#8B4513', '#FFD700'],
+ *             duration: 2
  *         }
  *     }
  * });
  * 
  * @example
- * // Color entire text
- * typeText({
+ * // Emergency text with scramble effect
+ * await typeText({
  *     MainElementID: '.warning_text',
- *     text: ['DANGER AHEAD!'],
+ *     sceneTexts: {
+ *         Lines: ['SYSTEM ERROR DETECTED!']
+ *     },
  *     options: {
- *         textAndColorArray: {
- *             word: 'ALL',
- *             color: 'red'
+ *         EFFECT: 'scramble',
+ *         Coloring: {
+ *             Onlysnipet: false,
+ *             Color: ['red']
  *         },
- *         printImmediately: true
+ *         TimeSettings: {
+ *             totalRevealTime: 100,
+ *             cycleSpeed: 30,
+ *             delayPerChar: 2
+ *         }
  *     }
  * });
  * 
  * @example
- * // Create secondary span element
- * typeText({
- *     MainElementID: '.container',
- *     text: ['Additional information...'],
+ * // Multiple text lines with secondary elements
+ * await typeText({
+ *     MainElementID: '.story_container',
+ *     sceneTexts: {
+ *         Lines: [
+ *             'Chapter 1: The Beginning',
+ *             'You stand before the mysterious tower...',
+ *             'What will you do?'
+ *         ]
+ *     },
  *     options: {
  *         secondaryElement: true,
- *         speed: 50,
+ *         secondaryElementTitle: 'story_line',
+ *         EFFECT: 'type',
  *         defaultColor: 'lightblue'
  *     }
  * });
  * 
- * @returns {Promise<void>} Promise that resolves when typing animation completes
+ * TECHNICAL NOTES:
+ * - Uses token system to prevent animation conflicts when rapidly clicking
+ * - Integrates with game's save system for user preferences
+ * - Handles HTML formatting through formatText() utility
+ * - Supports mobile touch events and desktop mouse/keyboard
+ * - Memory efficient: cleans up tokens and cursors after animation
  * 
- * @note This function integrates with the game's save system to respect user settings:
- * - Checks SaveForest.section0.Settings.SlowTyping to determine if animation should be skipped
- * - Respects SaveForest.section0.dead.isDead for text coloring (red if dead)
- * - Uses localStorage to maintain consistency across game sessions
+ * PERFORMANCE CONSIDERATIONS:
+ * - Long text with scramble effect may impact performance on slower devices
+ * - Consider using printImmediately: true for very long passages
+ * - Secondary elements create additional DOM nodes - use sparingly for large text blocks
  * 
- * @note The function handles:
- * - Token-based typing interruption (clicking to skip animation)
- * - Cursor management (fake blinking cursor during typing)
- * - Text formatting through formatText() function
- * - Previous text tracking to avoid re-typing identical content
+ * @see PrintCharSlow - Core typewriter animation engine
+ * @see FadePrint - Fade animation implementation  
+ * @see textAnimation - Scramble effect implementation
+ * @see formatText - Text preprocessing for line breaks and spacing
+ * @see prepareElement - DOM element preparation and span creation
  * 
- * @see addTextFullFeature - Original function this replaces
- * @see PrintCharSlow - Core character-by-character printing function
- * @see textAnimation - Core character printing animation function
- * @see formatText - Text formatting utility for spaces and line breaks
+ * @since v2.0 - Replaces legacy addTextFullFeature function
+ * @author Gatch Tower Development Team ( ME , MYSELF and I )
  */
-// Remake of addTextFullFeature
 async function typeText({ 
     MainElementID, 
     sceneTexts = {},
-    options = {} 
-}) {
-    const {
-        textAndColorArray = {word : [], color : []}, // array of { word: string, color: string }
-        tempColorDuration = 0,
-
-        speed = 200, 
+    options : {
         printImmediately = false, 
         replace = true,
-        position =  'bottom',
 
         secondaryElement = true,
         secondaryElementTitle = null,
         MainElementBlock = null,
         
+        Coloring = {
+            Color : [],
+            Background : [],
+            duration : 0,
+            Onlysnipet : false,
+            snipet : [],
+        },
+        
         defaultColor = 'azure',
         TimeSettings = { totalRevealTime: 200, cycleSpeed: 25, delayPerChar: 1 },
         EFFECT = 'fade'
-    } = options;
+    } 
+}) {
+
     const {
         Lines = [],
         Position = 1,
@@ -338,41 +336,26 @@ async function typeText({
     let cursor;
     let TokenSettings = { currentTypingToken, token, elementId: MainElementID};
     // Set-up element
-    let {
-        block,
-        EventScene,
-        blockClean,
-        querySelectorString,
-        TextBlock,
-        IsScene 
-    } = getTextBlockDetails(MainElementBlock);
-    const text = Lines; 
-    const StringText = typeof text === "object" ? Object.values(text) : [text];
-    const AmountOfText = StringText.length;
-    const el = prepareElement(MainElementID, secondaryElement, secondaryElementTitle,MainElementBlock,StringText,AmountOfText, position);
+    const StringText = typeof Lines === "object" ? Object.values(Lines) : [Lines];
+    const el = prepareElement(MainElementID, secondaryElement, secondaryElementTitle, MainElementBlock,StringText);
     // Set-up flag
     isCurrentlyPrinting[MainElementID] = true;
+    // Print text
     if (el) printText({
-        StringText,replace,
-        printImmediately, previousText, MainElementID, TimeSettings,
-        textAndColorArray, el,
-        cursor,defaultColor,
-        TokenSettings,
-        currentTypingToken, token,
-        tempColorDuration,
-        EFFECT,MainElementBlock,Position
+        el, StringText, MainElementID,
+        TokenSettings, token, currentTypingToken,
+        previousText, cursor,
+        Position,
+        printImmediately, replace, Coloring, defaultColor, TimeSettings, EFFECT, MainElementBlock
     });
 }
 // utility: printText
 async function printText({
-    StringText,replace,
-    printImmediately, previousText, MainElementID, TimeSettings,
-    textAndColorArray, el,
-    cursor,defaultColor,
-    TokenSettings,
-    currentTypingToken, token,
-    tempColorDuration,
-    EFFECT,MainElementBlock,Position
+    el, StringText, MainElementID,
+    TokenSettings, token, currentTypingToken,
+    previousText, cursor,
+    Position,
+    printImmediately, replace, Coloring, defaultColor, TimeSettings, EFFECT, MainElementBlock
     }) {
     for (let i=0;i< StringText.length;i++){
         const textList = StringText[i];
@@ -392,36 +375,36 @@ async function printText({
         // replace text or not
         if (!replace && previousText[MainElementID] !== undefined ) DeltaEl.innerHTML = previousText[MainElementID];
         // set-up text
-        const editedColor = setElementColor( DeltaEl, MainElementID, defaultColor );
+        const editedColor = setElementColor( DeltaEl, MainElementID, defaultColor ); // set default color or dead color
         const PrintBoolian = GetPrintBoolian(printImmediately, previousText, MainElementID, textList, TimeSettings);
         // Handle text and color array
-        if (PrintcolorArray(textAndColorArray, DeltaEl, MainElementID, textList, PrintBoolian) === true) return;
+        if ( ColoringHandler(Coloring, DeltaEl, MainElementID, textList, PrintBoolian) === true) return;
         if (!printImmediately && MainElementID === '.TextBlock' && EFFECT !== 'fade') { cursor = createFakeCursor(); DeltaEl.appendChild(cursor); }
         if (PrintBoolian) {
             handlePrintImmediately( DeltaEl, textList, MainElementID )
         } else {
-            if (EFFECT === 'type') await PrintCharSlow({ textBlock: textList, elementId: MainElementID, element: DeltaEl, speed, cursor, currentTypingToken, token, replace });
-            if (EFFECT === 'fade') await FadePrint( DeltaEl, textList, MainElementID, TimeSettings, TokenSettings, Position );
-            if( EFFECT === 'scramble') await textAnimation(textList, DeltaEl, editedColor, TokenSettings, TimeSettings);
+            if ( EFFECT === 'type') await PrintCharSlow({ textBlock: textList, elementId: MainElementID, element: DeltaEl, speed: TimeSettings.delayPerChar, cursor, currentTypingToken, token, replace });
+            if ( EFFECT === 'fade') await FadePrint( DeltaEl, textList, MainElementID, TimeSettings, TokenSettings, Position );
+            if ( EFFECT === 'scramble') await textAnimation(textList, DeltaEl, editedColor, TokenSettings, TimeSettings);
         }
         // Typing finished, clear token
         clearToken(currentTypingToken, MainElementID, token, textList);
         // Reset color after delay
-        if(tempColorDuration > 0) setTimeout(() => DeltaEl.style.color = editedColor, tempColorDuration * 1000);
+        if ( Coloring.duration > 0) setTimeout(() => DeltaEl.style.color = editedColor, Coloring.duration * 1000);
     }
 }
-// utility: PrintcolorArray
-function PrintcolorArray(textAndColorArray,element, elementId, text, PrintBoolian) {
-    // If the word "ALL" is found in the textAndColorArray, set the color to text instead of the word
-    if (textAndColorArray.word == 'ALL') element.style.color = textAndColorArray.color;
-    // If printing immediately or slow typing disabled or previous typing is the same
-    if (PrintBoolian) {
-        handlePrintImmediately( element, text, elementId );
+// ---- utility -----
+
+// utility: ColoringHandler
+function ColoringHandler(Coloring, element, MainElementID, textList, PrintBoolian) {
+    if(!Coloring.Onlysnipet) {
+        element.style.color = Coloring.Color[0];
+    } else if ( PrintBoolian) {
+        // If printing immediately or slow typing disabled or previous typing is the same
+        handlePrintImmediately( element, textList, MainElementID );
         clearCursor();
-    }
-    // Handle text and color array
-    if (textAndColorArray.word.length > 0 && textAndColorArray.word != 'ALL') {
-        applyWordColoring( element, text, textAndColorArray );
+    } else if (Coloring.snipet.length > 0 && Coloring.Onlysnipet) {
+        applyColoring( element, textList, Coloring );
         return true;
     }
 }
@@ -443,7 +426,17 @@ function clearToken(currentTypingToken, elementId, token, text) {
     return previousText && isCurrentlyPrinting;
 }
 }
-// ------- New Text Handler Functions -------
+// utility: clearText and clearButtonText
+function clearText() {
+    document.querySelectorAll('.TextBlock').forEach(el => {
+        el.textContent = ''
+    });
+}
+function clearButtonText() {
+    document.querySelectorAll('.Choices').forEach(el => {
+        el.innerHTML = '';
+    });
+}
 /**
  * Text animation that displays random letters/symbols first, then transitions to correct text
  * @param {string} text - The final text to display
@@ -541,13 +534,96 @@ async function textAnimation( text, element, color = 'azure',
         }
     }, TimeSettings.cycleSpeed);
 }
-function clearText() {
-    document.querySelectorAll('.TextBlock').forEach(el => {
-        el.textContent = ''
-    });
+/**
+ * Prints text character by character with a typewriter effect
+ * @param {Object} params - Configuration object for the typing animation
+ * @param {string} params.textBlock - The text content to be typed out
+ * @param {string} params.elementId - Unique identifier for the target element
+ * @param {HTMLElement} params.element - The DOM element where text will be displayed
+ * @param {number} params.speed - Base delay in milliseconds between each character
+ * @param {HTMLElement} params.cursor - Optional cursor element to show typing position
+ * @param {Object} params.currentTypingToken - Token tracking object to manage typing interruptions
+ * @param {string} params.token - Unique token for this specific typing session
+ * @param {string} params.output - Accumulated output string (default: empty string)
+ * @param {Object} params.replace - Configuration for text replacement behavior
+ * @param {boolean} params.replace.anew - Whether to append to existing text or replace entirely
+ * @param {string} params.replace.PastText - Previous text to preserve when appending
+ */
+async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, currentTypingToken, token, output = '', replace = { anew : false, PastText : ''}}) {
+    const formattedText = formatText(textBlock);
+    for (let i = 0; i < formattedText.length; i++) {
+        if (currentTypingToken[elementId] !== token) {
+            // If player clicked while printing
+            handlePrintImmediately( element, textBlock );
+            return;
+        }
+        let char = formattedText[i];
+        output += char;
+        element.innerHTML = replace.anew ? replace.PastText + output : output;
+        if (cursor && element) element.appendChild(cursor); // Append cursor after each character
+        // add a longer pause after dot or comma
+        const delayDuration = (char === '.' || char === ',') ? 400 : speed;
+        // typingSound.currentTime = 0; // Reset sound to start
+        // typingSound.play().catch(() => {}); // Play typing sound
+        await new Promise(resolve => setTimeout(resolve, delayDuration)); // Delay next letter
+    }
+    if ( cursor ) element.removeChild(cursor); // Remove cursor after typing
 }
-function clearButtonText() {
-    document.querySelectorAll('.Choices').forEach(el => {
-        el.innerHTML = '';
-    });
-}
+/**
+ * Displays text with a smooth fade-in animation effect as an alternative to typewriter typing.
+ * Integrates with the game's token system for click-to-skip functionality and supports 
+ * element positioning for dialogue systems.
+ * 
+ * @param {HTMLElement} el - Target DOM element to animate
+ * @param {string} textList - Raw text content to display and animate
+ * @param {string} MainElementID - CSS selector/ID for the target element (e.g., '.TextBlock')
+ * @param {Object} TimeSettings - Animation timing configuration
+ * @param {number} TimeSettings.totalRevealTime - Delay before animation starts in milliseconds (default: 200)
+ * @param {Object} TokenSettings - Token system for interruption handling
+ * @param {Object} TokenSettings.currentTypingToken - Global token tracking object
+ * @param {string} TokenSettings.token - Unique token for this animation session
+ * @param {number|string} Position - Element positioning value for parent container (default: 1)
+ *   - Number: Sets data-position attribute on parent element
+ *   - 'default': Skips positioning entirely
+ * 
+ * @returns {Promise<string|undefined>} Resolves to the cached text content when animation completes
+ * 
+ * @see formatText - Text preprocessing for spacing and line breaks
+ * @see handlePrintImmediately - Instant text display for interruptions
+ * @see clearCursor - Cleanup utility for cursor elements
+ * @see typeText - Main text animation controller that calls this function
+ * 
+ * @since v2.0 - Part of enhanced text animation system
+ * @author Gatch Tower Development Team
+ */
+async function FadePrint( 
+    el, textList, MainElementID,
+    TimeSettings = { totalRevealTime : 200} ,
+    TokenSettings = { currentTypingToken, token },
+    Position = 1
+    ) {
+    clearCursor();
+    const formattedText = formatText(textList);
+
+    el.style.opacity = 0;
+    el.offsetHeight = 'undefined';
+    if (el) el.innerHTML = formattedText;
+    if ( Position != 'default') el.parentElement.dataset.position = Position;
+    // Apply animation
+    
+    el.style.animation = `${600}ms linear ${TimeSettings.totalRevealTime}ms 1 normal forwards running fadeIn`;
+
+
+    if (TokenSettings.currentTypingToken[MainElementID] !== TokenSettings.token) {
+        // If player clicked while printing
+        handlePrintImmediately( el, textList );
+        return;
+    }
+
+    // Wait for animation to finish
+    await new Promise(resolve => setTimeout(resolve, TimeSettings.totalRevealTime));
+
+    if (isCurrentlyPrinting) isCurrentlyPrinting[MainElementID] = false;
+    if (previousText) previousText[MainElementID] = textList;
+    return previousText?.[MainElementID];
+};

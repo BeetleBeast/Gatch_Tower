@@ -1,8 +1,8 @@
 let GlobalQuerySelect = {}
 var currentdate = new Date();
 var datetime = currentdate.getDate() + "/" + (currentdate.getMonth()+1) + "/" + currentdate.getFullYear() + "|" + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-let valueSTRING = [];   // Initialize the text of the player character set feature 
-let valueCOLOR = [];    // Initialize the color of the player character set feature 
+const valueSTRING = [];   // Initialize the text of the player character set feature 
+const valueCOLOR = [];    // Initialize the color of the player character set feature 
 let isCurrentlyPrinting = {}; // set true if is printing and false if not
 const previousText = {};
 let previousAmounts = [];

@@ -98,48 +98,54 @@ function impromptuSave(saveData) {
  */
 function manageHiddenInfo({
     saveData, 
-    TextID, 
-    ItemID, 
+    text, 
+    item, 
     Btn
     }) {
-    const itemDiscoveryText = getItemDiscoveryText(ItemID);
-    const FirstScanBtn = saveData.Uncovered.HiddenButton.find(item => item.sceneID === saveData.scenes[saveData.currentScene].sceneID)
-    if (Btn || FirstScanBtn) {
-        if (Btn !== undefined) {
-            Btn.forEach(CountedBtn => {
-                const MakeVisible = CountedBtn.IsVisible !== true;
-                const button = document.querySelector('.Btn_' + CountedBtn.BtnID);
-                if (button) {
-                    button.style.display = MakeVisible ? "block" : "none";
-                    saveData.Uncovered.HiddenButton.find(item => item.sceneID === saveData.scenes[saveData.currentScene].sceneID).Show = MakeVisible;
-                }
-            })
-        } else document.querySelector('.Btn_' + FirstScanBtn.BtnID).style.display = FirstScanBtn.Show ? "block" : "none";
+    if (Btn !== undefined) {
+        Btn.forEach(CountedBtn => {
+            const MakeVisible = CountedBtn.visible !== true;
+            const button = document.querySelector('.Btn_' + CountedBtn.BtnID);
+            if (button) {
+                button.style.display = MakeVisible ? "block" : "none";
+                CountedBtn.visible = MakeVisible;
+            }
+        })
     }
-    if(TextID !== undefined){
-        if(!saveData.Uncovered.HiddenText[TextID]) {
-            typeText({
-                MainElementID : '.TextBlock',
-                sceneTexts: { 
-                    Lines: saveData.scenes[saveData.currentScene]?.ALT_Text['Hidden'],
-                    Position: saveData.scenes[saveData.currentScene]?.ALT_Text['Position'] || 1 // default to center if not specified
-                },
-                options: {
-                    printImmediately: true,
-                    tempColorDuration:  1,
-                    secondaryElement : true,
-                    replace : false,
-                    textAndColorArray : { word : 'ALL', color : 'blue'},
-                    MainElementBlock: `.Block_0`,
-                }
-            })
-            saveData.Uncovered.HiddenText[TextID] = true;
-        }
+    if(text !== undefined){
+        text.forEach(IndividualText => {
+            if(!IndividualText.visible) {
+                const Alt_Text_Object = saveData.scenes[saveData.currentScene]?.ALT_Text;
+                typeText({
+                    MainElementID : '.TextBlock',
+                    sceneTexts: { 
+                        Lines: Alt_Text_Object['Hidden'],
+                        Position: Alt_Text_Object['Position'] || 1 // default to center if not specified
+                    },
+                    options: {
+                        printImmediately: true,
+                        tempColorDuration:  1,
+                        secondaryElement : true,
+                        replace : false,
+                        Coloring : { 
+                            Color : Alt_Text_Object.Coloring?.Color || ['blue'],
+                            duration: Alt_Text_Object.Coloring?.duration || 1,
+                            Background : Alt_Text_Object.Coloring?.Background || [],
+                            Onlysnipet : Alt_Text_Object.Coloring?.Onlysnipet || false,
+                            snipet : Alt_Text_Object.Coloring?.snipet || [],
+                        },
+                        MainElementBlock: `.Block_0`,
+                    }
+                })
+                text.visible = true;
+            }
+        })
     }
-    if(ItemID !== undefined){
+    if(item !== undefined){
+        const itemDiscoveryText = getItemDiscoveryText(item.itemID);
         //  add the item to the inventory and show the text if it is not already discovered
-        if (itemDiscoveryText && !saveData.Uncovered.Items[ItemID]) {
-            addItemToInventory(saveData, ItemID, 1);
+        if (itemDiscoveryText && !item.visible) {
+            addItemToInventory(saveData, item.itemID, 1);
             typeText({
                 MainElementID : '.TextBlock',
                 sceneTexts: { 
@@ -151,12 +157,12 @@ function manageHiddenInfo({
                     tempColorDuration:  1,
                     secondaryElement : true,
                     replace : false,
-                    textAndColorArray : { word : 'ALL', color : itemDiscoveryText.color},
-                    secondaryElementTitle: itemDiscoveryText.DevElementName,
+                    Coloring : { Color : [itemDiscoveryText?.color], duration: 1 },
+                    secondaryElementTitle: itemDiscoveryText?.DevElementName,
                     MainElementBlock: `.Block_0`,
                 }
             })
-            saveData.Uncovered.Items[ItemID] = true;
+            item.visible = true;
         }
     }
     sessionStorage.setItem('TempLatestSave', JSON.stringify(saveData));
@@ -438,7 +444,7 @@ function getItemDiscoveryText(id){
     const ID = Number(id);
     return saveData.Items.find(entry => entry.id === ID);
 }
-function characterMaker(saveData, lastChoiceIndex, value, valueS){
+function characterMaker(saveData, lastChoiceIndex, valueString, valueColor){
     //  Update class value
     const characterKeys = {
         2: 'eye_Color',
@@ -451,18 +457,18 @@ function characterMaker(saveData, lastChoiceIndex, value, valueS){
     
     const keyToUpdate = characterKeys[lastChoiceIndex];
     if (keyToUpdate) {
-        character[keyToUpdate] = value;
+        character[keyToUpdate] = valueString;
     }
 
     // Update the value arrays
-    valueSTRING.push(value);
-    valueCOLOR.push(valueS);
+    valueSTRING.push(valueString);
+    valueCOLOR.push(valueColor);
 
     // Get template string
     const templateString = saveData.character_Description_Text[lastChoiceIndex].charachterDefining;
 
     // Evaluate it as a template literal
-    const charachterDefining = new Function('value', 'valueSTRING', `return \`${templateString}\`;`)(value, valueSTRING);
+    const charachterDefining = new Function('value', 'valueSTRING', `return \`${templateString}\`;`)(valueString, valueSTRING);
 
     //  Display text to Side Menu
     // GlobalQuerySelect.Side_Menu2.innerHTML = charachterDefining;
@@ -474,9 +480,9 @@ function characterMaker(saveData, lastChoiceIndex, value, valueS){
             Position: 2 // default to center
         },
         options: {
-            textAndColorArray: { word : valueSTRING, color : valueCOLOR},
+            Coloring : { Onlysnipet : true, Color : valueCOLOR, snipet : valueSTRING },
             replace : true,
-            secondaryElement: false
+            secondaryElement: false,
         }
     })
     saveData.character_Description_Text_Final = GlobalQuerySelect.Side_Menu2.innerHTML;
@@ -498,7 +504,7 @@ function performSceneAction(actionObj, saveData) {
     const ALT_Text = saveData.scenes[saveData.currentScene]?.ALT_Text?.['default'];
     const ALT_Name = saveData.scenes[saveData.currentScene]?.ALT_Name;
     
-    const { type, effect, strength, value, target, tag, textID, itemID, Btn, text, instaKill } = actionObj[0];
+    const { type, effect, strength, value, target, tag, textID, itemID, Btn, text,item, instaKill } = actionObj[0];
     //
     
     // effectHandlers, ActionHandlers
@@ -516,6 +522,7 @@ function performSceneAction(actionObj, saveData) {
             itemID,
             Btn,
             text,
+            item,
             instaKill,
             optionsText: options?.ButtonText,
             altOptionsText: ALT_options?.ButtonText,
@@ -541,7 +548,7 @@ function performSceneAction(actionObj, saveData) {
  * 0_4
  * 0_5
  * 0_6
- * 0_7 => characterMaker(saveData, lastChoiceIndex, value, valueS)
+ * 0_7 => characterMaker(saveData, lastChoiceIndex, valueString, valueColor)
  * 1_6 => 
         Btn 2:
             //  Investigate the hidden alcove

@@ -34,6 +34,8 @@
 	--LightGrey: rgb(123,123,123);
 	--DarkGrey: rgb(44,44,44);
 
+	--GreyedOut: rgba(0, 0, 0, 0.5);
+
 	--DefaultColor0: azure;
 	--DefaultColor2: rgb(34, 34, 34);
 	--DefaultColor6: rgb(102, 102, 102);

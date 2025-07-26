@@ -26,9 +26,9 @@ const ActionHandlers = {
             document.querySelector('.TextBlock').appendChild(document.createElement(tag));
         }
     },
-    manageHiddenInfo: ({ saveData, textID, itemID, Btn}) => {
-        if ( textID || itemID || Btn) {
-            manageHiddenInfo({saveData, TextID: textID, ItemID: itemID, Btn});
+    manageHiddenInfo: ({ saveData, text, item, Btn}) => {
+        if ( text || item || Btn) {
+            manageHiddenInfo({saveData, text, item, Btn});
         }
     },
     damageAndDeath: ({ text, value, instaKill }) => {
@@ -61,7 +61,7 @@ const effectHandlers = {
             MainElementID : '.Quest_Title',
             sceneTexts: {
                 Lines: ALT_Name,
-                Position: 2 // default to center
+                Position: 'default' // default to center
             },
             options:{
                 secondaryElement: false,
