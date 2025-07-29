@@ -106,7 +106,11 @@
 
 ## ✅ TODO List
 
+- [ ] remove colors i.e. make it more grey scale
+- [ ] re-size title ( to big )
 - [ ] make navigateStory actually usable instead of being a pain in the ass.
+
+- [ ] implement actionMap.
 
 - [ ] Implement multiple text styles and save them.
 - [ ] add better flavour text.
@@ -128,6 +132,8 @@
 ---
 
 ## 🐞 FIXMEs
+
+- [ ] when 2 or more events are there buttons don't exist for those events
 
 ---
 

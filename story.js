@@ -26,7 +26,7 @@ function Render_Scene(saveData, isNew = false) {
     GlobalQuerySelect.Side_Menu3.dataset.visible =  saveData.dead.isDead ? 'false' : 'true'; // 5. Side menu ( show or hide the effects (debuffs) bar )
     Effect_Bar_progress(saveData, saveData.Debuff_SpashText_Final); // 6. Effect bar if applicable
     // --- UI Rendering Map ---
-    if (saveData.currentScene.split('_')[0] >= 1) saveData.Canvas.Map.forEach(MapList => CreateMap(MapList));
+    if (isCanvasActive(saveData.Canvas, saveData.currentScene)) saveData.Canvas.Map.forEach(MapList => CreateMap(MapList));
     // --- UI Rendering Inventory ---
     populateInventory(saveData, 1); // 8. Inventory ( only first page )
     //DisplayDebuffTextWithColors(saveData,)

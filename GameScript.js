@@ -30,7 +30,7 @@ function startup(userConfirmed) {
     if (DebugMode) userConfirmed === 1 ? console.log('Continue story') : console.log('start new story');
     if (userConfirmed !== 1 && userConfirmed !== 2) {
         Title_Section(GlobalQuerySelect);
-        TextBlock_Content(GlobalQuerySelect, undefined, undefined, false);
+        TextBlock_Content(GlobalQuerySelect, 1, false);
         GlobalQuerySelect.Title.innerHTML = 'Gatcha tower';
         StartUp_Content();
     }
@@ -201,6 +201,42 @@ function newGame(){
     Render_Scene(saveData, true);
 
 }
+
+function parseScene(sceneStr) {
+    const [major, minor] = sceneStr.split('_').map(Number);
+    return { major, minor };
+}
+
+function compareScenes(a, b) {
+    if (a.major < b.major) return -1;
+    if (a.major > b.major) return 1;
+    if (a.minor < b.minor) return -1;
+    if (a.minor > b.minor) return 1;
+    return 0;
+}
+
+function isCanvasActive(Canvas, PlayerPosition) {
+    const currentScene = parseScene(PlayerPosition);
+
+    return Canvas.activeTime.some(rule => {
+        if (rule === "ALL") return true;
+
+        const match = rule.match(/^([<>]=?)(\d+)_(\d+)$/);
+        if (!match) return rule === PlayerPosition;
+
+        const operator = match[1];
+        const targetScene = parseScene(`${match[2]}_${match[3]}`);
+        const cmp = compareScenes(currentScene, targetScene);
+
+        switch (operator) {
+        case "<":  return cmp === -1;
+        case "<=": return cmp <= 0;
+        case ">":  return cmp === 1;
+        case ">=": return cmp >= 0;
+        }
+    });
+}
+
 
 function SetLoadingScreen(StartLoadingScreen, EndLoadingScreen){
     // Set the loading screen

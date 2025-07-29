@@ -126,7 +126,6 @@ function triggerRandomEvent(event) {
     // add the buttons to the page
     populateButton( false, event)
 
-    const TextBlockParent = [`.Block_R${event.REventID}` , `.Block_0`] // `.Block_${sceneID}`
     if(event.allow_original_scene) {
         typeText({
             MainElementID : '.Quest_Title',
@@ -136,14 +135,18 @@ function triggerRandomEvent(event) {
             },
             options: {
                 secondaryElement: false,
-
+                
             }
         })
     }
     // first event then normal scene text
     let eventList = [];
-    eventList.push(event);
+    eventList.push(...[].concat(event)); // safe even if event is not an array
     for (const scene of eventList) {
+        if ( !(document.querySelector(`.Block_R${scene.REventID}`))) {
+            const interactionBlock = InteractionBlock(1,`R${scene.REventID}`)
+            document.querySelector('.main').append(interactionBlock);
+        }
         typeText({
             MainElementID : '.TextBlock',
             sceneTexts: {
@@ -156,18 +159,19 @@ function triggerRandomEvent(event) {
                 secondaryElement : true,
                 // textAndColorArray : { word : 'ALL', color : 'blue'},
                 Coloring : { 
-                    Color : scene.sceneTexts.Coloring.Color || ['blue'],
-                    duration: scene.sceneTexts.Coloring.duration || 1,
-                    Background : scene.sceneTexts.Coloring.Background || [],
-                    Onlysnipet : scene.sceneTexts.Coloring.Onlysnipet || false,
-                    snipet : scene.sceneTexts.Coloring.snipet || [],
+                    Color : scene.sceneTexts.Coloring?.Color || ['blue'],
+                    duration: scene.sceneTexts.Coloring?.duration || 1,
+                    Background : scene.sceneTexts.Coloring?.Background || [],
+                    Onlysnipet : scene.sceneTexts.Coloring?.Onlysnipet || false,
+                    snipet : scene.sceneTexts.Coloring?.snipet || [],
                 },
                 replace: false,
-                MainElementBlock: TextBlockParent[0]
+                MainElementBlock: `.Block_R${scene.REventID}`
             }
         })
     }
-    if ( event.allow_original_scene ) {
+    const allowOriginal = eventList.some(scene => scene.allow_original_scene);
+    if ( allowOriginal ) {
         typeText({
             MainElementID : '.TextBlock',
             sceneTexts: {
@@ -178,7 +182,7 @@ function triggerRandomEvent(event) {
                 printImmediately: false,
                 secondaryElement : true,
                 replace: false,
-                MainElementBlock: TextBlockParent[1]
+                MainElementBlock: `.Block_0`
             }
         })
     }

@@ -128,7 +128,7 @@ function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock
     const targetElement = secondaryElement ? document.querySelector(containerSelector) : document.querySelector(elementId);
 
     if (!targetElement) {
-        console.warn(`Element not found for selector: ${elementId}`);
+        console.warn(`Element not found for selector: ${elementId}${targetElement}`);
         return null;
     }
 

@@ -635,8 +635,8 @@ let saveData = {
             sceneName: "FistEnemySpotted",
             sceneTexts: {
                 Lines: [
-                    `After an hour of crawling through tight, crumbling passages, the player emerged into a vast open cavern.`,
-                    `~Fresh air rushed in, and ahead—blinding light marked the exit, just 200 meters away.`,
+                    `After an hour of crawling through tight, crumbling passages, you emerged into a vast open cavern.`,
+                    `~Fresh air rushed in, just 200 meters ahead blinding light marked the exit.`,
                 ],
                 Position: '1' // AKA default ( Left )
             },
@@ -645,11 +645,22 @@ let saveData = {
             sceneID: 24,
             ButtonTitle: "",
             options: {
-                2: {ButtonNumber: 2, ButtonText: "Observe", next_scene: false, duration: '0:05'}
+                2: {ButtonNumber: 2, ButtonText: "wait & Observe", next_scene: false, duration: '0:05'},
+                3: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: false}
             },
             ALT_options: {},
         },
     },
+    actionMap: [  //  { condition_area: sceneID, pathTaken
+        {
+            pathSourceArea: 24,
+            pathTargetArea: '',
+            pathTaken: {
+                include: ["wait & Observe"],
+                exclude: ["run to the exit"]
+            }
+        }
+    ],
     RandomEvent : {
         //  0 is a Test, 1 to last gets all R events
         0 : { Name: 'Test',
@@ -677,9 +688,32 @@ let saveData = {
             allow_multiple_event: false, // if false, will be the only event to run
             allow_original_scene : true // merge sites options && their actions
         },
+        1: { Name: 'Teleportation',
+            REventID: 1,
+            sceneTexts : {
+                Lines: [
+                    'A dev offers you a ride to the worlds edge!',
+                    '~What will you do?',
+                ],
+                Position: 1, // center
+                Coloring: {
+                    Color: ['yellow'],
+                    duration: 1,
+                }
+            },
+            chance: 1,
+            options : {
+                1 : {ButtonNumber: 1, ButtonText: 'Accept', Position: 1, next_scene: '2_0'},
+            },
+            ALT_options : {},
+            action : [{}],
+            sites : ['<2_0'],
+            allow_multiple_event: true, // if false, will be the only event to run
+            allow_original_scene : true // merge sites options && their actions
+        }
     },
     Canvas : {
-        PlayerPosition : '',// chapterID_sceneID
+        activeTime: ['>2_5'],
         // Map : [{  nodes: [ canvas elements ]  }]
         Map : [
             /*

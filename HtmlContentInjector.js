@@ -220,13 +220,13 @@ function Main_Section_Content1(GlobalQuerySelect) {
     GlobalQuerySelect.Button_Choice7 = document.querySelector('.Sh_7');
     return GlobalQuerySelect;
 }
-function TextBlock_Content(GlobalQuerySelect, amountOfBlocks = 1, DefaultButtons = 7, interactionBlock = true) {
+function TextBlock_Content(GlobalQuerySelect, amountOfBlocks = 1, interactionBlock = true) {
     const app = document.querySelector('.app');
     const main = document.createElement('div');
 
     main.classList.add('main');
     if (interactionBlock) {
-        const blocks = InteractionBlock(amountOfBlocks, undefined, DefaultButtons);
+        const blocks = InteractionBlock(amountOfBlocks, undefined);
         main.append( ...blocks);
         GlobalQuerySelect.InteractionBlock = blocks;
         GlobalQuerySelect.TextBlock = document.querySelector('.TextBlock');
@@ -238,9 +238,9 @@ function TextBlock_Content(GlobalQuerySelect, amountOfBlocks = 1, DefaultButtons
     GlobalQuerySelect.app = document.querySelector('.app');
     return GlobalQuerySelect;
 }
-function InteractionBlock(amountOfBlocks, blockIndex, DefaultButtons = 7) {
+function InteractionBlock(amountOfBlocks, blockIndex) {
+    const InteractionBlockELements = [];
     if (blockIndex === undefined) {
-        const InteractionBlockELements = [];
         for (let i = 0; i < amountOfBlocks; i++) {
             const InteractionBlock = document.createElement('div');
             const TextBlock = document.createElement('div'); // main_section
@@ -265,6 +265,7 @@ function InteractionBlock(amountOfBlocks, blockIndex, DefaultButtons = 7) {
         InteractionBlock.dataset.block = blockIndex;
 
         InteractionBlock.append( TextBlock, BtnBlock );
+        InteractionBlockELements.push(InteractionBlock);
         return InteractionBlock;
     }
 }
