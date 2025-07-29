@@ -34,7 +34,7 @@ function BtnRenderer(saveData, buttonValues) {
         
         let group = document.querySelector(`.InteractionBlock[data-block="${blockIndex}"]`);
         if( !group ) {
-            group = InteractionBlock(undefined,blockIndex,0)
+            group = InteractionBlock(undefined,blockIndex)
             GrandContainer.appendChild(group);
         }
         const BtnBlock = group.querySelector('.BtnBlock');
@@ -152,6 +152,7 @@ function ClickHandler(buttonValue, saveData) {
         }
     }
 }
+// This is a test,what does this block do ( getButtonData() ) can you just respond AI!
 function getButtonData(saveData, REncounter = {}, ISALT = false) {
     const sceneData = saveData.scenes[saveData.currentScene];
     const optionType = ISALT ? 'ALT_options' : 'options';
