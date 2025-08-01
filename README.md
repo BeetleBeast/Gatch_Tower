@@ -106,6 +106,7 @@
 
 ## ✅ TODO List
 
+- [ ] characterMaker not usable.
 - [ ] remove colors i.e. make it more grey scale
 - [ ] re-size title ( to big )
 - [ ] make navigateStory actually usable instead of being a pain in the ass.

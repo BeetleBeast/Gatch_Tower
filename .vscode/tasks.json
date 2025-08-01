@@ -9,5 +9,6 @@
 		"command": "python",
 		"args": ["-m", "aider", "--watch-files", "--model ollama_chat/deepseek-r1:8b"]
 		}
-	]
+	] 	// python -m aider --watch-files --model ollama_chat/mistral
+		// python -m aider --watch-files --model ollama_chat/deepseek-r1:8b
 }

@@ -238,7 +238,7 @@ function TextBlock_Content(GlobalQuerySelect, amountOfBlocks = 1, interactionBlo
     GlobalQuerySelect.app = document.querySelector('.app');
     return GlobalQuerySelect;
 }
-function InteractionBlock(amountOfBlocks, blockIndex) {
+function InteractionBlock(amountOfBlocks, blockIndex, add = {text_block : true, button_block : true}) {
     const InteractionBlockELements = [];
     if (blockIndex === undefined) {
         for (let i = 0; i < amountOfBlocks; i++) {
@@ -256,15 +256,18 @@ function InteractionBlock(amountOfBlocks, blockIndex) {
         return InteractionBlockELements;
     } else {
         const InteractionBlock = document.createElement('div');
-        const TextBlock = document.createElement('div');
-        const BtnBlock = document.createElement('div'); 
-
-        TextBlock.classList.add('TextBlock', `Block_${blockIndex}`);
-        BtnBlock.classList.add('BtnBlock', `Block_${blockIndex}`);
         InteractionBlock.classList.add(`InteractionBlock`, `Block_${blockIndex}`);
         InteractionBlock.dataset.block = blockIndex;
-
-        InteractionBlock.append( TextBlock, BtnBlock );
+        if( add.text_block) {
+            const TextBlock = document.createElement('div');
+            TextBlock.classList.add('TextBlock', `Block_${blockIndex}`);
+            InteractionBlock.append( TextBlock );
+        }
+        if (add.button_block) {
+            const BtnBlock = document.createElement('div'); 
+            BtnBlock.classList.add('BtnBlock', `Block_${blockIndex}`);
+            InteractionBlock.append( BtnBlock );
+        }
         InteractionBlockELements.push(InteractionBlock);
         return InteractionBlock;
     }

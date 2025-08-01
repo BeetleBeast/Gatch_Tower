@@ -1,10 +1,22 @@
 function populateButton( ISALT = false, REncounter = []) {
     const saveData = JSON.parse(sessionStorage.getItem('TempLatestSave'));
+    window._registeredButtons = [];
     const buttonValues = getButtonValues(saveData, REncounter, ISALT);
     
     clearButtonContent();
     BtnRenderer(saveData, buttonValues);
     manageHiddenInfo({ saveData });
+    if (!window._keyboardListenerSetup) {
+        window.addEventListener("keydown", (e) => {
+            if (/^(Digit|Numpad)[1-9]$/.test(e.code) && Array.isArray(window._registeredButtons)) {
+                const num = e.code.replace(/^(Digit|Numpad)/, '');
+                const match = window._registeredButtons?.[num];
+                if (match  && typeof match.handler === 'function') match.handler();
+            }
+        });
+        window._keyboardListenerSetup = true;
+    }
+
     if (DebugMode) console.log('Buttons Rendered ' + JSON.stringify(buttonValues)); // Logging the addition of event listener
     return GlobalQuerySelect;
 }
@@ -41,21 +53,33 @@ function BtnRenderer(saveData, buttonValues) {
         BtnBlock.appendChild(button);
     
         if (button) {
-            const totalRevealTime =  200; // Default to 200ms if not set
+            const totalRevealTime = 200;
+
+            // Reset styling
             button.style.opacity = 0;
-            button.offsetHeight = 'undefined';
-            button.innerHTML = `${buttonValue.Text}`;
-            if (buttonValue?.Duration ) button.innerHTML += ` (${buttonValue?.Duration})`;
-            if (buttonValue?.Interesting) button.innerHTML += ` (${buttonValue?.Interesting})`;
+            void button.offsetHeight; // force reflow
+
+            // Set content
+            button.innerHTML = `(${buttonValue.BtnOrder}) ${buttonValue.Text}`;
+            if (buttonValue.Duration) button.innerHTML += ` (${buttonValue.Duration})`;
+            if (buttonValue.Interesting) button.innerHTML += ` (${buttonValue.Interesting})`;
+
+            // Style and metadata
             button.style.animation = `${600}ms linear ${totalRevealTime}ms 1 normal forwards running fadeIn`;
             button.style.display = 'inline-block';
             button.dataset.position = buttonValue?.Position;
 
+            // Attach click handler
             const handler = ClickHandler(buttonValue.Value, saveData);
             const newButton = button.cloneNode(true);
             button.parentNode.replaceChild(newButton, button);
             newButton.addEventListener("click", handler);
 
+            if (!window._registeredButtons) window._registeredButtons = [];
+            window._registeredButtons[buttonValue.BtnOrder] = {
+                key: buttonValue.BtnOrder,
+                handler: handler,
+            };
         }
     }
 }
@@ -66,27 +90,31 @@ function BtnRenderer(saveData, buttonValues) {
  * @returns values inside the button(s) of the current scene
  * @description This function retrieves the button values from the saveData object for the current scene.
  */
-function getButtonValues(saveData, REncounter, ISALT = false) {
+function getButtonValues(saveData, Rencounter, ISALT = false) {
     const buttonValues = [];
     let options = saveData.scenes[saveData.currentScene][ISALT ? 'ALT_options' : 'options'];
-    if (REncounter.Name !== undefined) {
-        for (const key in REncounter.options) {
-            if (REncounter.options[key]?.ButtonText) {
-                // If button number conflicts, assign a new number
-                const ButtonText = REncounter.options[key]?.ButtonText
-                const buttonNumber = Math.max(1,...Object.values(options).map(opt => opt?.ButtonNumber || 1)) + 1;
-                const existingOption = Object.values(options).find(opt => opt?.ButtonText === ButtonText);
-                if (!existingOption) {
-                    const newKey = Object.keys(options).length;
-                    options[newKey+1] = {
-                        ButtonNumber: buttonNumber,
-                        ButtonText: ButtonText,
-                        Position: REncounter.options[key]?.Position || 1,
-                        next_scene: REncounter.options[key]?.next_scene,
-                        Duration: REncounter.options[key]?.duration || '', // Default to empty if duration is not specified
-                        Interesting: REncounter.options[key]?.Interesting || '', // Default to empty if not specified
-                        group: `${saveData.currentScene}|R${REncounter.REventID}`, // Here  chapter_scene|REventKey
-                    };
+    let eventList = [];
+    eventList.push(...[].concat(Rencounter)); // safe even if event is not an array
+    for( let REncounter of eventList) {
+        if (REncounter.Name !== undefined) {
+            for (const key in REncounter.options) {
+                if (REncounter.options[key]?.ButtonText) {
+                    // If button number conflicts, assign a new number
+                    const ButtonText = REncounter.options[key]?.ButtonText
+                    const buttonNumber = Math.max(1,...Object.values(options).map(opt => opt?.ButtonNumber || 1)) + 1;
+                    const existingOption = Object.values(options).find(opt => opt?.ButtonText === ButtonText);
+                    if (!existingOption) {
+                        const newKey = Object.keys(options).length;
+                        options[newKey+1] = {
+                            ButtonNumber: buttonNumber,
+                            ButtonText: ButtonText,
+                            Position: REncounter.options[key]?.Position || 1,
+                            next_scene: REncounter.options[key]?.next_scene,
+                            Duration: REncounter.options[key]?.duration || '', // Default to empty if duration is not specified
+                            Interesting: REncounter.options[key]?.Interesting || '', // Default to empty if not specified
+                            group: `${saveData.currentScene}|R${REncounter.REventID}`, // Here  chapter_scene|REventKey
+                        };
+                    }
                 }
             }
         }
@@ -101,6 +129,7 @@ function getButtonValues(saveData, REncounter, ISALT = false) {
                 Duration: options[key]?.duration || '', // Default to empty if duration is not specified
                 Interesting: options[key]?.Interesting || '', // Default to empty if not specified
                 group: options[key]?.group || `${saveData.currentScene}|NONE`, // Here  chapter_scene|NONE
+                BtnOrder: parseInt(key)
             });
         }
     }// FIXME : this can cause problems if keys not specified 
@@ -152,7 +181,6 @@ function ClickHandler(buttonValue, saveData) {
         }
     }
 }
-// This is a test,what does this block do ( getButtonData() ) can you just respond AI!
 function getButtonData(saveData, REncounter = {}, ISALT = false) {
     const sceneData = saveData.scenes[saveData.currentScene];
     const optionType = ISALT ? 'ALT_options' : 'options';
