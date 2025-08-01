@@ -43,8 +43,7 @@
 	
 }
 .settings:hover:not(.settingsEmpty){
-	color: var(--AlmostBlue);
-    border: 1px solid var(--Green2);
+    border: 1px solid white;
 	cursor: pointer;
 }
 

@@ -9,11 +9,13 @@
     z-index: auto;
     position: relative;
     display: flex;
+    /*
     align-items: center;
     justify-content: center;    
 
     width: 100%;
     height: 100%;
+    */
     top: 0px;
     text-align: center;
     float: none;
@@ -25,8 +27,10 @@
     font-size: larger;
     font-weight: 400;
     font-style: normal;
+    /*
     border-right: solid 2px var(--DefaultColor0);
     border-bottom: solid 2px var(--DefaultColor0);
+    */
 }
 /* ---- Map ---- */
 .MapParent {
@@ -87,13 +91,14 @@
 	z-index: auto;
 	text-align: center;
 	padding: 20px;
+    padding-left: 0px;
 	padding-bottom: 20px;
 
 	width: fit-content;
 	
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 	background-color: var(--mainColor);
     /*
     display: flex;
@@ -144,12 +149,11 @@
     margin: 0 auto;
 }
 .Choices[data-position="1"] {
-    margin-left: 5em;
-    width: 0;
+    margin-left: 0em;
 }
 .TextBlock[data-position="1"] {
     text-align: left;
-    margin-left: 2em;
+    margin-left: 0em;
     line-height: 1.5;
 }
 /* Position 2 Long Text*/

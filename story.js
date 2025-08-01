@@ -367,7 +367,7 @@ function navigateStory(saveData, { direction = 'next', level = 'scene', NextScen
         console.warn("No valid options available.");
         return;
     }
-    const [next_chapter, next_scene] = (options.next_scene ? options.next_scene.split('_') : [undefined,undefined]);
+    const [next_chapter, next_scene] = (options.next_scene ? options.next_scene.split('_') : [current_chapter,current_scene+1]);
     if (level === 'scene') {
         const ChapterAcessPoint = saveData.scenes?.[options?.next_scene]?.ChapterAcessPoint;
         let currentIndex = sceneKeys.indexOf(current_scene);

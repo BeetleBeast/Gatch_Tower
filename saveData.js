@@ -588,8 +588,8 @@ let saveData = {
             sceneID: 23,
             ButtonTitle: "",
             options: {
-                2: {ButtonNumber: 2, ButtonText: "Go to the sound", next_scene: '2_1', duration: '0:30'},
-                3: {ButtonNumber: 7, ButtonText: "Observe the light", next_scene: false, duration: '0:02',
+                1: {ButtonNumber: 2, ButtonText: "Go to the sound", next_scene: '2_1', duration: '0:30'},
+                2: {ButtonNumber: 7, ButtonText: "Observe the light", next_scene: false, duration: '0:02',
                     action: [{
                         type: 'manageHiddenInfo',
                         text: [{
@@ -626,7 +626,7 @@ let saveData = {
             sceneID: 24,
             ButtonTitle: "",
             options: {
-                2: {ButtonNumber: 2, ButtonText: "Continue", next_scene: "2_2", duration: '1:30'}
+                1: {ButtonNumber: 2, ButtonText: "Continue", next_scene: "2_2", duration: '1:30'}
             },
             ALT_options: {},
         },
@@ -645,8 +645,8 @@ let saveData = {
             sceneID: 24,
             ButtonTitle: "",
             options: {
-                2: {ButtonNumber: 2, ButtonText: "wait & Observe", next_scene: false, duration: '0:05'},
-                3: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: false}
+                1: {ButtonNumber: 2, ButtonText: "wait & Observe", next_scene: false, duration: '0:05'},
+                2: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: false}
             },
             ALT_options: {},
         },

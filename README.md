@@ -106,7 +106,6 @@
 
 ## ✅ TODO List
 
-- [ ] characterMaker not usable.
 - [ ] remove colors i.e. make it more grey scale
 - [ ] re-size title ( to big )
 - [ ] make navigateStory actually usable instead of being a pain in the ass.
@@ -119,6 +118,8 @@
 - [ ] Create a loot screen tied to inventory system.
 
 - [ ] Simplify cave level for first encounter.
+
+- [ ] when ?? is high enauf add | effect will hapen on button example: (1) Run | fatigue{red}
 
 - [ ] add a better intro.
 
