@@ -2,6 +2,7 @@
 //temp
 let saveData = {
     name: "Main",
+    gameVersion: 'v0.4.7.0', // v[Epoch].[Major].[Minor].[Bug-fix]
     LastSaved: "",
     currentScene: "0_0", // 0_1 for chapter 0, scene 1
     dead : {
