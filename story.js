@@ -328,10 +328,7 @@ function scene_progress(currentSceneText,currentSceneName) {
 }
 function navigateStory(saveData, { direction = 'next', level = 'scene', NextScene = '' }) {
     let [chapter, scene] = saveData.currentScene.split('_').map(Number);
-    if (chapter !== 'Death') {
-        chapter = parseInt(chapter);
-        scene = parseInt(scene);
-    }
+    let [current_chapter, current_scene] = chapter === 'Death' ? [chapter,scene] : [parseInt(chapter), parseInt(scene)]
     // death handling
     if (saveData.dead.isDead) {
         const [safeChapter, safeScene] = saveData.dead.LastSafeScene.split('_').map(Number);
@@ -353,27 +350,27 @@ function navigateStory(saveData, { direction = 'next', level = 'scene', NextScen
         return;
     }
     // SaveScene handling
-    if (saveData.currentScene == saveData.dead.safeScenes?.[saveData.currentScene]) saveData.dead.LastSafeScene = `${chapter}_${scene}`;
+    if (saveData.currentScene == saveData.dead.safeScenes?.[saveData.currentScene]) saveData.dead.LastSafeScene = `${current_chapter}_${current_scene}`;
 
-    let lastChoiceIndex = saveData.Choices_Made[chapter].length - 1;
-    let LastButtonPressed = direction === 'next' ? saveData.Choices_Made[chapter][lastChoiceIndex] : 1;
+    let lastChoiceIndex = saveData.Choices_Made[current_chapter].length - 1;
+    let LastButtonPressed = direction === 'next' ? saveData.Choices_Made[current_chapter][lastChoiceIndex] : 1;
 
 
     const sceneKeys = Object.keys(saveData.scenes)
-        .filter(key => key.startsWith(`${chapter}_`))
+        .filter(key => key.startsWith(`${current_chapter}_`))
         .map(key => parseInt(key.split('_')[1]))
         .sort((a, b) => a - b);
 
-        const sceneData = saveData.scenes[saveData.currentScene];
-        const options = Object.values(saveData.scenes[saveData.currentScene].options)?.find(b => b.ButtonNumber === LastButtonPressed);
-        if ((!Object.values(sceneData?.options)?.find(b => b.ButtonNumber === LastButtonPressed)) && direction !="previous") {
-            console.warn("No valid options available.");
-            return;
-        }
+    const sceneData = saveData.scenes[saveData.currentScene];
+    const options = Object.values(saveData.scenes[saveData.currentScene].options)?.find(b => b.ButtonNumber === LastButtonPressed);
+    if ((!Object.values(sceneData?.options)?.find(b => b.ButtonNumber === LastButtonPressed)) && direction !="previous") {
+        console.warn("No valid options available.");
+        return;
+    }
+    const [next_chapter, next_scene] = (options.next_scene ? options.next_scene.split('_') : [undefined,undefined]);
     if (level === 'scene') {
         const ChapterAcessPoint = saveData.scenes?.[options?.next_scene]?.ChapterAcessPoint;
-        let currentIndex = sceneKeys.indexOf(scene);
-        
+        let currentIndex = sceneKeys.indexOf(current_scene);
         if (direction === 'next') {
             if( options.next_scene === 'DeadEnd') return;
             if (!options.next_scene && options.next_scene !== undefined) {
@@ -382,12 +379,12 @@ function navigateStory(saveData, { direction = 'next', level = 'scene', NextScen
                 return;
             }
             // if next scene is not defined, use the next scene in the chapter
-            options.next_scene = options?.next_scene || `${chapter}_${sceneKeys[currentIndex + 1]}`;
+            options.next_scene = options?.next_scene || `${current_chapter}_${sceneKeys[currentIndex + 1]}`;
             // if next scene gets undefined, set the next chapter in the scene
-            if ( options.next_scene.includes('undefined')) options.next_scene = `${chapter+1}_${0}`;
-            if (options?.next_scene?.split('_')[0] == saveData.currentScene.split('_')[0]) {
+            if ( options.next_scene.includes('undefined')) options.next_scene = `${current_chapter+1}_${0}`;
+            if (next_chapter == saveData.currentScene.split('_')[0]) {
                 // Move to the next scene
-                scene = options.next_scene? options.next_scene.split('_')[1] : sceneKeys[currentIndex + 1];
+                current_scene = options.next_scene? next_scene : sceneKeys[currentIndex + 1];
                 // Perform custom action if specified
                 if (options.action) performSceneAction(options.action, saveData);
             } else {
@@ -399,27 +396,27 @@ function navigateStory(saveData, { direction = 'next', level = 'scene', NextScen
                 if (options.action) performSceneAction(options.action, saveData);
                 return;
             }
-            scene = options.next_scene? options.next_scene.split('_')[1] : sceneKeys[currentIndex - 1];
-            chapter = options.next_scene? options.next_scene.split('_')[0] : chapter;
+            current_scene = options.next_scene? next_scene : sceneKeys[currentIndex - 1];
+            current_chapter = options.next_scene? next_chapter : current_chapter;
             if (options.action) performSceneAction(options.action, saveData);
 
         }
-        saveData.currentScene = `${chapter}_${scene}`;
+        saveData.currentScene = `${current_chapter}_${current_scene}`;
     }
 
     if (level === 'chapter') {
-        if (direction === 'next' && chapter < Object.keys(saveData.scenes).length - 1) {
-            chapter = options.next_scene.split('_')[0] || chapter + 1;
-            scene = options.next_scene.split('_')[1] || 0;
-        } else if (direction === 'previous' && chapter > 0) {
-            chapter = options.next_scene.split('_')[0] || chapter - 1;
-            scene = options.next_scene.split('_')[1] || 0;
+        if (direction === 'next' && current_chapter < Object.keys(saveData.scenes).length - 1) {
+            current_chapter = next_chapter || current_chapter + 1;
+            current_scene = next_scene || 0;
+        } else if (direction === 'previous' && current_chapter > 0) {
+            current_chapter = next_chapter || current_chapter - 1;
+            current_scene = next_scene || 0;
             console.warn('NOT Used anymore')
         } else {
             if (DebugMode) console.log('No more chapters in this direction.');
             return;
         }
-        saveData.currentScene = `${chapter}_${scene}`;
+        saveData.currentScene = `${current_chapter}_${current_scene}`;
     }
 
     clearButtonContent();
@@ -446,6 +443,7 @@ function getItemDiscoveryText(id){
 }
 function characterMaker(saveData, lastChoiceIndex, valueString, valueColor){
     //  Update class value
+    console.log('characterMaker online')
     const characterKeys = {
         2: 'eye_Color',
         3: 'hair_style',
