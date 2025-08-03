@@ -140,41 +140,41 @@
     100% { transform: translate(1px, 1px); }
 }
 /* Position 1  default left */
-[data-position="1"] { 
+[data-position="Left"] { 
     margin: 0;
     padding: 0;
     text-align: center;
 }
-.BtnBlock[data-position="1"] {
+.BtnBlock[data-position="Left"] {
     margin: 0 auto;
 }
-.Choices[data-position="1"] {
+.Choices[data-position="Left"] {
     margin-left: 0em;
 }
-.TextBlock[data-position="1"] {
+.TextBlock[data-position="Left"] {
     text-align: left;
     margin-left: 0em;
     line-height: 1.5;
 }
 /* Position 2 Long Text*/
-[data-position="2"] { 
+[data-position="Centered"] { 
     margin-top: 20em;
     padding: 0;
     line-height: 1.5;
 }
 
-.BtnBlock[data-position="2"] {
+.BtnBlock[data-position="Centered"] {
     margin: 0;
 }
-.Choices[data-position="2"] {
+.Choices[data-position="Centered"] {
     margin-left: 0;
     width: auto;
 }
-.TextBlock[data-position="2"] {
+.TextBlock[data-position="Centered"] {
     text-align: center;
     margin-left: 0;
 }
-.InteractionBlock[data-position="2"] {
+.InteractionBlock[data-position="Centered"] {
     display: flex;
     align-items: baseline;
     text-align: left;

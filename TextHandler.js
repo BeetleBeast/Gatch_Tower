@@ -172,7 +172,7 @@ function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock
  * @param {string} config.MainElementID - CSS selector for target element (e.g., '.TextBlock', '#dialog')
  * @param {Object} config.sceneTexts - Text content and positioning
  * @param {string[]} config.sceneTexts.Lines - Array of text strings to display
- * @param {number} config.sceneTexts.Position - Element positioning (default: 1)
+ * @param {number} config.sceneTexts.Position - Element positioning (default: 'Left')
  * @param {Object} config.options - Animation and styling options
  * 
  * OPTIONS BREAKDOWN:
@@ -212,7 +212,7 @@ function prepareElement(elementId, secondaryElement, SpanTitle, MainElementBlock
  *     MainElementID: '.TextBlock',
  *     sceneTexts: {
  *         Lines: ['Welcome to Gatsha Tower, brave adventurer...'],
- *         Position: 1
+ *         Position: 'Left'
  *     },
  *     options: {
  *         EFFECT: 'type',
@@ -326,7 +326,7 @@ async function typeText({
 
     const {
         Lines = [],
-        Position = 1,
+        Position = 'Left',
     } = sceneTexts;
 
     // Set-up Token & cursor
@@ -582,8 +582,8 @@ async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, cur
  * @param {Object} TokenSettings - Token system for interruption handling
  * @param {Object} TokenSettings.currentTypingToken - Global token tracking object
  * @param {string} TokenSettings.token - Unique token for this animation session
- * @param {number|string} Position - Element positioning value for parent container (default: 1)
- *   - Number: Sets data-position attribute on parent element
+ * @param {number|string} Position - Element positioning value for parent container (default: 'Left')
+ *   - String: Sets data-position attribute on parent element
  *   - 'default': Skips positioning entirely
  * 
  * @returns {Promise<string|undefined>} Resolves to the cached text content when animation completes
@@ -600,7 +600,7 @@ async function FadePrint(
     el, textList, MainElementID,
     TimeSettings = { totalRevealTime : 200} ,
     TokenSettings = { currentTypingToken, token },
-    Position = 1
+    Position = 'Left'
     ) {
     clearCursor();
     const formattedText = formatText(textList);
@@ -627,3 +627,21 @@ async function FadePrint(
     if (previousText) previousText[MainElementID] = textList;
     return previousText?.[MainElementID];
 };
+function CustomText(inputObj, variables = {}, returnType = String) {
+    const result = {};
+    for (const [key, value] of Object.entries(inputObj)) {
+        const match = typeof value === 'string' && value.match(/\$\{(\w+)\}/g);
+        if (match) {
+        let replaced = value;
+        match.forEach(m => {
+            const varKey = m.slice(2, -1); // remove ${ and }
+            const val = variables[varKey];
+            replaced = replaced.replace(m, val !== undefined ? val : '');
+        });
+        result[key] = (typeof returnType == Number) ? Number(replaced) : replaced;
+        } else {
+        result[key] = value;
+        }
+    }
+    return result;
+}

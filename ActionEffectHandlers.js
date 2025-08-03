@@ -36,6 +36,27 @@ const ActionHandlers = {
             damageAndDeath(value, text, instaKill);
         }
     },
+    QTE: ({ amountQTE, duration, QTE_settings, variables }) => {
+        const CustomBluePrintPosition = (QTE_blueprint) => QTEBlueprint(QTE_blueprint);
+        const CustomAmountorDuration = (amount, dur) => {
+            let int_amountQTE, int_duration;
+            if (typeof amount === 'string') int_amountQTE = CustomText({ value: amount }, variables, Number).value;
+            else if (typeof amount === 'number') int_amountQTE = parseInt(amount);
+            if (typeof dur === 'string') int_duration = CustomText({ value: dur }, variables).value;
+            else if (typeof dur === 'number') int_duration = parseInt(dur);
+            return [int_amountQTE, int_duration];
+        }
+        const [ int_amountQTE, int_duration ] = CustomAmountorDuration(amountQTE, duration);
+
+        if (QTE_settings?.hasBlueprint) {
+            runQTESequence(int_amountQTE, int_duration, QTE_settings.Input, QTE_settings.countDown, CustomBluePrintPosition(QTE_settings.blueprint));
+        } else if (!QTE_settings.hasBlueprint && QTE_settings.CustomPosition) {
+            runQTESequence(int_amountQTE, int_duration, QTE_settings.Input, QTE_settings.countDown, QTE_settings.CustomPosition);
+
+        } else {
+            runQTESequence(int_amountQTE, int_duration, QTE_settings.Input, QTE_settings.countDown);
+        }
+    },
 };
 
 const effectHandlers = {
@@ -91,3 +112,17 @@ const effectHandlers = {
     Fatigue : () => {},
     MAXeffect : () => {}
 };
+
+function Action(saveData, action, variables = {}) {
+    if (action && action.length > 0) {
+        action.forEach((actionItem) => {
+            const handler = ActionHandlers[actionItem.type];
+            if (handler) {
+                actionItem.variables = variables;
+                handler(actionItem);
+            } else {
+                console.warn("Unknown action: " + actionItem.action);
+            }
+        });
+    }
+}

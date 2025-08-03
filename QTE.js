@@ -207,7 +207,103 @@ async function runQTESequence(amountQTE = 1, duration = 2000, Input = 'Space', c
         }
     }
 }
-
+const Blueprint = {
+    QTE_1: [
+        {
+            DefaultbarWidth : 500,
+            DefaultbarHeight : 30,
+            qtewrapper : {
+                width : '100%',
+                textAlign : 'center',
+                marginTop : '100px',
+                position: 'absolute',
+                // left: '100',
+                top: '200',
+                right: '150',
+                // bottom: '500',
+                transform: 'rotate(45deg)',
+            },
+            bar : {
+                position : 'relative',
+                width : '500px',
+                height : '30px',
+                backgroundColor : '#333',
+                margin : '0 auto',
+                borderRadius : '15px',
+                overflow : 'hidden',
+            },
+            perfectZone : {
+                position : 'absolute',
+                left : '250px',
+                width : '100px',
+                height : '100%',
+                backgroundColor : 'green',
+                opacity : '0.6',
+            },
+            successZone : {
+                position : 'absolute',
+                left : '275px',
+                width : '50px',
+                height : '100%',
+                backgroundColor : 'lime',
+                opacity : 1,
+            },
+            marker : {
+                position : 'absolute',
+                width : '10px',
+                height : '100%',
+                backgroundColor : 'white',
+                left : '0px',
+                transition : 'none',
+            },
+            resultText : {
+                fontSize : '24px',
+                marginTop : '20px',
+            },
+        },{
+            DefaultbarWidth : 500,
+            DefaultbarHeight : 30,
+            qtewrapper : {
+                width : '100%',
+                textAlign : 'center',
+                marginTop : '100px',
+                position: 'absolute',
+                // left: '100',
+                top: '200',
+                right: '150',
+                // bottom: '500',
+                transform: 'rotate(60deg)',
+            },
+        },{
+            DefaultbarWidth : 500,
+            DefaultbarHeight : 30,
+            qtewrapper : {
+                width : '100%',
+                textAlign : 'center',
+                marginTop : '100px',
+                position: 'absolute',
+                // left: '100',
+                top: '200',
+                right: '150',
+                // bottom: '500',
+                transform: 'rotate(-60deg)',
+            },
+        }
+    ]
+}
+function QTEBlueprint(QTE_blueprint){
+    // TODO: Implement the QTE blueprint logic
+    // This function should return a position object or style object based on the QTE_blueprint
+    switch (QTE_blueprint) {
+        case 'QTE_1':
+            return Blueprint.QTE_1;
+        case 'QTE_2':
+            break;
+        default:
+            console.warn(`Unknown QTE blueprint: ${QTE_blueprint}`);
+            return Blueprint.QTE_1; // Fallback to default blueprint
+    }
+}
 // Example usage of runQTESequence function
 /*
 runQTESequence(3, 2000, 'Space', 3, [{

@@ -15,10 +15,11 @@ function Render_Scene(saveData, isNew = false) {
     
     clearText();
     clearButtonText();
-
+    let variables = {};
+    if (saveData.scenes[saveData.currentScene].hasVariables) variables = calculateVariable(saveData.scenes[saveData.currentScene].variables);
     if ( !tryRandomEncounter(true) ) {
-        populateButton( !saveData.CurrentDebuff_Effects.filter(effect => effect === 'confused')); // 1. Button's and teir Visibility, Text's Visibility, Item's Visibility and actions, 
-        populateText(saveData); // 2. Populate text in main section
+        populateButton( !saveData.CurrentDebuff_Effects.filter(effect => effect === 'confused'), variables); // 1. Button's and teir Visibility, Text's Visibility, Item's Visibility and actions, 
+        populateText(saveData, variables); // 2. Populate text in main section
     }
     // --- UI Rendering Side-Menu ---
     // GameCicle // 3. day & night cicle
@@ -30,6 +31,10 @@ function Render_Scene(saveData, isNew = false) {
     // --- UI Rendering Inventory ---
     populateInventory(saveData, 1); // 8. Inventory ( only first page )
     //DisplayDebuffTextWithColors(saveData,)
+
+    // --- action rendering ---
+    Action(saveData, saveData.scenes[saveData.currentScene].action, variables);
+
     return saveData;
 }
 function impromptuSave(saveData) {
@@ -120,7 +125,7 @@ function manageHiddenInfo({
                     MainElementID : '.TextBlock',
                     sceneTexts: { 
                         Lines: Alt_Text_Object['Hidden'],
-                        Position: Alt_Text_Object['Position'] || 1 // default to center if not specified
+                        Position: Alt_Text_Object['Position'] || 'Left' // default to center if not specified
                     },
                     options: {
                         printImmediately: true,
@@ -285,11 +290,20 @@ function addItemToInventory(saveData, itemId, newQuantity = 1) {
         console.error(`Item with id ${itemId} not found in Items.`);
     }
 }
-function populateText(saveData) {
+function populateText(saveData, variables = {}) {
     //  populate text in main section
     const current_title_progress = saveData.currentScene.split('_')[0] || 0;
     const currentScene = saveData.scenes[saveData.currentScene];
-    const currentSceneText = currentScene.sceneTexts;
+    let currentSceneText;
+    if ( variables) {
+        let temp = currentScene.sceneTexts.Lines.map(line => {
+            const remplaceOBJ = CustomText({ text: line},variables);
+            return remplaceOBJ.text;
+        });
+        currentScene.sceneTexts.Lines = temp;
+    }
+    currentSceneText = currentScene.sceneTexts;
+
     const currentSceneName = currentScene.sceneName;
     const currentTitle = currentScene.chapterTitle;
     const currentSectionTitle = currentScene.ButtonTitle;
@@ -315,7 +329,7 @@ function scene_progress(currentSceneText,currentSceneName) {
         MainElementID : '.TextBlock',
         sceneTexts: {
             Lines: currentSceneText.Lines,
-            Position: currentSceneText.Position || 1 // default to Left if not specified
+            Position: currentSceneText.Position || 'Left' // default to Left if not specified
         },
         options: {
             speed : 35,
@@ -475,7 +489,7 @@ function characterMaker(saveData, lastChoiceIndex, valueString, valueColor){
         MainElementID: '.Side-Menu2',
         sceneTexts: { 
             Lines: charachterDefining,
-            Position: 2 // default to center
+            Position: 'Centered' // default to center
         },
         options: {
             Coloring : { Onlysnipet : true, Color : valueCOLOR, snipet : valueSTRING },
@@ -630,3 +644,111 @@ function performSceneAction(actionObj, saveData) {
             //    10 : { 1 : "Leave the area undisturbed", 2 : "Sit amongst the mushrooms and observe.", 3 : "Reach out to touch the mushrooms.", 4 : "Inhale deeply, breathing in the aroma.", 5 : "Feel the texture of the ground beneath your feet.", 6 : "Listen for any sounds emanating from the grove."},
             
  */
+
+function pickWeightedGroup(groups) {
+    const totalWeight = groups.reduce((sum, g) => sum + g.weight, 0);
+    const rand = Math.random() * totalWeight;
+    let cumulative = 0;
+    for (const group of groups) {
+        cumulative += group.weight;
+        if (rand < cumulative) return group;
+    }
+    return groups[0]; // fallback
+}
+
+function getRandomFromArray(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randomInRange([min, max]) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function deepGet(obj, path) {
+    return path.split('/').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
+}
+
+function calculateVariable(variables) {
+    if (!variables) return {};
+    const isRandom = variables.IsRandom;
+    const result = {};
+    const selectedGroups = {};
+    const resolved = new Set();
+
+    function resolveVariable(key) {
+        if (resolved.has(key)) return; // already done
+        const variable = variables[key];
+        if (!variable) return;
+
+        // Dependency case
+        if (variable.Dependency) {
+        const [depVar, ...pathParts] = variable.Dependency.split('/');
+        if (!resolved.has(depVar)) resolveVariable(depVar); // make sure dependency is resolved
+
+        const group = selectedGroups[depVar];
+        const value = deepGet(group, pathParts.join('/'));
+
+        if (value !== undefined) {
+            result[key] = Array.isArray(value) ? randomInRange(value) : value;
+        } else {
+            result[key] = variable.default ?? null;
+        }
+        resolved.add(key);
+        return;
+        }
+
+        // Random non-dependent value
+        const values = variable.values;
+        if (isRandom && Array.isArray(values)) {
+        if (typeof values[0] === "object" && values[0].items) {
+            const group = pickWeightedGroup(values);
+            selectedGroups[key] = group;
+            result[key] = getRandomFromArray(group.items);
+        } else {
+            result[key] = getRandomFromArray(values);
+        }
+        } else {
+        result[key] = variable.default ?? null;
+        }
+
+        resolved.add(key);
+    }
+
+    for (const key of Object.keys(variables)) {
+        if (key !== "IsRandom") resolveVariable(key);
+    }
+
+    return result;
+}
+/*
+    variables = {
+        IsRandom: true,
+        NUMBERofENEMY: {
+            Dependency: 'TYPEofENEMY/typeData/amountRange',
+            default: 1
+        },
+        TYPEofENEMY: {
+            values: [
+            {
+                group: "Common",
+                weight: 60,
+                items: ["Goblin", "Wolf"],
+                amountRange: [2, 5]
+            },
+            {
+                group: "Uncommon",
+                weight: 30,
+                items: ["Bandit", "baby Orc"],
+                amountRange: [1, 3]
+            },
+            {
+                group: "Rare",
+                weight: 10,
+                items: ["young Orc"],
+                amountRange: [1, 1]
+            }
+            ],
+            default: "Goblin"
+        }
+    };
+*/

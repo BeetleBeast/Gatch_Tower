@@ -107,9 +107,14 @@
 ## ✅ TODO List
 
 - [ ] remove colors i.e. make it more grey scale
-- [ ] re-size title ( to big )
+- [ ] do something with the QTE response
+- [ ] {
+    make a fight scene when in QTE mode a.e. when it is counting down and let
+    it dissapear when the results are in
+  }
 - [ ] make navigateStory actually usable instead of being a pain in the ass.
 
+- [ ] implement a button to open Inventory ( I )
 - [ ] implement actionMap.
 
 - [ ] Implement multiple text styles and save them.

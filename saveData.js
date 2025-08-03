@@ -2,7 +2,7 @@
 //temp
 let saveData = {
     name: "Main",
-    gameVersion: 'v0.4.7.0', // v[Epoch].[Major].[Minor].[Bug-fix]
+    gameVersion: 'v0.4.9.0', // v[Epoch].[Major].[Minor].[Bug-fix]
     LastSaved: "",
     currentScene: "0_0", // 0_1 for chapter 0, scene 1
     dead : {
@@ -21,7 +21,7 @@ let saveData = {
             sceneName: "DeathScreen0",
             sceneTexts: {
                 Lines: [ "You died because "],
-                Position: 1, // default to Left
+                Position: 'Left',
             },
             ALT_Text: null,
             sceneID: -1,
@@ -40,7 +40,7 @@ let saveData = {
             sceneName: "Start",
             sceneTexts: {
                 Lines: [ "You wake up in a dark cave, the damp air clinging to your skin as you grope for any semblance of direction. The sound of distant rumbling echoes through the cavern, urging you to explore. With each step, the path twists and turns, revealing ancient ruins and forgotten passages. As you navigate this mysterious labyrinth, the weight of uncertainty presses upon you, yet a flicker of curiosity ignites within."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 0,
@@ -55,7 +55,7 @@ let saveData = {
             sceneName: "charachterDefining0",
             sceneTexts: {
                 Lines: [ "Gazing into the rippling surface of a subterranean pool, you catch a glimpse of your own reflection amidst the murky depths. The dim light barely illuminates your features, leaving much to the imagination. Who is this figure staring back at you? The lines of gender blur in the wavering distortion, leaving only a sense of mystery in its wake..."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 1,
@@ -71,7 +71,7 @@ let saveData = {
             sceneName: "charachterDefining1",
             sceneTexts: {
                 Lines: [ "In the dim cavern, Your eyes glimmer like precious gems, reflecting the faint light with an entrancing allure. With each glance, you discern a depth of color, ranging from the azure depths of a tranquil ocean to the earthy warmth of sunlit forests."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 2,
@@ -97,7 +97,7 @@ let saveData = {
             sceneName: "charachterDefining2",
             sceneTexts: {
                 Lines: [ "Amidst the shadows, Your hair dances in the gentle breeze, its texture hinting at a story of its own. Whether cascading in ebony rivers, catching the light in shimmering silver strands, or ablaze with the fiery hues of a setting sun, each tress adds to Your mystique"],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 3,
@@ -123,7 +123,7 @@ let saveData = {
             sceneName: "charachterDefining3",
             sceneTexts: {
                 Lines: [ "Your skin, bathed in the flickering light, revealed a complexion that seemed to hold stories untold. As you observe closely, you notice nuances of color, from the palest porcelain to the richest ebony, each hue adding depth to Your enigmatic presence."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 4,
@@ -149,7 +149,7 @@ let saveData = {
             sceneName: "charachterDefining4",
             sceneTexts: {
                 Lines: [ "Your stature, silhouetted against the cavern walls, commands attention with a presence that is both formidable and intriguing. As you study them further, you discern the subtle contours of Your frame, which may lean towards a delicate grace or exude a powerful strength, leaving an indelible impression in the depths of the cavern."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 5,
@@ -175,7 +175,7 @@ let saveData = {
             sceneName: "charachterDefining5",
             sceneTexts: {
                 Lines: [ "Your attire, a reflection of your journey through the rugged terrain, appears weathered and worn, bearing the marks of your passage through the cave's unforgiving landscape. You notice that your clothing carries either the rugged authenticity of a seasoned traveler, marked by dirt and grime, or the pristine cleanliness that hints at your recent arrival, untouched by the trials of the cavern."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             ButtonTitle: "",
@@ -195,7 +195,7 @@ let saveData = {
             sceneName: "charachterDefining6",
             sceneTexts: {
                 Lines: [ "Gazing into the rippling waters of the cave's puddle, the figure contemplates their gender, recognizing it as a deeply personal truth. Whether they perceive themselves as aligning with the feminine or masculine, their identity crystallizes as a reflection of their inner self, not merely a narrative waiting to be written."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 7,
@@ -215,7 +215,7 @@ let saveData = {
             sceneName: "charachterDefining7",
             sceneTexts: {
                 Lines: [ "As the light begins to dim within the cavern, the figure gazes into the fading reflections of the puddle, contemplating their essence. In the obscurity, their species becomes shrouded in uncertainty, a mysterious aspect of their being that defies classification. Their identity transcends the confines of known races, leaving their true nature obscured in the fading light."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 8,
@@ -230,7 +230,7 @@ let saveData = {
             sceneName: "seekExit",
             sceneTexts: {
                 Lines: [ "Navigating the damp walls of the cavern, you seek an exit, fingers tracing the rough texture in search of escape. With each step, your determination grows, fueled by the desire to break free from the confines of this underground labyrinth."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 9,
@@ -247,7 +247,7 @@ let saveData = {
             ChapterAcessPoint: true,
             sceneTexts: {
                 Lines: [ "As you wander through the cave's labyrinth like passages, you encounter a variety of pathways, each offering its own unique allure. One path is adorned with vibrant green moss, another lined with glittering crystals, while another disappears into shadowed depths. Further along, you find yourself following the course of an underground stream, and eventually, you stumble upon a cavern illuminated by bioluminescent fungi. Each pathway beckons with its own mysteries, inviting you to explore deeper into the heart of the cave's secrets."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 10,
@@ -267,7 +267,7 @@ let saveData = {
             sceneName: "The Mossy Passage",
             sceneTexts: {
                 Lines: [ "The current area is enveloped in a verdant embrace, with lush green moss covering every surface. The air is cool and fresh, carrying the earthy scent of vegetation. Shafts of dim light filter through the canopy above, casting dappled patterns on the moss-covered ground."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 11,
@@ -283,7 +283,7 @@ let saveData = {
             sceneName: "The Crystal Tunnel",
             sceneTexts: {
                 Lines: [ "In this area, the walls sparkle with the mesmerizing glow of crystals, illuminating the surroundings with a soft, ethereal light. The air feels charged with energy, and the ground beneath your feet shimmers with crystalline formations. Every step echoes softly in the cavernous space, creating a sense of wonder and awe."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 12,
@@ -299,7 +299,7 @@ let saveData = {
             sceneName: "The Shadowed Corridor",
             sceneTexts: {
                 Lines: [ "As you navigate this area, darkness presses in from all sides, enveloping you in an oppressive gloom. The air feels heavy and stifling, and the sound of your own footsteps echoes eerily in the silence. Shapes shift and morph in the shadows, playing tricks on your senses and heightening your sense of unease."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 13,
@@ -315,7 +315,7 @@ let saveData = {
             sceneName: "The Subterranean Stream",
             sceneTexts: {
                 Lines: [ "Here, the area is defined by the presence of a crystal-clear stream that meanders through the cavern. The sound of rushing water fills the air, accompanied by the gentle drip of stalactites above. The walls are slick with moisture, and patches of bioluminescent fungi cast a soft, eerie glow on the surroundings."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 14,
@@ -331,7 +331,7 @@ let saveData = {
             sceneName: "The Fungal Grove",
             sceneTexts: {
                 Lines: [ "In this area, the cavern is alive with the soft glow of bioluminescent fungi, casting an otherworldly light on the surroundings. The air is thick with the earthy scent of mushrooms, and strange shapes loom in the shadows. The ground beneath your feet is spongy with fungal growth, adding to the surreal atmosphere of the grove."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Text: null,
             sceneID: 15,
@@ -347,14 +347,14 @@ let saveData = {
             sceneName: "Mossy1",
             sceneTexts: {
                 Lines: [ "As you traverse the mossy passage, you stumble upon a hidden alcove where a delicate flower blooms amidst the verdant foliage. Its petals shimmer with an otherworldly glow, emitting a faint, melodic hum. The flower seems to beckon to you, offering a sense of peace and serenity amidst the chaos of the cave."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: "Finding an exit?",
             ALT_Text: {
                 default : "As you traverse the mossy passage, you stumble upon a hidden alcove where a delicate flower blooms amidst the verdant foliage. Its petals shimmer with an otherworldly glow, emitting a faint, melodic hum. The flower seems to beckon to you, offering a sense of peace and serenity amidst the chaos of the cave.",
                 Hidden : "~You have discovered a hidden alcove nestled within the mossy passage, its entrance partially obscured by verdant foliage.",
                 Confusion : "",
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             sceneID: 16,
             ButtonTitle: "What shall you do",
@@ -425,7 +425,7 @@ let saveData = {
             sceneName: "Crystal1",
             sceneTexts: {
                 Lines: [ "In the heart of the crystal tunnel, you discover a shimmering pool of water, its surface reflecting the myriad hues of the surrounding crystals. As you approach, you notice a faint figure standing at the water's edge, its form obscured by the dancing light."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -453,7 +453,7 @@ let saveData = {
             sceneName: "Shadowed1",
             sceneTexts: {
                 Lines: [ "Within the shadowed corridor, you come across a series of ancient runes etched into the cavern walls, their meanings lost to time. As you study the intricate symbols, you sense a faint stirring in the darkness, as if the very shadows themselves are alive with unseen energy."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -474,7 +474,7 @@ let saveData = {
             sceneName: "Subterranean1",
             sceneTexts: {
                 Lines: [ "Along the banks of the subterranean stream, you encounter a family of glowing fish, their scales shimmering with iridescent light as they dart through the crystal-clear waters. They seem to be communicating with one another through a series of intricate patterns and movements, creating a mesmerizing display of aquatic ballet."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -495,7 +495,7 @@ let saveData = {
             sceneName: "Fungal1",
             sceneTexts: {
                 Lines: [ "Deep within the fungal grove, you stumble upon a cluster of luminous mushrooms, their caps pulsating with a soft, ethereal light. As you approach, you feel a sense of peace wash over you, as if the mushrooms are emitting a calming energy that soothes your weary soul."],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -516,7 +516,7 @@ let saveData = {
             sceneName: "Mossy2",
             sceneTexts: {
                 Lines: [ "placeholder"],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -533,7 +533,7 @@ let saveData = {
             sceneName: "Mossy1_hidden_enclove",
             sceneTexts: {
                 Lines: [ "You have found a hidden alcove tucked away within the mossy passage, concealed by lush greenery. Inside, the alcove opens into a small chamber adorned with shimmering crystals that reflect the dim light filtering through cracks in the ceiling. The air is cool and refreshing, carrying a faint hint of earthiness and mystery. Amidst the crystals, you spot a glimmering object half-buried in the moss—a small, intricately carved wooden box"],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -563,7 +563,7 @@ let saveData = {
             ALT_options: {},
         },
         "2_0": { // start of the real game 
-            chapterTitle: "Lost in the forest",
+            chapterTitle: "Cavern",
             sceneName: "DarkCavern",
             ChapterAcessPoint: true,
             sceneTexts: {
@@ -572,7 +572,7 @@ let saveData = {
                     `~You see paths leading to dark corridors`,
                     `~You hear a strange sound comming from the depths`,
                 ],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: {
@@ -580,7 +580,7 @@ let saveData = {
                     '~You hear a distant unclear sound comming from the light',
                     '~maybe a bird?'
                 ],
-                Position: 1, // center
+                Position: 'Left',
                 Coloring: {
                     Color: ["var(--GreyedOut)"],
                     duration: 0,
@@ -613,14 +613,14 @@ let saveData = {
             ALT_options: {},
         },
         "2_1": {
-            chapterTitle: "Lost in the forest",
+            chapterTitle: "Cavern",
             sceneName: "CavernClimbing",
             sceneTexts: {
                 Lines: [
                     `Deeper in the cave, the air grew warmer, the silence broken by a distant sound.`,
                     `~Light flickered through narrow cracks, guiding the way.`,
                 ],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
@@ -632,21 +632,130 @@ let saveData = {
             ALT_options: {},
         },
         "2_2": {
-            chapterTitle: "Lost in the forest",
+            chapterTitle: "Cavern",
             sceneName: "FistEnemySpotted",
             sceneTexts: {
                 Lines: [
                     `After an hour of crawling through tight, crumbling passages, you emerged into a vast open cavern.`,
-                    `~Fresh air rushed in, just 200 meters ahead blinding light marked the exit.`,
+                    `~Fresh air rushes in, just 200 meters ahead a blinding light marked the exit.`,
                 ],
-                Position: '1' // AKA default ( Left )
+                Position: 'Left'
             },
             ALT_Name: null,
             ALT_Text: null,
             sceneID: 24,
             ButtonTitle: "",
             options: {
-                1: {ButtonNumber: 2, ButtonText: "wait & Observe", next_scene: false, duration: '0:05'},
+                1: {ButtonNumber: 2, ButtonText: "wait & Observe", next_scene: "2_3", duration: '0:05'},
+                2: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: "2_4"}
+            },
+            ALT_options: {},
+        },
+        "2_3": {
+            chapterTitle: "Cavern",
+            sceneName: "Enemy reconisance",
+            sceneTexts: {
+                Lines: [
+                    'You observe your suroundings and find ${NUMBERofENEMY} ${TYPEofENEMY}.',
+                    `~They dont notice your precence.`,
+                ],
+                Position: 'Left',
+                Coloring: {
+                    Color: ["var(--GreyedOut)"],
+                    duration: 0,
+                }
+            },
+            ALT_Name: null,
+            ALT_Text: null,
+            sceneID: 24,
+            ButtonTitle: "",
+            options: {
+                1: {ButtonNumber: 2, ButtonText: "Fight", next_scene: false, duration: '0:05'},
+                2: {ButtonNumber: 3, ButtonText: "Run past | increased chance of being caught", next_scene: false, duration: '0:01'},
+                3: {ButtonNumber: 3, ButtonText: "sneak past | decreased chance of being caught", next_scene: false, duration: '1:00'},
+                4: {ButtonNumber: 3, ButtonText: "??", next_scene: false}
+            },
+            ALT_options: {},
+        },
+        "2_4": {
+            chapterTitle: "Cavern",
+            sceneName: "enemy rush",
+            sceneTexts: {
+                Lines: [
+                    'You are caught by ${NUMBERofENEMY} ${TYPEofENEMY}.',
+                ],
+                Position: 'Left'
+            },
+            ALT_Name: null,
+            ALT_Text: null,
+            hasVariables: true,
+            variables: {
+                IsRandom: true,
+                ENEMYSPEED: {
+                    Dependency: 'TYPEofENEMY/typeData/speedRange',
+                    default: 2000,
+                },
+                DROPRATE: {
+                    Dependency: 'TYPEofENEMY/typeData/dropRate',
+                    default: 0.1
+                },
+                NUMBERofENEMY: {
+                    Dependency: 'TYPEofENEMY/typeData/amountRange',
+                    default: 1
+                },
+                TYPEofENEMY: {
+                    values: [
+                    {
+                        group: "Common",
+                        weight: 60,
+                        items: ["Goblin", "slime"],
+                        typeData: {
+                        dropRate: 0.3,
+                        amountRange: [2, 5],
+                        speedRange: [2000, 3000]
+                        }
+                    },
+                    {
+                        group: "Uncommon",
+                        weight: 30,
+                        items: ["Bandit", "Wolf"],
+                        typeData: {
+                        dropRate: 0.15,
+                        amountRange: [1, 3],
+                        speedRange: [1200, 2000]
+                        }
+                    },
+                    {
+                        group: "Rare",
+                        weight: 10,
+                        items: ["young Orc"],
+                        typeData: {
+                        dropRate: 0.01,
+                        amountRange: [1, 1],
+                        speedRange: [800, 1000]
+                        }
+                    }
+                    ],
+                    default: "Goblin"
+                }
+            },
+            action : [
+                { 
+                    type: 'QTE',
+                    amountQTE: '${NUMBERofENEMY}',
+                    duration: '${ENEMYSPEED}',
+                    QTE_settings: {
+                        hasBlueprint: true,
+                        blueprint: 'QTE_1',
+                        Input: 'space',
+                        countDown: 3
+                    }
+                }
+            ],
+            sceneID: 24,
+            ButtonTitle: "",
+            options: {
+                1: {ButtonNumber: 2, ButtonText: "pick up drop", next_scene: false, duration: '0:05'},
                 2: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: false}
             },
             ALT_options: {},
@@ -671,7 +780,7 @@ let saveData = {
                     'A dev has captured you and is about to question you!',
                     '~What will you do?',
                 ],
-                Position: 1, // center
+                Position: 'Left',
                 Coloring: {
                     Color: ['blue'],
                     duration: 1,
@@ -696,7 +805,7 @@ let saveData = {
                     'A dev offers you a ride to the worlds edge!',
                     '~What will you do?',
                 ],
-                Position: 1, // center
+                Position: 'Left',
                 Coloring: {
                     Color: ['yellow'],
                     duration: 1,
@@ -1153,6 +1262,14 @@ let saveData = {
         { id: 8 , Name : "white gemstone", DescriptionText : '', Discoverytext : "You have discovered a white gemstone, a rare item that can be used for various purposes.", quantity : 0, color : "Blue", quality : "rare"},
         { id: 9 , Name : "dark gemstone", DescriptionText : '', Discoverytext : "You have discovered a dark gemstone, a rare item that can be used for various purposes.", quantity : 0, color : "Blue", quality : "rare"},
         { id: 10 , Name : "purple gemstone", DescriptionText : '', Discoverytext : "You have discovered a purple gemstone, an epic item that can be used for various purposes.", quantity : 0, color : "Purple", quality : "epic"},
+
+        { id: 11 , Name : "goblin blood", DescriptionText : '', Discoverytext : "You have discovered a purple gemstone, an epic item that can be used for various purposes.", quantity : 0, color : "Grey", quality : "common"},
+        { id: 12 , Name : "slime core", DescriptionText : '', Discoverytext : "You have discovered a purple gemstone, an epic item that can be used for various purposes.", quantity : 0, color : "Grey", quality : "common"},
+
+        { id: 13 , Name : "knife", DescriptionText : '', Discoverytext : "You have discovered a purple gemstone, an epic item that can be used for various purposes.", quantity : 0, color : "Green", quality : "uncommon"},
+        { id: 14 , Name : "wolf hide", DescriptionText : '', Discoverytext : "You have discovered a purple gemstone, an epic item that can be used for various purposes.", quantity : 0, color : "Green", quality : "uncommon"},
+
+        { id: 15 , Name : "orc husk", DescriptionText : '', Discoverytext : "You have discovered a orc husk, an rare item that can be used for various purposes.", quantity : 0, color : "Blue", quality : "rare"},
     ],
     Inventory : [
         //  ID number : {"Name" : Name of item ,"quantity" : 0,"quality" : "common"}
