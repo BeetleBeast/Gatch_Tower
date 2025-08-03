@@ -667,13 +667,64 @@ let saveData = {
             },
             ALT_Name: null,
             ALT_Text: null,
+            hasVariables: true,
+            variables: {
+                IsRandom: true,
+                ENEMYSPEED: {
+                    Dependency: 'TYPEofENEMY/typeData/speedRange',
+                    default: 2000,
+                },
+                DROPRATE: {
+                    Dependency: 'TYPEofENEMY/typeData/dropRate',
+                    default: 0.1
+                },
+                NUMBERofENEMY: {
+                    Dependency: 'TYPEofENEMY/typeData/amountRange',
+                    default: 1
+                },
+                TYPEofENEMY: {
+                    values: [
+                    {
+                        group: "Common",
+                        weight: 60,
+                        items: ["Goblin", "slime"],
+                        typeData: {
+                        dropRate: 0.3,
+                        amountRange: [2, 5],
+                        speedRange: [2000, 3000]
+                        }
+                    },
+                    {
+                        group: "Uncommon",
+                        weight: 30,
+                        items: ["Bandit", "Wolf"],
+                        typeData: {
+                        dropRate: 0.15,
+                        amountRange: [1, 3],
+                        speedRange: [1200, 2000]
+                        }
+                    },
+                    {
+                        group: "Rare",
+                        weight: 10,
+                        items: ["young Orc"],
+                        typeData: {
+                        dropRate: 0.01,
+                        amountRange: [1, 1],
+                        speedRange: [800, 1000]
+                        }
+                    }
+                    ],
+                    default: "Goblin"
+                }
+            },
             sceneID: 24,
             ButtonTitle: "",
             options: {
-                1: {ButtonNumber: 2, ButtonText: "Fight", next_scene: false, duration: '0:05'},
+                1: {ButtonNumber: 2, ButtonText: "Fight | increase critical hit", next_scene: false, duration: '0:05'},
                 2: {ButtonNumber: 3, ButtonText: "Run past | increased chance of being caught", next_scene: false, duration: '0:01'},
                 3: {ButtonNumber: 3, ButtonText: "sneak past | decreased chance of being caught", next_scene: false, duration: '1:00'},
-                4: {ButtonNumber: 3, ButtonText: "??", next_scene: false}
+                // 4: {ButtonNumber: 3, ButtonText: "??", next_scene: false}
             },
             ALT_options: {},
         },
@@ -757,6 +808,30 @@ let saveData = {
             options: {
                 1: {ButtonNumber: 2, ButtonText: "pick up drop", next_scene: false, duration: '0:05'},
                 2: {ButtonNumber: 3, ButtonText: "run to the exit", next_scene: false}
+            },
+            ALT_options: {},
+        },
+        "2_5": {
+            chapterTitle: "??",
+            sceneName: "ousideCavern",
+            sceneTexts: {
+                Lines: [
+                    `With your ememy's behind you, you rush towards the end of the cavern.`,
+                    `~Blinded by the light, you smell flowers that haven't been cultivated or trampeled on what seems like a century.`,
+                    `~You feel the warmth of the sun on your skin, a sensation you haven't felt in what seems like an eternity.`,
+                    `~there does't seem to be any danger here, just a peaceful meadow.`,
+                ],
+                Position: 'Left'
+            },
+            ALT_Name: null,
+            ALT_Text: null,
+            sceneID: 24,
+            ButtonTitle: "",
+            options: {
+                1: {ButtonNumber: 2, ButtonText: "climb the nearest tree", next_scene: false, duration: '0:20'},
+                2: {ButtonNumber: 3, ButtonText: "walk in a direction", next_scene: false},
+                3: {ButtonNumber: 3, ButtonText: "calculate the time | depends on knowledge", next_scene: false},
+                // 4: {ButtonNumber: 3, ButtonText: "walk in ${direction}", next_scene: false} // depends on knowledge
             },
             ALT_options: {},
         },
