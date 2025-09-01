@@ -175,9 +175,11 @@ async function runQTESequence(amountQTE = 1, duration = 2000, Input = 'Space', c
         if (DebugMode) console.log(`Starting QTE sequence in ${countDown} seconds...`);
         for (let i = countDown; i > 0; i--) {
             if (DebugMode) console.log(i);
+            document.querySelector(".main").textContent = `Countdown ${i}`;
             await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
         }
     }
+    document.querySelector(".main").textContent = ``;
     // Start the QTE sequence
     if (DebugMode) console.log("Starting QTE sequence with " + amountQTE + " QTEs.");
     for (let i = 0; i < amountQTE; i++) {
