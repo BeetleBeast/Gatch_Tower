@@ -330,71 +330,69 @@ async function typeText({
     } = sceneTexts;
 
     // Set-up Token & cursor
-    const token = GenRateToken();
-    currentTypingToken[MainElementID] = token;
+    const TokenSettings = { 
+        currentTypingToken: {[MainElementID]: ''},
+        token: GenRateToken(),
+        elementId: MainElementID
+    };
+    TokenSettings.currentTypingToken[MainElementID] = TokenSettings.token;
+
     clearCursor();
     let cursor;
-    let TokenSettings = { currentTypingToken, token, elementId: MainElementID};
+
     // Set-up element
     const StringText = typeof Lines === "object" ? Object.values(Lines) : [Lines];
-    const el = prepareElement(MainElementID, secondaryElement, secondaryElementTitle, MainElementBlock,StringText);
+    const Elements = {
+        el: prepareElement(MainElementID, secondaryElement, secondaryElementTitle, MainElementBlock,StringText),
+        MainElementID,
+    };
     // Set-up flag
-    isCurrentlyPrinting[MainElementID] = true;
+    isCurrentlyPrinting[Elements.MainElementID] = true;
     // Print text
-    if (el) printText({
-        el, StringText, MainElementID,
-        TokenSettings, token, currentTypingToken,
-        previousText, cursor,
-        Position,
-        printImmediately, replace, Coloring, defaultColor, TimeSettings, EFFECT, MainElementBlock
-    });
-}
-// utility: printText
-async function printText({
-    el, StringText, MainElementID,
-    TokenSettings, token, currentTypingToken,
-    previousText, cursor,
-    Position,
-    printImmediately, replace, Coloring, defaultColor, TimeSettings, EFFECT, MainElementBlock
-    }) {
-    for (let i=0;i< StringText.length;i++){
-        const textList = StringText[i];
-        if (textList.length == 0) continue;
-        let DeltaEl;
-        if (el[i]) {
-            DeltaEl = el[i];
-        } else if (MainElementBlock) {
-            DeltaEl = document.createElement('span');
-            DeltaEl.classList.add('TextBlock', `TextBlock_${i}`);
-            el.appendChild(DeltaEl);
-        } else {
-            DeltaEl = el;
-            if( replace ) el.innerHTML = '';
-            // clearSpan(DeltaEl); // Clear the content for replacement
+    if (Elements.el) {
+        for (let i=0;i< StringText.length;i++) {
+            const textList = StringText[i];
+            if (textList.length == 0) continue;
+            Elements.DeltaEl;
+            if (Elements.el[i]) {
+                Elements.DeltaEl = Elements.el[i];
+            } else if (MainElementBlock) {
+                Elements.DeltaEl = document.createElement('span');
+                Elements.DeltaEl.classList.add('TextBlock', `TextBlock_${i}`);
+                Elements.el.appendChild(Elements.DeltaEl);
+            } else {
+                Elements.DeltaEl = Elements.el;
+                if( replace ) Elements.el.innerHTML = '';
+                // clearSpan(DeltaEl); // Clear the content for replacement
+            }
+            // replace text or not
+            if (!replace && previousText[Elements.MainElementID] !== undefined ) Elements.DeltaEl.innerHTML = previousText[Elements.MainElementID];
+            // set-up text
+            const editedColor = setElementColor( Elements.DeltaEl, Elements.MainElementID, defaultColor ); // set default color or dead color
+            const PrintBoolian = GetPrintBoolian(printImmediately, previousText, Elements.MainElementID, textList, TimeSettings);
+            // Handle text and color array
+            if ( ColoringHandler(Coloring, Elements.DeltaEl, Elements.MainElementID, textList, PrintBoolian) === true) return;
+            if (!printImmediately && Elements.MainElementID === '.TextBlock' && EFFECT !== 'fade') { cursor = createFakeCursor(); DeltaEl.appendChild(cursor); }
+            if (PrintBoolian) handlePrintImmediately( Elements.DeltaEl, textList, Elements.MainElementID )
+            else if(EFFECT)  await PrintTextWEffect({ textList, Elements, TimeSettings, cursor, replace, TokenSettings, Position, editedColor, EFFECT });
+            // Typing finished, clear token
+            clearToken(TokenSettings, textList);
+            // Reset color after delay
+            if ( Coloring.duration > 0) setTimeout(() => Elements.DeltaEl.style.color = editedColor, Coloring.duration * 1000);
         }
-        // replace text or not
-        if (!replace && previousText[MainElementID] !== undefined ) DeltaEl.innerHTML = previousText[MainElementID];
-        // set-up text
-        const editedColor = setElementColor( DeltaEl, MainElementID, defaultColor ); // set default color or dead color
-        const PrintBoolian = GetPrintBoolian(printImmediately, previousText, MainElementID, textList, TimeSettings);
-        // Handle text and color array
-        if ( ColoringHandler(Coloring, DeltaEl, MainElementID, textList, PrintBoolian) === true) return;
-        if (!printImmediately && MainElementID === '.TextBlock' && EFFECT !== 'fade') { cursor = createFakeCursor(); DeltaEl.appendChild(cursor); }
-        if (PrintBoolian) {
-            handlePrintImmediately( DeltaEl, textList, MainElementID )
-        } else {
-            if ( EFFECT === 'type') await PrintCharSlow({ textBlock: textList, elementId: MainElementID, element: DeltaEl, speed: TimeSettings.delayPerChar, cursor, currentTypingToken, token, replace });
-            if ( EFFECT === 'fade') await FadePrint( DeltaEl, textList, MainElementID, TimeSettings, TokenSettings, Position );
-            if ( EFFECT === 'scramble') await textAnimation(textList, DeltaEl, editedColor, TokenSettings, TimeSettings);
-        }
-        // Typing finished, clear token
-        clearToken(currentTypingToken, MainElementID, token, textList);
-        // Reset color after delay
-        if ( Coloring.duration > 0) setTimeout(() => DeltaEl.style.color = editedColor, Coloring.duration * 1000);
     }
 }
 // ---- utility -----
-
+// utility: PrintTextWEffect 
+async function PrintTextWEffect({
+    textList, Elements, TimeSettings, cursor, replace,
+    TokenSettings, Position,
+    editedColor, EFFECT
+}) {
+    if ( EFFECT === 'type') await PrintCharSlow({ textList, TokenSettings, element: Elements.DeltaEl, speed: TimeSettings, cursor, replace });
+    if ( EFFECT === 'fade') await FadePrint( Elements.DeltaEl, textList, TimeSettings, TokenSettings, Position );
+    if ( EFFECT === 'scramble') await textAnimation(textList, Elements.DeltaEl, editedColor, TokenSettings, TimeSettings);
+}
 // utility: ColoringHandler
 function ColoringHandler(Coloring, element, MainElementID, textList, PrintBoolian) {
     if(!Coloring.Onlysnipet) {
@@ -418,11 +416,11 @@ function GetPrintBoolian(printImmediately, previousText, MainElementID, textList
     return param;
 }
         
-function clearToken(currentTypingToken, elementId, token, text) {
-    if (currentTypingToken[elementId] === token) {
-    previousText[elementId] = text;
-    delete currentTypingToken[elementId];
-    isCurrentlyPrinting[elementId] = false;
+function clearToken(TokenSettings, text) {
+    if (TokenSettings.currentTypingToken[TokenSettings.elementId] === TokenSettings.token) {
+    previousText[TokenSettings.elementId] = text;
+    delete TokenSettings.currentTypingToken[TokenSettings.elementId];
+    isCurrentlyPrinting[TokenSettings.elementId] = false;
     return previousText && isCurrentlyPrinting;
 }
 }
@@ -549,12 +547,12 @@ async function textAnimation( text, element, color = 'azure',
  * @param {boolean} params.replace.anew - Whether to append to existing text or replace entirely
  * @param {string} params.replace.PastText - Previous text to preserve when appending
  */
-async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, currentTypingToken, token, output = '', replace = { anew : false, PastText : ''}}) {
-    const formattedText = formatText(textBlock);
+async function PrintCharSlow({ textList, TokenSettings, element, speed, cursor, output = '', replace = { anew : false, PastText : ''}}) {
+    const formattedText = formatText(textList);
     for (let i = 0; i < formattedText.length; i++) {
-        if (currentTypingToken[elementId] !== token) {
+        if (TokenSettings.currentTypingToken[TokenSettings.elementId] !== TokenSettings.token) {
             // If player clicked while printing
-            handlePrintImmediately( element, textBlock );
+            handlePrintImmediately( element, textList );
             return;
         }
         let char = formattedText[i];
@@ -562,7 +560,7 @@ async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, cur
         element.innerHTML = replace.anew ? replace.PastText + output : output;
         if (cursor && element) element.appendChild(cursor); // Append cursor after each character
         // add a longer pause after dot or comma
-        const delayDuration = (char === '.' || char === ',') ? 400 : speed;
+        const delayDuration = (char === '.' || char === ',') ? 400 : speed.delayPerChar;
         // typingSound.currentTime = 0; // Reset sound to start
         // typingSound.play().catch(() => {}); // Play typing sound
         await new Promise(resolve => setTimeout(resolve, delayDuration)); // Delay next letter
@@ -597,9 +595,9 @@ async function PrintCharSlow({ textBlock, elementId, element, speed, cursor, cur
  * @author Gatch Tower Development Team
  */
 async function FadePrint( 
-    el, textList, MainElementID,
+    el, textList,
     TimeSettings = { totalRevealTime : 200} ,
-    TokenSettings = { currentTypingToken, token },
+    TokenSettings = { currentTypingToken, token, MainElementID },
     Position = 'Left'
     ) {
     clearCursor();
@@ -614,7 +612,7 @@ async function FadePrint(
     el.style.animation = `${600}ms linear ${TimeSettings.totalRevealTime}ms 1 normal forwards running fadeIn`;
 
 
-    if (TokenSettings.currentTypingToken[MainElementID] !== TokenSettings.token) {
+    if (TokenSettings.currentTypingToken[TokenSettings.MainElementID] !== TokenSettings.token) {
         // If player clicked while printing
         handlePrintImmediately( el, textList );
         return;
