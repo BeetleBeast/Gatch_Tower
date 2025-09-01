@@ -151,7 +151,8 @@ async function startBarQTE(duration = 2000, Input = 'Space', CustomPosition = {}
             }
         }
         function keyHandler(e) {
-            if (e.code === Input) inputHandler();
+            const InputList = ['Space'];
+            if (e.code === Input || InputList.includes(e.code)) inputHandler();
         }
 
         function mouseHandler(e) {
