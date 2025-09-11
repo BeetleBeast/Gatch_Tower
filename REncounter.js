@@ -148,7 +148,7 @@ function triggerRandomEvent(event) {
     eventList.push(...[].concat(event)); // safe even if event is not an array
     for (const scene of eventList) {
         if ( !(document.querySelector(`.Block_R${scene.REventID}`))) {
-            const interactionBlock = InteractionBlock(1,`R${scene.REventID}`,add_args)
+            const interactionBlock = interactionBlock(1,`R${scene.REventID}`,add_args)
             document.querySelector('.main').append(interactionBlock);
         }// fix this AI , the text prints itself but not the buttons for the events. exept only when 1 event is inside the event list AI!
         typeText({

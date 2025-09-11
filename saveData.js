@@ -656,7 +656,7 @@ let saveData = {
             sceneName: "Enemy reconisance",
             sceneTexts: {
                 Lines: [
-                    'You observe your suroundings and find ${NUMBERofENEMY} ${TYPEofENEMY}.',
+                    'You observe your suroundings and find ${NUMBERofENEMY} ${TYPEofENEMY}${LANGUAGE_SUFFIX}.',
                     `~They dont notice your precence.`,
                 ],
                 Position: 'Left',
@@ -681,6 +681,10 @@ let saveData = {
                 NUMBERofENEMY: {
                     Dependency: 'TYPEofENEMY/typeData/amountRange',
                     default: 1
+                },                
+                LANGUAGE_SUFFIX: {
+                    getValue: (vars) => vars.NUMBERofENEMY > 1 ? 's' : '',
+                    default: '',
                 },
                 TYPEofENEMY: {
                     values: [
@@ -733,7 +737,7 @@ let saveData = {
             sceneName: "enemy rush",
             sceneTexts: {
                 Lines: [
-                    'You are caught by ${NUMBERofENEMY} ${TYPEofENEMY}.',
+                    'You are caught by ${NUMBERofENEMY} ${TYPEofENEMY}${LANGUAGE_SUFFIX}.',
                 ],
                 Position: 'Left'
             },
@@ -753,6 +757,9 @@ let saveData = {
                 NUMBERofENEMY: {
                     Dependency: 'TYPEofENEMY/typeData/amountRange',
                     default: 1
+                },
+                LANGUAGE_SUFFIX: {
+                    default: '',
                 },
                 TYPEofENEMY: {
                     values: [

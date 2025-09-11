@@ -667,7 +667,23 @@ function randomInRange([min, max]) {
 function deepGet(obj, path) {
     return path.split('/').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
 }
+/**
+ * 
+ * @param {*} variables 
+ * @returns 
+ * 
+ * is a function that resolves and computes scene variables for your game, supporting dependencies, randomization, and custom logic.
 
+How it works:
+
+It takes a variables object (scene variables definition).
+For each variable:
+If it has a Dependency, it resolves the dependent variable first, then extracts the value from the dependency using a path (e.g., TYPEofENEMY/typeData/amountRange).
+If it has a getValue function, it calls this function with the current resolved variables to compute the value (useful for things like pluralization).
+If it has a values array and randomization is enabled, it picks a random value (weighted if groups are defined).
+Otherwise, it uses the default value.
+It returns an object with all resolved variable values for the current scene.
+ */
 function calculateVariable(variables) {
     if (!variables) return {};
     const isRandom = variables.IsRandom;
@@ -696,6 +712,13 @@ function calculateVariable(variables) {
         resolved.add(key);
         return;
         }
+        // Custom resolver case
+        if (variableResolvers[key]) {
+            result[key] = variableResolvers[key](result);
+            resolved.add(key);
+            return;
+        }
+
 
         // Random non-dependent value
         const values = variable.values;
