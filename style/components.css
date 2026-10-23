@@ -58,6 +58,17 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+.story-text-entering {
+    animation: fadeIn 600ms linear both;
+}
+.story-text-line {
+    display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+    .story-text-entering {
+        animation: none;
+    }
+}
 .app {
     grid-row: 1/7;
     grid-column: 3/8;
