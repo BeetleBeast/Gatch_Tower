@@ -1,0 +1,1 @@
+// Scene, choice, condition, effect types
