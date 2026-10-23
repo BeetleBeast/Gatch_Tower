@@ -247,6 +247,36 @@
 	text-decoration: underline;
 	cursor: pointer;
 }
+.story-choices {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px 0;
+}
+.story-choice {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 0 5px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--blue);
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+.story-choice:hover {
+    text-decoration: underline;
+}
+.story-choice--back {
+    color: var(--beige);
+}
+.story-choice--back:hover {
+    color: var(--Red);
+}
 .Sh_1,.Btn_1{
 	color: var(--beige);
 	

@@ -39,6 +39,7 @@ export class StoryView implements StoryViewPort {
         content.className = "main";
 
         const title = document.createElement("h1");
+        title.className = "Quest_Title";
         title.textContent = scene.title;
 
         const text = document.createElement("p");
@@ -56,19 +57,22 @@ export class StoryView implements StoryViewPort {
         });
 
         const choices = document.createElement("nav");
+        choices.className = "story-choices";
         choices.setAttribute("aria-label", "Story choices");
 
-        for (const choice of scene.choices) {
+        scene.choices.forEach((choice, index) => {
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "startscreen";
+            button.className = choice.destination.type === "back"
+                ? "story-choice story-choice--back"
+                : "story-choice";
             button.dataset.choiceId = choice.id;
             const choiceColor = CHOICE_COLORS[choice.id];
             if (choiceColor) button.style.color = choiceColor;
-            button.textContent = choice.label;
+            button.textContent = `(${index + 1}) ${choice.label}`;
             button.addEventListener("click", () => onChoice(choice.id), { once: true });
             choices.append(button);
-        }
+        });
 
         if (scene.choices.length === 0) {
             const note = document.createElement("p");

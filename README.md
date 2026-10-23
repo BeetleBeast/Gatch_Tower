@@ -2,6 +2,12 @@
 
 ---
 
+## 🛠️ Running the TypeScript version
+
+Install dependencies with `npm install`, then run `npm run dev`. Vite opens the game at `http://127.0.0.1:5173/GachaTower.html` and serves TypeScript directly with hot reload.
+
+Run `npm run build` to type-check the TypeScript and create a production build in `dist/`.
+
 ## 🎮 Game Concept
 
 **Title:** *Gatsha Tower*  

@@ -25,6 +25,7 @@ describe("StoryView", () => {
 
         view.render(scene, vi.fn());
 
+        expect(root.querySelector("h1")?.className).toBe("Quest_Title");
         expect(textRenderer.render).toHaveBeenCalledWith(expect.objectContaining({
             text: scene.text,
             position: "Centered",
@@ -53,8 +54,13 @@ describe("StoryView", () => {
 
         const buttons = root.querySelectorAll("button");
         expect(buttons[0]?.dataset.choiceId).toBe("blue");
+        expect(buttons[0]?.textContent).toBe("(1) Piercing blue");
+        expect(buttons[0]?.classList.contains("story-choice")).toBe(true);
+        expect(buttons[0]?.classList.contains("startscreen")).toBe(false);
         expect(buttons[0]?.style.color).toBe("rgb(114, 167, 255)");
         expect(buttons[1]?.dataset.choiceId).toBe("previous");
+        expect(buttons[1]?.textContent).toBe("(2) Previously");
+        expect(buttons[1]?.classList.contains("story-choice--back")).toBe(true);
         expect(buttons[1]?.style.color).toBe("");
     });
 
