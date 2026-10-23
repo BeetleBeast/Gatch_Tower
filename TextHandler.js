@@ -353,7 +353,6 @@ async function typeText({
         for (let i=0;i< StringText.length;i++) {
             const textList = StringText[i];
             if (textList.length == 0) continue;
-            Elements.DeltaEl;
             if (Elements.el[i]) {
                 Elements.DeltaEl = Elements.el[i];
             } else if (MainElementBlock) {
