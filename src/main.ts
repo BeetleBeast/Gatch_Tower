@@ -11,6 +11,8 @@ import { FadeEffect } from "./ui/textRenderer/effects/fadeEffect";
 import { TypewriterEffect } from "./ui/textRenderer/effects/typewriterEffect";
 import { ScrambleEffect } from "./ui/textRenderer/effects/scrambleEffect";
 import { TextAnimator } from "./ui/textRenderer/textAnimator";
+import { QteSequence } from "./domain/qte/qteSequence";
+import { BarQteView } from "./ui/qte/barQteView";
 
 function bootstrap(): void {
     const appRoot = document.querySelector<HTMLElement>(".app");
@@ -23,9 +25,10 @@ function bootstrap(): void {
         scramble: new ScrambleEffect(animationClock),
     });
     const textRenderer = new StoryTextRenderer(textAnimator);
+    const qteSequence = new QteSequence(animationClock);
     const game = new StartGame(
         new StartScreen(appRoot),
-        new StoryView(appRoot, textRenderer),
+        new StoryView(appRoot, textRenderer, new BarQteView(qteSequence)),
         new LocalSaveRepository(window.localStorage),
         new NewGameFactory("0_0"),
         new StoryEngine(storyScenes),

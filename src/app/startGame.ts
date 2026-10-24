@@ -6,7 +6,7 @@ import type {
     StoryEnginePort,
     StoryViewPort,
 } from "../interfaces";
-import type { GameState, StoryScene } from "../types";
+import type { GameState, QteSequenceResult, SceneId, StoryScene } from "../types";
 
 export class StartGame {
     private readonly startScreen: StartScreenPort;
@@ -62,7 +62,7 @@ export class StartGame {
         try {
             const scene = this.storyEngine.getScene(state.currentSceneId);
             this.startScreen.hide();
-            this.storyView.render(scene, (choiceId) => this.choose(state, choiceId));
+            this.renderScene(state, scene);
         } catch (error) {
             this.reportError("Could not open this scene.", error, this.startScreen);
         }
@@ -73,10 +73,40 @@ export class StartGame {
             const nextState = this.storyEngine.choose(state, choiceId);
             this.saveRepository.save(nextState);
             const nextScene = this.storyEngine.getScene(nextState.currentSceneId);
-            this.storyView.render(nextScene, (nextChoiceId) => this.choose(nextState, nextChoiceId));
+            this.renderScene(nextState, nextScene);
         } catch (error) {
             this.reportError("Could not save or advance this choice.", error, this.storyView);
         }
+    }
+
+    private renderScene(state: GameState, scene: StoryScene): void {
+        let sceneState = state;
+        this.storyView.render(
+            scene,
+            (choiceId) => this.choose(sceneState, choiceId),
+            (result) => {
+                sceneState = this.saveQteResult(sceneState, scene.id, result);
+            },
+            state.effects,
+        );
+    }
+
+    private saveQteResult(state: GameState, sceneId: SceneId, result: QteSequenceResult): GameState {
+        const updatedState: GameState = {
+            ...state,
+            qteResults: {
+                ...state.qteResults,
+                [sceneId]: result,
+            },
+        };
+
+        try {
+            this.saveRepository.save(updatedState);
+        } catch (error) {
+            this.reportError("Could not save the quick-time event result.", error, this.storyView);
+        }
+
+        return updatedState;
     }
 
     private reportError(message: string, error: unknown, target: StartScreenPort | StoryViewPort): void {

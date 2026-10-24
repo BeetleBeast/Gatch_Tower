@@ -1,6 +1,7 @@
 import type { StoryViewPort } from "../interfaces/index";
+import type { QteViewPort } from "../interfaces/index";
 import type { TextRendererPort } from "../interfaces/index";
-import type { StoryScene } from "../types/index";
+import type { ActiveEffect, QteSequenceResult, StoryScene } from "../types/index";
 
 const CHOICE_COLORS: Readonly<Record<string, string>> = {
     blue: "#72a7ff",
@@ -25,14 +26,24 @@ const CHOICE_COLORS: Readonly<Record<string, string>> = {
 export class StoryView implements StoryViewPort {
     private readonly root: HTMLElement;
     private readonly textRenderer: TextRendererPort;
+    private readonly qteView: QteViewPort;
     private currentTextElement: HTMLElement | null = null;
+    private currentSceneController: AbortController | null = null;
 
-    constructor(root: HTMLElement, textRenderer: TextRendererPort) {
+    constructor(root: HTMLElement, textRenderer: TextRendererPort, qteView: QteViewPort) {
         this.root = root;
         this.textRenderer = textRenderer;
+        this.qteView = qteView;
     }
 
-    public render(scene: StoryScene, onChoice: (choiceId: string) => void): void {
+    public render(
+        scene: StoryScene,
+        onChoice: (choiceId: string) => void,
+        onQteResult: (result: QteSequenceResult) => void,
+        activeEffects: Readonly<Record<string, ActiveEffect>>,
+    ): void {
+        this.currentSceneController?.abort();
+        this.currentSceneController = null;
         if (this.currentTextElement) this.textRenderer.skip(this.currentTextElement);
 
         const content = document.createElement("section");
@@ -60,6 +71,7 @@ export class StoryView implements StoryViewPort {
         choices.className = "story-choices";
         choices.setAttribute("aria-label", "Story choices");
 
+        const choiceButtons: HTMLButtonElement[] = [];
         scene.choices.forEach((choice, index) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -70,7 +82,9 @@ export class StoryView implements StoryViewPort {
             const choiceColor = CHOICE_COLORS[choice.id];
             if (choiceColor) button.style.color = choiceColor;
             button.textContent = `(${index + 1}) ${choice.label}`;
+            if (scene.qte) button.disabled = true;
             button.addEventListener("click", () => onChoice(choice.id), { once: true });
+            choiceButtons.push(button);
             choices.append(button);
         });
 
@@ -80,7 +94,33 @@ export class StoryView implements StoryViewPort {
             choices.append(note);
         }
 
-        content.append(title, text, choices);
+        content.append(title, text);
+        const activeEffectEntries = Object.entries(activeEffects);
+        if (activeEffectEntries.length > 0) {
+            const effectList = document.createElement("ul");
+            effectList.className = "active-effects";
+            effectList.setAttribute("aria-label", "Active buffs and debuffs");
+            for (const [id, effect] of activeEffectEntries) {
+                const entry = document.createElement("li");
+                const modifier = effect.kind === "buff" ? "+" : "-";
+                const duration = effect.remainingChoices === null
+                    ? "Permanent"
+                    : `${effect.remainingChoices} choice${effect.remainingChoices === 1 ? "" : "s"} remaining`;
+                entry.textContent = `${id}: ${effect.kind} to ${effect.target} `
+                    + `(${modifier}${effect.magnitude}; ${duration})`;
+                entry.dataset.effectKind = effect.kind;
+                effectList.append(entry);
+            }
+            content.append(effectList);
+        }
+        let qteContainer: HTMLElement | null = null;
+        if (scene.qte) {
+            qteContainer = document.createElement("div");
+            qteContainer.className = "qte-container";
+            qteContainer.setAttribute("aria-label", "Quick-time event");
+            content.append(qteContainer);
+        }
+        content.append(choices);
         if (scene.contentNotice) {
             const notice = document.createElement("p");
             notice.className = "story-content-note";
@@ -89,6 +129,26 @@ export class StoryView implements StoryViewPort {
             content.append(notice);
         }
         this.root.replaceChildren(content);
+        if (scene.qte && qteContainer) {
+            const controller = new AbortController();
+            this.currentSceneController = controller;
+            void this.qteView.play(qteContainer, scene.qte, controller.signal)
+                .then((result) => {
+                    if (controller.signal.aborted) return;
+                    this.showQteResult(qteContainer, result);
+                    choiceButtons.forEach((button) => {
+                        button.disabled = false;
+                    });
+                    onQteResult(result);
+                })
+                .catch((error: unknown) => {
+                    if (controller.signal.aborted) return;
+                    this.showError(`Could not run the quick-time event: ${String(error)}`);
+                    choiceButtons.forEach((button) => {
+                        button.disabled = false;
+                    });
+                });
+        }
         void this.textRenderer.render({
             target: text,
             text: scene.text,
@@ -97,6 +157,15 @@ export class StoryView implements StoryViewPort {
         }).catch((error: unknown) => {
             this.showError(`Could not render story text: ${String(error)}`);
         });
+    }
+
+    private showQteResult(container: HTMLElement, result: QteSequenceResult): void {
+        const summary = document.createElement("p");
+        summary.className = `qte-summary qte-summary--${result.result}`;
+        summary.setAttribute("role", "status");
+        summary.textContent = `QTE ${result.result}: ${result.score} points`
+            + ` (${result.perfectCount} perfect, ${result.successCount} success, ${result.failCount} missed).`;
+        container.append(summary);
     }
 
     public showError(message: string): void {

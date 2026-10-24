@@ -33,6 +33,19 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
                 destination: { type: "next" },
                 effects: [{ type: "applyStatus", status: "focus", amount: 2 }],
             },
+            {
+                id: "focusBoost",
+                label: "Focus boost",
+                destination: { type: "next" },
+                effects: [{
+                    type: "applyEffect",
+                    effectId: "focus-boost",
+                    kind: "buff",
+                    target: "focus",
+                    magnitude: 3,
+                    durationChoices: 2,
+                }],
+            },
         ],
     },
     "0_2": {
@@ -57,12 +70,14 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
 
 function createState(currentSceneId: SceneId = "0_0"): GameState {
     return {
-        schemaVersion: 2,
+        schemaVersion: 3,
         currentSceneId,
         sceneHistory: [],
         choicesMade: {},
         characterChoices: {},
         statuses: {},
+        effects: {},
+        qteResults: {},
     };
 }
 
@@ -147,6 +162,24 @@ describe("StoryEngine", () => {
         expect(initial.characterChoices).toEqual({});
         expect(afterEyes.characterChoices).toEqual({ eyes: "lightgrey" });
         expect(afterStatus.statuses).toEqual({ focus: 2 });
+    });
+
+    it("applies timed effects and expires them as choices advance", () => {
+        const engine = new StoryEngine(scenes);
+        const applied = engine.choose(createState("0_1"), "focusBoost");
+
+        expect(applied.effects["focus-boost"]).toEqual({
+            kind: "buff",
+            target: "focus",
+            magnitude: 3,
+            remainingChoices: 2,
+        });
+
+        const oneChoiceLater = engine.choose(applied, "continue");
+        expect(oneChoiceLater.effects["focus-boost"]?.remainingChoices).toBe(1);
+
+        const afterExpiry = engine.choose(oneChoiceLater, "previous");
+        expect(afterExpiry.effects["focus-boost"]).toBeUndefined();
     });
 
     it("rejects unavailable choices, missing navigation destinations, and unknown scenes", () => {

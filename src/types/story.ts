@@ -1,4 +1,5 @@
 import type { TextPosition, TextRenderOptionsInput } from "./text";
+import type { QteConfig } from "./qte";
 
 export type ChapterId = number;
 export type SceneNumber = number;
@@ -12,7 +13,18 @@ export interface StoryChoice {
 }
 export type StoryEffect =
     | { type: "setCharacterChoice"; record: Record<string, string>; }
-    | { type: "applyStatus"; status: string; amount: number };
+    | { type: "applyStatus"; status: string; amount: number }
+    | { type: "applyEffect"; effectId: string; kind: ActiveEffectKind; target: string; magnitude: number; durationChoices?: number }
+    | { type: "removeEffect"; effectId: string };
+
+export type ActiveEffectKind = "buff" | "debuff";
+
+export interface ActiveEffect {
+    kind: ActiveEffectKind;
+    target: string;
+    magnitude: number;
+    remainingChoices: number | null;
+}
 
 export type SceneDestination =
     | { type: "scene"; sceneId: SceneId }
@@ -30,6 +42,7 @@ export interface StoryScene {
     choices: StoryChoice[];
     variants?: SceneVariant[];
     contentNotice?: string;
+    qte?: QteConfig;
 }
 
 interface SceneVariant {

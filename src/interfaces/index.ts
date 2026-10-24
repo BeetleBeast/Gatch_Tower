@@ -2,6 +2,7 @@ export type { GameStateFactory } from "./gameStateFactory";
 export type { SaveRepository } from "./saveRepository";
 export type { StartScreenActions, StartScreenPort } from "./startScreen";
 export type { StoryEnginePort } from "./storyEngine";
+export type { QteViewPort } from "./qteView";
 export type { StoryViewPort } from "./storyView";
 export type {
     AnimationClockPort,

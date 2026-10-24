@@ -1,5 +1,6 @@
 export type { GameState } from "./gameState";
-export type { ChapterId, SceneDestination, SceneId, SceneNumber, StoryChoice, StoryEffect, StoryScene } from "./story";
+export type { QteConfig, QteHitResult, QteResultType, QteSequenceResult } from "./qte";
+export type { ActiveEffect, ActiveEffectKind, ChapterId, SceneDestination, SceneId, SceneNumber, StoryChoice, StoryEffect, StoryScene } from "./story";
 export type {
     TextAnimationRequest,
     TextAnimationTiming,

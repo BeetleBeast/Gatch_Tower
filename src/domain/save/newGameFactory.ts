@@ -10,12 +10,14 @@ export class NewGameFactory implements GameStateFactory {
 
     public create(): GameState {
         return {
-            schemaVersion: 2,
+            schemaVersion: 3,
             currentSceneId: this.initialSceneId,
             sceneHistory: [],
             choicesMade: {},
             characterChoices: {},
             statuses: {},
+            effects: {},
+            qteResults: {},
         };
     }
 }

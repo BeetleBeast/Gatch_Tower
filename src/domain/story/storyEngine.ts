@@ -1,13 +1,16 @@
 import type { StoryEnginePort } from "../../interfaces";
+import { EffectEngine } from "../effects/effectEngine";
 import type { GameState, SceneId, StoryChoice, StoryScene } from "../../types/index";
 import type { SceneDestination } from "../../types/story";
 
 export class StoryEngine implements StoryEnginePort {
     private readonly scenes: Readonly<Record<SceneId, StoryScene>>;
     private readonly orderedSceneIds: readonly SceneId[];
+    private readonly effectEngine: EffectEngine;
 
     constructor(scenes: Readonly<Record<SceneId, StoryScene>>) {
         this.scenes = scenes;
+        this.effectEngine = new EffectEngine();
         this.orderedSceneIds = Object.values(scenes)
             .map((scene) => scene.id)
             .sort(compareSceneIds);
@@ -15,9 +18,7 @@ export class StoryEngine implements StoryEnginePort {
 
     public getScene(sceneId: SceneId): StoryScene {
         const scene = this.scenes[sceneId];
-        if (!scene) {
-            throw new Error(`The story does not contain a scene with id "${sceneId}".`);
-        }
+        if (!scene) throw new Error(`The story does not contain a scene with id "${sceneId}".`);
 
         return scene;
     }
@@ -63,7 +64,7 @@ export class StoryEngine implements StoryEnginePort {
         };
     }
 
-    private applyEffects(state: GameState, choice: StoryChoice): Pick<GameState, "characterChoices" | "statuses"> {
+    private applyEffects(state: GameState, choice: StoryChoice): Pick<GameState, "characterChoices" | "statuses" | "effects"> {
         const characterChoices = { ...state.characterChoices };
         const statuses = { ...state.statuses };
 
@@ -75,10 +76,17 @@ export class StoryEngine implements StoryEnginePort {
                 case "applyStatus":
                     statuses[effect.status] = (statuses[effect.status] ?? 0) + effect.amount;
                     break;
+                case "applyEffect":
+                case "removeEffect":
+                    break;
             }
         }
 
-        return { characterChoices, statuses };
+        return {
+            characterChoices,
+            statuses,
+            effects: this.effectEngine.applyChoiceEffects(state.effects, choice.effects ?? []),
+        };
     }
 
     public choose(state: GameState, choiceId: string): GameState {

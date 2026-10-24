@@ -8,6 +8,16 @@ Install dependencies with `npm install`, then run `npm run dev`. Vite opens the 
 
 Run `npm run build` to type-check the TypeScript and create a production build in `dist/`.
 
+### Quick-time events
+
+Story scenes can opt into a quick-time event with a `qte` configuration. The shadowed corridor (`1_3`) currently demonstrates a one-round Space-bar QTE; the player can also click the bar. Choices stay disabled until the event finishes, and its score and hit counts are saved separately in `qteResults`.
+
+Buffs and debuffs are authored as choice effects using `applyEffect`. Each effect modifies a named status, can have a duration measured in player choices, stacks by adding magnitude, and can be removed with `removeEffect`. Omitted durations mean the effect is permanent. Effects and base status values are saved separately; `EffectEngine.getEffectiveStatus` calculates a status including active buffs and debuffs. Effect sequencing lives in `src/domain/effects/`.
+
+For example, a choice can apply a temporary buff with `{ type: "applyEffect", effectId: "focus-boost", kind: "buff", target: "focus", magnitude: 2, durationChoices: 3 }`.
+
+QTE sequencing lives in `src/domain/qte/`, while the bar and its input handling live in `src/ui/qte/`.
+
 ## 🎮 Game Concept
 
 **Title:** *Gatsha Tower*  
@@ -113,7 +123,7 @@ Run `npm run build` to type-check the TypeScript and create a production build i
 ## ✅ TODO List
 
 - [ ] remove colors i.e. make it more grey scale
-- [ ] do something with the QTE response
+- [x] do something with the QTE response
 - [ ] {
     make a fight scene when in QTE mode a.e. when it is counting down and let
     it dissapear when the results are in
