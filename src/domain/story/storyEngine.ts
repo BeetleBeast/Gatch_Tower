@@ -1,6 +1,6 @@
 import type { StoryEnginePort } from "../../interfaces";
 import { EffectEngine } from "../effects/effectEngine";
-import type { GameState, SceneId, StoryChoice, StoryScene } from "../../types/index";
+import type { Event, GameState, SceneId, StoryChoice, StoryScene } from "../../types/index";
 import type { SceneDestination } from "../../types/story";
 
 export class StoryEngine implements StoryEnginePort {
@@ -53,6 +53,10 @@ export class StoryEngine implements StoryEnginePort {
             return { sceneId, sceneHistory };
         }
 
+        if (destination.type === "None") {
+            return { sceneId: currentScene.id, sceneHistory: [...state.sceneHistory] };
+        }
+
         const currentIndex = this.orderedSceneIds.indexOf(currentScene.id);
         const sceneId = this.orderedSceneIds[currentIndex + 1];
 
@@ -92,6 +96,18 @@ export class StoryEngine implements StoryEnginePort {
     public choose(state: GameState, choiceId: string): GameState {
         const scene = this.getScene(state.currentSceneId);
         const choice = this.findChoice(scene, choiceId);
+        return this.applyChoice(state, choice, choiceId);
+    }
+
+    public chooseEvent(state: GameState, event: Event, choiceId: string): GameState {
+        const choice = event.choices.find((candidate) => candidate.id === choiceId);
+        if (!choice) throw new Error(`Choice "${choiceId}" is not available in event "${event.name}".`);
+
+        return this.applyChoice(state, choice, `event:${event.id}:${choiceId}`);
+    }
+
+    private applyChoice(state: GameState, choice: StoryChoice, recordedChoiceId: string): GameState {
+        const scene = this.getScene(state.currentSceneId);
         const destination = this.resolveDestination(choice.destination, state);
         const effects = this.applyEffects(state, choice);
 
@@ -101,7 +117,7 @@ export class StoryEngine implements StoryEnginePort {
             sceneHistory: destination.sceneHistory,
             choicesMade: {
                 ...state.choicesMade,
-                [scene.id]: choiceId,
+                [scene.id]: recordedChoiceId,
             },
             ...effects,
         };

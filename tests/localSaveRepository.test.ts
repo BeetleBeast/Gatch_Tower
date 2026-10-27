@@ -21,6 +21,7 @@ describe("LocalSaveRepository", () => {
             characterChoices: {},
             statuses: {},
             effects: {},
+            events: {},
             qteResults: {},
         });
         expect(JSON.parse(storage.getItem("gatch-tower.game.v3") ?? "null")).toMatchObject({
@@ -41,6 +42,7 @@ describe("LocalSaveRepository", () => {
             characterChoices: { eyes: "lightgrey" },
             statuses: { focus: 2 },
             effects: { focusBoost: { kind: "buff", target: "focus", magnitude: 2, remainingChoices: 3 } },
+            events: {},
             qteResults: {
                 "1_3": { result: "perfect", score: 2, perfectCount: 1, successCount: 0, failCount: 0 },
             },

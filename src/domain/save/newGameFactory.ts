@@ -1,5 +1,5 @@
-import type { GameState, SceneId } from "../../types/index";
-import type { GameStateFactory } from "../../interfaces/index";
+import type { GameState, SceneId } from "../../types";
+import type { GameStateFactory } from "../../interfaces";
 
 export class NewGameFactory implements GameStateFactory {
     private readonly initialSceneId: SceneId;
@@ -18,6 +18,7 @@ export class NewGameFactory implements GameStateFactory {
             statuses: {},
             effects: {},
             qteResults: {},
+            events: {},
         };
     }
 }

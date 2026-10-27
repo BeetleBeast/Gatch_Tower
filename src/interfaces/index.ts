@@ -3,7 +3,8 @@ export type { SaveRepository } from "./saveRepository";
 export type { StartScreenActions, StartScreenPort } from "./startScreen";
 export type { StoryEnginePort } from "./storyEngine";
 export type { QteViewPort } from "./qteView";
-export type { StoryViewPort } from "./storyView";
+export type { StoryViewPort, StoryViewRenderOptions } from "./storyView";
+export type { RandomEncounterPort } from "./randomEncounters";
 export type {
     AnimationClockPort,
     TextAnimatorPort,

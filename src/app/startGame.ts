@@ -5,8 +5,9 @@ import type {
     StartScreenPort,
     StoryEnginePort,
     StoryViewPort,
+    RandomEncounterPort,
 } from "../interfaces";
-import type { GameState, QteSequenceResult, SceneId, StoryScene } from "../types";
+import type { Event, GameState, QteSequenceResult, SceneId, StoryScene } from "../types";
 
 export class StartGame {
     private readonly startScreen: StartScreenPort;
@@ -14,6 +15,7 @@ export class StartGame {
     private readonly saveRepository: SaveRepository;
     private readonly newGameFactory: GameStateFactory;
     private readonly storyEngine: StoryEnginePort;
+    private readonly randomEncounters: RandomEncounterPort;
 
     constructor(
         startScreen: StartScreenPort,
@@ -21,12 +23,14 @@ export class StartGame {
         saveRepository: SaveRepository,
         newGameFactory: GameStateFactory,
         storyEngine: StoryEnginePort,
+        randomEncounters: RandomEncounterPort
     ) {
         this.startScreen = startScreen;
         this.storyView = storyView;
         this.saveRepository = saveRepository;
         this.newGameFactory = newGameFactory;
         this.storyEngine = storyEngine;
+        this.randomEncounters = randomEncounters;
     }
 
     public start(): void {
@@ -79,15 +83,36 @@ export class StartGame {
         }
     }
 
-    private renderScene(state: GameState, scene: StoryScene): void {
+    private chooseEvent(state: GameState, event: Event, choiceId: string, currentEvents: readonly Event[]): void {
+        try {
+            const choice = event.choices.find((candidate) => candidate.id === choiceId);
+            if (!choice) throw new Error(`Choice "${choiceId}" is not available in event "${event.name}".`);
+            const nextState = this.storyEngine.chooseEvent(state, event, choiceId);
+            this.saveRepository.save(nextState);
+            const nextScene = this.storyEngine.getScene(nextState.currentSceneId);
+            const remainingEvents = choice.destination.type === "None"
+                ? currentEvents.filter((candidate) => candidate.id !== event.id)
+                : undefined;
+            this.renderScene(nextState, nextScene, remainingEvents);
+        } catch (error) {
+            this.reportError("Could not save or advance this event choice.", error, this.storyView);
+        }
+    }
+
+    private renderScene(state: GameState, scene: StoryScene, selectedEvents?: readonly Event[]): void {
         let sceneState = state;
+        const events = selectedEvents ?? this.randomEncounters.tryRandomEncounter(scene.id) ?? [];
         this.storyView.render(
             scene,
-            (choiceId) => this.choose(sceneState, choiceId),
-            (result) => {
-                sceneState = this.saveQteResult(sceneState, scene.id, result);
+            {
+                events,
+                activeEffects: state.effects,
+                onChoice: (choiceId) => this.choose(sceneState, choiceId),
+                onEventChoice: (event, choice) => this.chooseEvent(sceneState, event, choice.id, events),
+                onQteResult: (result) => {
+                    sceneState = this.saveQteResult(sceneState, scene.id, result);
+                },
             },
-            state.effects,
         );
     }
 

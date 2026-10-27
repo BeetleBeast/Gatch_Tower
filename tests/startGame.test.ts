@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { GameStateFactory, SaveRepository, StartScreenActions, StoryViewPort } from "../src/interfaces/index";
 import { StartGame } from "../src/app/startGame";
 import { StoryEngine } from "../src/domain/story/storyEngine";
-import type { GameState, SceneId, StoryScene } from "../src/types/index";
+import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
 
 describe("StartGame", () => {
     it("keeps a completed QTE result when the player advances the scene", () => {
@@ -14,6 +14,7 @@ describe("StartGame", () => {
             characterChoices: {},
             statuses: {},
             effects: {},
+            events: {},
             qteResults: {},
         };
         const scenes: Readonly<Record<SceneId, StoryScene>> = {
@@ -36,9 +37,9 @@ describe("StartGame", () => {
         let onChoice: ((choiceId: string) => void) | undefined;
         let onQteResult: ((result: ReturnType<typeof createQteResult>) => void) | undefined;
         const storyView: StoryViewPort = {
-            render: vi.fn((_scene, choose, completeQte) => {
-                onChoice = choose;
-                onQteResult = completeQte;
+            render: vi.fn((_scene, options) => {
+                onChoice = options.onChoice;
+                onQteResult = options.onQteResult;
             }),
             showError: vi.fn(),
         };
@@ -48,6 +49,7 @@ describe("StartGame", () => {
             saveRepository,
             gameStateFactory,
             new StoryEngine(scenes),
+            { tryRandomEncounter: () => null },
         );
 
         game.start();
@@ -67,6 +69,56 @@ describe("StartGame", () => {
                 },
             },
         });
+    });
+
+    it("renders random events and dismisses no-destination events without rerolling", () => {
+        const event: Event = {
+            id: 5,
+            name: "Test",
+            text: "A brief interruption.",
+            weight: 1,
+            choices: [{ id: "dismiss", label: "Dismiss", destination: { type: "None" } }],
+            allowed_scenes: "All",
+            allowMultipleEvent: false,
+            includeOriginalScene: true,
+        };
+        const initialState: GameState = {
+            schemaVersion: 3,
+            currentSceneId: "0_0",
+            sceneHistory: [],
+            choicesMade: {},
+            characterChoices: {},
+            statuses: {},
+            effects: {},
+            events: {},
+            qteResults: {},
+        };
+        const scene: StoryScene = { id: "0_0", title: "Opening", text: "Story text", choices: [] };
+        const scenes: Readonly<Record<SceneId, StoryScene>> = { "0_0": scene };
+        const eventSelector = { tryRandomEncounter: vi.fn(() => [event]) };
+        const renderOptions: Parameters<StoryViewPort["render"]>[1][] = [];
+        const storyView: StoryViewPort = {
+            render: vi.fn((_scene, options) => renderOptions.push(options)),
+            showError: vi.fn(),
+        };
+        const startScreenActions: StartScreenActions[] = [];
+        const game = new StartGame(
+            { show: (actions) => startScreenActions.push(actions), showMessage: vi.fn(), hide: vi.fn() },
+            storyView,
+            { load: () => null, save: vi.fn() },
+            { create: () => initialState },
+            new StoryEngine(scenes),
+            eventSelector,
+        );
+
+        game.start();
+        startScreenActions[0]?.onNewGame();
+        expect(renderOptions[0]?.events).toEqual([event]);
+        renderOptions[0]?.onEventChoice(event, event.choices[0]!);
+
+        expect(renderOptions).toHaveLength(2);
+        expect(renderOptions[1]?.events).toEqual([]);
+        expect(eventSelector.tryRandomEncounter).toHaveBeenCalledTimes(1);
     });
 });
 

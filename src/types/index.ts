@@ -12,3 +12,4 @@ export type {
     TextRenderOptionsInput,
     TextTiming,
 } from "./text";
+export type { Event, SceneLocations, StoryLocationDetails } from "./Events";

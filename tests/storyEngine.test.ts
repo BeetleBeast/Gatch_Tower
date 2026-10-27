@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { StoryEngine } from "../src/domain/story/storyEngine";
-import type { GameState, SceneId, StoryScene } from "../src/types/index";
+import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
 
 const scenes: Readonly<Record<SceneId, StoryScene>> = {
     "0_0": {
@@ -77,6 +77,7 @@ function createState(currentSceneId: SceneId = "0_0"): GameState {
         characterChoices: {},
         statuses: {},
         effects: {},
+        events: {},
         qteResults: {},
     };
 }
@@ -148,6 +149,47 @@ describe("StoryEngine", () => {
         const continued = engine.choose(previous, "continue");
         expect(continued.currentSceneId).toBe("0_1");
         expect(continued.sceneHistory).toEqual(["0_0"]);
+    });
+
+    it("applies random event choices through the same navigation and effect rules", () => {
+        const event: Event = {
+            id: 7,
+            name: "Teleportation",
+            text: "A dev offers you a ride.",
+            weight: 1,
+            choices: [{
+                id: "accept",
+                label: "Accept",
+                destination: { type: "scene", sceneId: "1_0" },
+                effects: [{ type: "applyStatus", status: "teleportations", amount: 1 }],
+            }],
+            allowed_scenes: "All",
+            allowMultipleEvent: true,
+            includeOriginalScene: true,
+        };
+        const result = new StoryEngine(scenes).chooseEvent(createState(), event, "accept");
+
+        expect(result.currentSceneId).toBe("1_0");
+        expect(result.sceneHistory).toEqual(["0_0"]);
+        expect(result.choicesMade["0_0"]).toBe("event:7:accept");
+        expect(result.statuses).toEqual({ teleportations: 1 });
+    });
+
+    it("keeps the current scene when an event choice has no destination", () => {
+        const event: Event = {
+            id: 8,
+            name: "Test",
+            text: "What will you do?",
+            weight: 1,
+            choices: [{ id: "dismiss", label: "Dismiss", destination: { type: "None" } }],
+            allowed_scenes: "All",
+            allowMultipleEvent: false,
+            includeOriginalScene: true,
+        };
+        const result = new StoryEngine(scenes).chooseEvent(createState("0_1"), event, "dismiss");
+
+        expect(result.currentSceneId).toBe("0_1");
+        expect(result.sceneHistory).toEqual([]);
     });
 
     it("applies selected-choice effects without mutating the prior state", () => {

@@ -29,7 +29,8 @@ export interface ActiveEffect {
 export type SceneDestination =
     | { type: "scene"; sceneId: SceneId }
     | { type: "back" }
-    | { type: 'next' };
+    | { type: 'next' }
+    | { type: 'None' };
 
 
 export interface StoryScene {

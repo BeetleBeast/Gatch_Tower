@@ -13,6 +13,7 @@ import { ScrambleEffect } from "./ui/textRenderer/effects/scrambleEffect";
 import { TextAnimator } from "./ui/textRenderer/textAnimator";
 import { QteSequence } from "./domain/qte/qteSequence";
 import { BarQteView } from "./ui/qte/barQteView";
+import { RandomEncounters } from "./domain/encounters/randomEncounters";
 
 function bootstrap(): void {
     const appRoot = document.querySelector<HTMLElement>(".app");
@@ -32,6 +33,7 @@ function bootstrap(): void {
         new LocalSaveRepository(window.localStorage),
         new NewGameFactory("0_0"),
         new StoryEngine(storyScenes),
+        new RandomEncounters()
     );
 
     game.start();

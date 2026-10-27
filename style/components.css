@@ -277,6 +277,18 @@
 .story-choice--back:hover {
     color: var(--Red);
 }
+.random-event {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border: 1px solid var(--DefaultColor0);
+}
+.random-event__title {
+    margin: 0;
+    text-align: center;
+}
+.story-event-choices {
+    padding-bottom: 0;
+}
 .qte-container {
     width: 100%;
     min-height: 7em;

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import type { TextRendererPort } from "../src/interfaces/index";
+import type { StoryViewRenderOptions, TextRendererPort } from "../src/interfaces/index";
 import type { QteViewPort } from "../src/interfaces/index";
 import { StoryView } from "../src/ui/storyView";
-import type { StoryScene } from "../src/types/index";
+import type { Event, StoryScene } from "../src/types/index";
 
 describe("StoryView", () => {
     it("forwards scene-specific animation options to the text renderer", () => {
@@ -25,7 +25,7 @@ describe("StoryView", () => {
             choices: [],
         };
 
-        view.render(scene, vi.fn(), vi.fn(), {});
+        view.render(scene, createRenderOptions());
 
         expect(root.querySelector("h1")?.className).toBe("Quest_Title");
         expect(textRenderer.render).toHaveBeenCalledWith(expect.objectContaining({
@@ -53,7 +53,7 @@ describe("StoryView", () => {
             ],
         };
 
-        view.render(scene, vi.fn(), vi.fn(), {});
+        view.render(scene, createRenderOptions());
 
         const buttons = root.querySelectorAll("button");
         expect(buttons[0]?.dataset.choiceId).toBe("blue");
@@ -83,7 +83,7 @@ describe("StoryView", () => {
             contentNotice: "Further content needs features not migrated yet.",
         };
 
-        view.render(scene, vi.fn(), vi.fn(), {});
+        view.render(scene, createRenderOptions());
 
         expect(root.querySelector('[role="note"]')?.textContent)
             .toBe("Further content needs features not migrated yet.");
@@ -107,7 +107,7 @@ describe("StoryView", () => {
             qte: { amount: 1, durationMs: 2000, countdownSeconds: 0, input: "Space" },
         };
 
-        view.render(scene, vi.fn(), onQteResult, {});
+        view.render(scene, createRenderOptions({ onQteResult }));
 
         const choice = root.querySelector<HTMLButtonElement>(".story-choice");
         expect(choice?.disabled).toBe(true);
@@ -133,10 +133,10 @@ describe("StoryView", () => {
             choices: [],
         };
 
-        view.render(scene, vi.fn(), vi.fn(), {
+        view.render(scene, createRenderOptions({ activeEffects: {
             focusBoost: { kind: "buff", target: "focus", magnitude: 2, remainingChoices: 3 },
             fatigue: { kind: "debuff", target: "speed", magnitude: 1, remainingChoices: null },
-        });
+        } }));
 
         const effects = root.querySelectorAll<HTMLLIElement>(".active-effects li");
         expect(effects).toHaveLength(2);
@@ -145,7 +145,88 @@ describe("StoryView", () => {
         expect(effects[0]?.dataset.effectKind).toBe("buff");
         expect(effects[1]?.dataset.effectKind).toBe("debuff");
     });
+
+    it("shows a random event with the story and routes its own choice", () => {
+        const textRenderer: TextRendererPort = {
+            render: vi.fn(async () => undefined),
+            skip: vi.fn(),
+        };
+        const qteView: QteViewPort = { play: vi.fn(async () => createQteResult()) };
+        const root = document.createElement("main");
+        const view = new StoryView(root, textRenderer, qteView);
+        const event = createEvent(true);
+        const onEventChoice = vi.fn();
+        const scene: StoryScene = {
+            id: "0_0",
+            title: "Opening",
+            text: "The story continues.",
+            choices: [{ id: "continue", label: "Continue", destination: { type: "next" } }],
+        };
+
+        view.render(scene, createRenderOptions({ events: [event], onEventChoice }));
+
+        expect(root.querySelector("h1")?.textContent).toBe("Opening");
+        expect(root.querySelector(".random-event__title")?.textContent).toBe("Teleportation");
+        expect(textRenderer.render).toHaveBeenCalledWith(expect.objectContaining({
+            text: "The story continues.",
+        }));
+        expect(textRenderer.render).toHaveBeenCalledWith(expect.objectContaining({
+            text: "A dev offers you a ride.",
+        }));
+        expect(root.querySelectorAll(".story-choice")).toHaveLength(2);
+        root.querySelector<HTMLButtonElement>("[data-event-choice-id='accept']")?.click();
+        expect(onEventChoice).toHaveBeenCalledWith(event, event.choices[0]);
+    });
+
+    it("renders only the random event when it excludes the original scene", () => {
+        const textRenderer: TextRendererPort = {
+            render: vi.fn(async () => undefined),
+            skip: vi.fn(),
+        };
+        const qteView: QteViewPort = { play: vi.fn(async () => createQteResult()) };
+        const root = document.createElement("main");
+        const view = new StoryView(root, textRenderer, qteView);
+        const event = createEvent(false);
+        const scene: StoryScene = {
+            id: "0_0",
+            title: "Original scene must be hidden",
+            text: "Original text must be hidden.",
+            choices: [{ id: "continue", label: "Original choice", destination: { type: "next" } }],
+        };
+
+        view.render(scene, createRenderOptions({ events: [event] }));
+
+        expect(root.querySelector("h1")).toBeNull();
+        expect(root.textContent).not.toContain("Original scene must be hidden");
+        expect(root.textContent).not.toContain("Original text must be hidden");
+        expect(root.textContent).not.toContain("Original choice");
+        expect(root.querySelector(".random-event__title")?.textContent).toBe("Teleportation");
+    });
 });
+
+function createRenderOptions(overrides: Partial<StoryViewRenderOptions> = {}): StoryViewRenderOptions {
+    return {
+        events: [],
+        activeEffects: {},
+        onChoice: vi.fn(),
+        onEventChoice: vi.fn(),
+        onQteResult: vi.fn(),
+        ...overrides,
+    };
+}
+
+function createEvent(includeOriginalScene: boolean): Event {
+    return {
+        id: 1,
+        name: "Teleportation",
+        text: "A dev offers you a ride.",
+        weight: 1,
+        choices: [{ id: "accept", label: "Accept", destination: { type: "scene", sceneId: "2_0" } }],
+        allowed_scenes: "All",
+        allowMultipleEvent: true,
+        includeOriginalScene,
+    };
+}
 
 function createQteResult() {
     return { result: "perfect" as const, score: 2, perfectCount: 1, successCount: 0, failCount: 0 };

@@ -75,6 +75,7 @@ function migrateGameState(value: unknown): GameState | null {
         characterChoices,
         statuses: migratedStatuses,
         effects,
+        events: {},
         qteResults: migratedQteResults,
     };
 }
