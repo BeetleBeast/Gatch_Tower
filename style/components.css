@@ -70,15 +70,14 @@
     }
 }
 .app {
-    grid-row: 1/7;
-    grid-column: 3/8;
+    grid-row: 1;
+    grid-column: 2;
 
 	flex: 1; /* Main content takes up remaining space */
 	display: block;
-	
-	flex-direction: column;
 	z-index: 5;
-	
+    min-height: 0;
+    overflow: hidden;
 }
 .InteractionBlock {
 	display: flexbox;

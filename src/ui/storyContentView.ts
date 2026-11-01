@@ -1,5 +1,5 @@
 import type { TextRendererPort, TextRenderRequest } from "../interfaces";
-import type { ActiveEffect, Event, StoryChoice, StoryScene } from "../types";
+import type { Event, StoryChoice, StoryScene } from "../types";
 import { createStoryChoiceList } from "./storyChoiceList";
 import { StoryEventView } from "./storyEventView";
 
@@ -22,9 +22,10 @@ export class StoryContentView {
     public create(
         scene: StoryScene,
         events: readonly Event[],
-        activeEffects: Readonly<Record<string, ActiveEffect>>,
+        discoveries: readonly string[],
         onChoice: (choiceId: string) => void,
         onEventChoice: (event: Event, choice: StoryChoice) => void,
+        onRestart: () => void,
     ): StoryContent {
         const element = document.createElement("section");
         element.className = "main";
@@ -45,8 +46,17 @@ export class StoryContentView {
                 ...(scene.textOptions ? { options: scene.textOptions } : {}),
             });
 
-            const effectList = this.createActiveEffects(activeEffects);
-            if (effectList) element.append(effectList);
+            for (const hiddenText of scene.hiddenText ?? []) {
+                if (!discoveries.includes(hiddenText.id)) continue;
+                const discoveredText = this.createTextElement();
+                discoveredText.classList.add("story-discovery");
+                element.append(discoveredText);
+                textRequests.push({
+                    target: discoveredText,
+                    text: hiddenText.text,
+                    position: scene.position ?? "Left",
+                });
+            }
 
             if (scene.qte) {
                 qteContainer = document.createElement("div");
@@ -62,12 +72,21 @@ export class StoryContentView {
                 { disabled: Boolean(scene.qte) },
             );
             choiceButtons.push(...sceneChoices.buttons);
-            if (scene.choices.length === 0) {
+            if (scene.choices.length === 0 && !scene.gameOver) {
                 const note = document.createElement("p");
                 note.textContent = "This is the end of the story content migrated so far.";
                 sceneChoices.navigation.append(note);
             }
             element.append(sceneChoices.navigation);
+
+            if (scene.gameOver) {
+                const restartButton = document.createElement("button");
+                restartButton.type = "button";
+                restartButton.className = "story-restart";
+                restartButton.textContent = "Start a new game";
+                restartButton.addEventListener("click", onRestart, { once: true });
+                element.append(restartButton);
+            }
 
             if (scene.contentNotice) {
                 const notice = document.createElement("p");
@@ -115,24 +134,4 @@ export class StoryContentView {
         return text;
     }
 
-    private createActiveEffects(activeEffects: Readonly<Record<string, ActiveEffect>>): HTMLElement | null {
-        const entries = Object.entries(activeEffects);
-        if (entries.length === 0) return null;
-
-        const effectList = document.createElement("ul");
-        effectList.className = "active-effects";
-        effectList.setAttribute("aria-label", "Active buffs and debuffs");
-        for (const [id, effect] of entries) {
-            const entry = document.createElement("li");
-            const modifier = effect.kind === "buff" ? "+" : "-";
-            const duration = effect.remainingChoices === null
-                ? "Permanent"
-                : `${effect.remainingChoices} choice${effect.remainingChoices === 1 ? "" : "s"} remaining`;
-            entry.textContent = `${id}: ${effect.kind} to ${effect.target} `
-                + `(${modifier}${effect.magnitude}; ${duration})`;
-            entry.dataset.effectKind = effect.kind;
-            effectList.append(entry);
-        }
-        return effectList;
-    }
 }

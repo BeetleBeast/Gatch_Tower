@@ -1,163 +1,195 @@
-/* ---- Side Bar ---- */
-/* ---- SB container --- */
 #Side-Menu {
-    grid-column: 1 / 1;
-    grid-row: 1 / 9;
     position: relative;
-	background-color: var(--side-Color);
-	border-right: 2px solid var(--SBBorder);
-	padding-right: 1px;
-	text-align: center;
+    z-index: 2;
     display: flex;
+    min-width: 0;
     flex-direction: column;
-    justify-content: space-between; /* this will create space between the elements */
-	transition: width 0.3s ease;
-}
-.Side-Menu_Class{
-	font-family: "Protest Revolution", sans-serif;
-	font-weight: 400;
-	font-style: normal;
-}
-/* ---- SB colapse Btn ---- */
-#Side-Menu_ColapseButton {
-	transform: scale(0.7);
-	z-index: 500;
-	display: block;
-    position: absolute;
-	top: 0;
-	right: 0;
+    gap: 1rem;
+    padding: 1rem;
+    overflow: hidden auto;
+    box-sizing: border-box;
     color: var(--DefaultColor0);
-    padding: 5px 10px; /* Adjust padding for button size */
-    border: 1px solid var(--DefaultColor9);
-	border-right: none;
-    background-color: transparent;
-    cursor: pointer;
+    background: var(--side-Color);
+    border-right: 1px solid var(--SBBorder);
+    text-align: left;
 }
-#Side-Menu_ColapseButton:hover {
-    border-color: var(--DefaultColor10);
-    background-color: var(--DefaultColor10);
-}
-/* Styles for the thick arrows (left and right) */
-.thick-arrow-left, .thick-arrow-right {
-    width: 15px;
-    height: 15px;
-    border: 5px solid var(--DefaultColor11);
-    border-left: 0;
-    border-top: 0;
-    
-    vertical-align: middle; /* Align arrows vertically within button */
-    transform: rotate(135deg); /* Adjust rotation angle for left arrow */
-    cursor: pointer;
-}
-.thick-arrow-right {
-    transform: rotate(315deg); /* Adjust rotation angle for right arrow */
-}
-#Side-Menu_ColapseButton:enabled:has(.thick-arrow-left) {
-	padding: 8px 5px 8px 10px; /* Adjust padding for button size */
-}
-#Side-Menu_ColapseButton:enabled:has(.thick-arrow-right) {
-	padding: 8px 10px 8px 5px; /* Adjust padding for button size */
-}
-/* ---- SB 1 ---- */
-.Side-Menu1{
-	margin: auto 5px;
-	padding: auto 5px;
-	margin-top: 5px;
-}
-#Side-image{
-	/*background-image:;*/
-	display: block;
-}
-#Side-Title{
-	text-align: center;
-	font-size: 25px;
-	padding-top: 6%;
-	color: var(--Gold);
-	display: block;
-}
-/* ---- SB 2 ---- */
-.Side-Menu2 {
-	height: 100%;
-	text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* this will create space between the elements */
-	color: var(--DefaultColor0);
-	margin-bottom: 15px;
-}
-/* ---- SB 3 ---- */
-.Side-Menu3 {
-	height: 100%;
-	text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* this will create space between the elements */
-	color: var(--DefaultColor0);
-}
-/* ---- SB 4 ---- */
-.Side-Menu4 {
-	height: 100%;
-	text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* this will create space between the elements */
-	color: var(--DefaultColor0);
-	margin-bottom: 3em;
-	margin-top: 15px;
-}
-.Side-Menu5 {
-	display: flex;
-	flex-direction: column-reverse;
-}
-.Side-Influences{
-	width: 100%;
-	height: 5px;
-	background-color: var(--DefaultColor12);
-}
-.Side-Influences_Bar{
-	width: 50%;
-	height: 5px;
-	background-color: var(--Control);
 
-}
-/* ---- SB 5 ---- */
-.SettingsLOW,
-.bottom-links {
-	
-}
-.bottom-links {
+.sidebar-header {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    /*justify-content: flex-end; /* this will align the elements to the bottom */
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
-.settings{
+
+.sidebar-title {
+    min-width: 0;
+    font-size: 1.15rem;
+    overflow-wrap: anywhere;
+}
+
+.sidebar-toggle {
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--DefaultColor6);
+    border-radius: 0.25rem;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.sidebar-content {
     display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-    justify-content: center;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sidebar-section {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.sidebar-section h3 {
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--SBBorder);
+    font-size: 0.95rem;
+}
+
+.sidebar-status-list,
+.sidebar-effects-list,
+.sidebar-discoveries-list,
+.sidebar-influence-list {
+    display: grid;
+    gap: 0.55rem;
+    list-style: none;
+}
+
+.sidebar-character-description {
+    color: var(--DefaultColor9);
+    font-size: 0.8rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.sidebar-character-trait {
+    font-weight: 700;
+}
+
+.sidebar-status {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-	background-color: rgb(41, 34, 34);
-	font-family: 'Times New Roman', Times, serif;
-	width: 5em;
-	height: 2.5em;
-	padding: none;
-	bottom: 10px;
-	border: 1px solid #444;
+    gap: 0.3rem 0.5rem;
+    font-size: 0.85rem;
 }
-.SettingsLOW{
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	align-items: baseline;
-    /*justify-content: flex-end; /* this will align the elements to the bottom */
+
+.sidebar-status-value {
+    font-variant-numeric: tabular-nums;
 }
-#side-Title{
-    /* existing styles */
-	margin-bottom: 50px;
+
+.sidebar-meter {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 0.4rem;
+    accent-color: var(--Green1);
 }
-.BtnInfo {
-    width: 80%;
+
+.sidebar-meter--health {
+    accent-color: #b95757;
+}
+
+.sidebar-influence {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.sidebar-influence-value {
+    color: var(--DefaultColor9);
+    font-variant-numeric: tabular-nums;
+}
+
+.sidebar-influence-meter {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 0.45rem;
+}
+
+.sidebar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--SBBorder);
+}
+
+.sidebar-action {
+    min-width: 0;
+    padding: 0.45rem;
+    border: 1px solid var(--DefaultColor6);
+    border-radius: 0.25rem;
+    color: var(--DefaultColor9);
+    background: transparent;
+    font: inherit;
+    font-size: 0.8rem;
+}
+
+.sidebar-action:last-child {
+    grid-column: 1 / -1;
+}
+
+.sidebar-effects-list li,
+.sidebar-discoveries-list li,
+.sidebar-empty {
+    color: var(--DefaultColor9);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.sidebar-discoveries-list summary {
+    color: var(--DefaultColor0);
+    cursor: pointer;
+}
+
+.sidebar-discoveries-list p {
+    margin-top: 0.35rem;
+    color: var(--DefaultColor9);
+}
+
+.sidebar-death {
+    padding: 0.5rem;
+    border-left: 3px solid #b95757;
+    color: #ffb4b4;
+}
+
+#Side-Menu[data-collapsed="true"] {
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+}
+
+#Side-Menu[data-collapsed="true"] .sidebar-title,
+#Side-Menu[data-collapsed="true"] .sidebar-content {
+    display: none;
+}
+
+#Side-Menu[data-collapsed="true"] .sidebar-header {
+    justify-content: center;
+}
+
+@media (max-width: 640px) {
+    #Side-Menu {
+        padding: 0.75rem;
+    }
+
+    .sidebar-title {
+        font-size: 0.95rem;
+    }
 }

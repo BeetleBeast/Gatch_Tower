@@ -1,8 +1,9 @@
 import type { SaveRepository } from "../../interfaces/index";
+import { DEFAULT_GAME_STATUSES, STATUS_LIMITS } from "../../types/index";
 import type { ActiveEffect, GameState, QteSequenceResult, SceneId } from "../../types/index";
 
-const SAVE_KEY = "gatch-tower.game.v3";
-const PREVIOUS_SAVE_KEYS = ["gatch-tower.game.v2", "gatch-tower.game.v1"] as const;
+const SAVE_KEY = "gatch-tower.game.v6";
+const PREVIOUS_SAVE_KEYS = ["gatch-tower.game.v5", "gatch-tower.game.v4", "gatch-tower.game.v3", "gatch-tower.game.v2", "gatch-tower.game.v1"] as const;
 
 export class LocalSaveRepository implements SaveRepository {
     private readonly storage: Storage;
@@ -43,7 +44,9 @@ function migrateGameState(value: unknown): GameState | null {
     }
 
     const candidate = value as Record<string, unknown>;
-    if ((candidate.schemaVersion !== 1 && candidate.schemaVersion !== 2 && candidate.schemaVersion !== 3)
+    if ((candidate.schemaVersion !== 1 && candidate.schemaVersion !== 2
+        && candidate.schemaVersion !== 3 && candidate.schemaVersion !== 4
+        && candidate.schemaVersion !== 5 && candidate.schemaVersion !== 6)
         || !isSceneId(candidate.currentSceneId)
         || !isStringRecord(candidate.choicesMade)) {
         return null;
@@ -52,28 +55,43 @@ function migrateGameState(value: unknown): GameState | null {
     const sceneHistory = candidate.sceneHistory ?? [];
     const characterChoices = candidate.characterChoices ?? {};
     const statuses = candidate.statuses ?? {};
+    const savedManaUnlocked = candidate.manaUnlocked;
+    const discoveries = candidate.discoveries ?? [];
+    const savedDeadFlag = candidate.isDead ?? false;
     const effects = candidate.effects ?? {};
     const qteResults = candidate.qteResults ?? {};
     if (!Array.isArray(sceneHistory)
         || !sceneHistory.every(isSceneId)
         || !isStringRecord(characterChoices)
-        || !isNumberRecord(statuses)
+        || !isValidStatuses(statuses)
+        || (savedManaUnlocked !== undefined && typeof savedManaUnlocked !== "boolean")
+        || (candidate.schemaVersion === 6 && typeof savedManaUnlocked !== "boolean")
+        || !isStringArray(discoveries)
+        || typeof savedDeadFlag !== "boolean"
         || !isActiveEffectsRecord(effects)
         || !isQteResultsRecord(qteResults)) {
         return null;
     }
 
-    const migratedStatuses = { ...statuses };
+    const migratedStatuses = { ...DEFAULT_GAME_STATUSES, ...statuses };
+    const manaUnlocked = typeof savedManaUnlocked === "boolean"
+        ? savedManaUnlocked
+        : candidate.schemaVersion === 5 || (migratedStatuses.mana ?? 0) > 0;
+    const isDead = savedDeadFlag || migratedStatuses.health === 0;
+    if (isDead) migratedStatuses.health = 0;
     const migratedQteResults = { ...qteResults };
     migrateLegacyQteResults(migratedStatuses, migratedQteResults);
 
     return {
-        schemaVersion: 3,
+        schemaVersion: 6,
         currentSceneId: candidate.currentSceneId,
         sceneHistory,
         choicesMade: candidate.choicesMade,
         characterChoices,
         statuses: migratedStatuses,
+        manaUnlocked,
+        discoveries: [...new Set(discoveries)],
+        isDead,
         effects,
         events: {},
         qteResults: migratedQteResults,
@@ -139,11 +157,17 @@ function isStringRecord(value: unknown): value is Record<string, string> {
         && Object.values(value).every((entry) => typeof entry === "string");
 }
 
-function isNumberRecord(value: unknown): value is Record<string, number> {
-    return typeof value === "object"
-        && value !== null
-        && !Array.isArray(value)
-        && Object.values(value).every((entry) => typeof entry === "number" && Number.isFinite(entry));
+function isValidStatuses(value: unknown): value is Record<string, number> {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+    return Object.entries(value).every(([status, entry]) => {
+        if (typeof entry !== "number" || !Number.isFinite(entry)) return false;
+        const limits = STATUS_LIMITS[status];
+        return !limits || (entry >= limits.min && (limits.max === undefined || entry <= limits.max));
+    });
+}
+
+function isStringArray(value: unknown): value is string[] {
+    return Array.isArray(value) && value.every((entry) => typeof entry === "string" && entry.trim() !== "");
 }
 
 function isActiveEffectsRecord(value: unknown): value is Record<string, ActiveEffect> {

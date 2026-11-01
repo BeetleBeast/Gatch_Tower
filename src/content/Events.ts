@@ -7,9 +7,9 @@ export const ALL_EVENTS: Event[] = [
         text: 'A dev has captured you and is about to question you!\nWhat will you do?',
         position: 'Left',
         coloring: {
-            Color: ['blue'],
+            Color: 'blue',
             duration: 1,
-            Background: ['black'],
+            Background: 'transparent',
             OnlySnippet: false,
         },
         weight: 0.5,
@@ -31,9 +31,9 @@ export const ALL_EVENTS: Event[] = [
         text: 'A dev offers you a ride to the worlds edge!\nWhat will you do?',
         position: 'Left',
         coloring: {
-            Color: ['yellow'],
+            Color: 'yellow',
             duration: 1,
-            Background: ['black'],
+            Background: 'transparent',
             OnlySnippet: false,
         },
         weight: 1,

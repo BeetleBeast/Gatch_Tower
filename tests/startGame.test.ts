@@ -2,17 +2,28 @@ import { describe, expect, it, vi } from "vitest";
 import type { GameStateFactory, SaveRepository, StartScreenActions, StoryViewPort } from "../src/interfaces/index";
 import { StartGame } from "../src/app/startGame";
 import { StoryEngine } from "../src/domain/story/storyEngine";
+import { NewGameFactory } from "../src/domain/save/newGameFactory";
 import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
 
 describe("StartGame", () => {
+    it("starts new games with no Mana and a locked Mana display", () => {
+        const state = new NewGameFactory("0_0").create();
+
+        expect(state.statuses.mana).toBe(0);
+        expect(state.manaUnlocked).toBe(false);
+    });
+
     it("keeps a completed QTE result when the player advances the scene", () => {
         const initialState: GameState = {
-            schemaVersion: 3,
+            schemaVersion: 6,
             currentSceneId: "1_3",
             sceneHistory: [],
             choicesMade: {},
             characterChoices: {},
-            statuses: {},
+            statuses: { health: 100, mana: 100, comprehension: 0 },
+            manaUnlocked: true,
+            discoveries: [],
+            isDead: false,
             effects: {},
             events: {},
             qteResults: {},
@@ -83,12 +94,15 @@ describe("StartGame", () => {
             includeOriginalScene: true,
         };
         const initialState: GameState = {
-            schemaVersion: 3,
+            schemaVersion: 6,
             currentSceneId: "0_0",
             sceneHistory: [],
             choicesMade: {},
             characterChoices: {},
-            statuses: {},
+            statuses: { health: 100, mana: 100, comprehension: 0 },
+            manaUnlocked: true,
+            discoveries: [],
+            isDead: false,
             effects: {},
             events: {},
             qteResults: {},

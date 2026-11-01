@@ -6,8 +6,6 @@ export const DEFAULT_TEXT_RENDER_OPTIONS: TextRenderOptions = {
     secondaryElement: true,
     secondaryElementTitle: null,
     Coloring: {
-        Color: [],
-        Background: [],
         duration: 0,
         OnlySnippet: false,
     },

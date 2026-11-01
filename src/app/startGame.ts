@@ -64,7 +64,7 @@ export class StartGame {
 
     private openGame(state: GameState): void {
         try {
-            const scene = this.storyEngine.getScene(state.currentSceneId);
+            const scene = this.storyEngine.getSceneForState(state);
             this.startScreen.hide();
             this.renderScene(state, scene);
         } catch (error) {
@@ -76,7 +76,7 @@ export class StartGame {
         try {
             const nextState = this.storyEngine.choose(state, choiceId);
             this.saveRepository.save(nextState);
-            const nextScene = this.storyEngine.getScene(nextState.currentSceneId);
+            const nextScene = this.storyEngine.getSceneForState(nextState);
             this.renderScene(nextState, nextScene);
         } catch (error) {
             this.reportError("Could not save or advance this choice.", error, this.storyView);
@@ -89,7 +89,7 @@ export class StartGame {
             if (!choice) throw new Error(`Choice "${choiceId}" is not available in event "${event.name}".`);
             const nextState = this.storyEngine.chooseEvent(state, event, choiceId);
             this.saveRepository.save(nextState);
-            const nextScene = this.storyEngine.getScene(nextState.currentSceneId);
+            const nextScene = this.storyEngine.getSceneForState(nextState);
             const remainingEvents = choice.destination.type === "None"
                 ? currentEvents.filter((candidate) => candidate.id !== event.id)
                 : undefined;
@@ -101,14 +101,23 @@ export class StartGame {
 
     private renderScene(state: GameState, scene: StoryScene, selectedEvents?: readonly Event[]): void {
         let sceneState = state;
-        const events = selectedEvents ?? this.randomEncounters.tryRandomEncounter(scene.id) ?? [];
+        const selected = state.isDead
+            ? []
+            : selectedEvents ?? this.randomEncounters.tryRandomEncounter(scene.id) ?? [];
+        const events = selected.map((event) => this.storyEngine.getEventForState(event, state));
         this.storyView.render(
             scene,
             {
                 events,
+                statuses: state.statuses,
+                manaUnlocked: state.manaUnlocked,
+                characterChoices: state.characterChoices,
+                discoveries: state.discoveries,
                 activeEffects: state.effects,
+                isDead: state.isDead,
                 onChoice: (choiceId) => this.choose(sceneState, choiceId),
                 onEventChoice: (event, choice) => this.chooseEvent(sceneState, event, choice.id, events),
+                onRestart: () => this.beginNewGame(),
                 onQteResult: (result) => {
                     sceneState = this.saveQteResult(sceneState, scene.id, result);
                 },

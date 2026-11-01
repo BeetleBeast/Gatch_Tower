@@ -1,6 +1,6 @@
 import type { StoryChoice } from "../types";
 
-const CHOICE_COLORS: Readonly<Record<string, string>> = {
+export const STORY_CHOICE_COLORS: Readonly<Record<string, string>> = {
     blue: "#72a7ff",
     brown: "#c4946d",
     green: "#70d28b",
@@ -47,7 +47,7 @@ export function createStoryChoiceList(
             button.dataset.eventId = String(options.eventId);
             button.dataset.eventChoiceId = choice.id;
         }
-        const choiceColor = CHOICE_COLORS[choice.id];
+        const choiceColor = STORY_CHOICE_COLORS[choice.id];
         if (choiceColor) button.style.color = choiceColor;
         button.textContent = `(${index + 1}) ${choice.label}`;
         button.disabled = options.disabled ?? false;

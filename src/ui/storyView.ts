@@ -1,20 +1,23 @@
 import type { QteViewPort, StoryViewPort, StoryViewRenderOptions, TextRenderRequest, TextRendererPort } from "../interfaces";
 import type { QteSequenceResult, StoryScene } from "../types";
 import { StoryContentView } from "./storyContentView";
+import type { SidebarView } from "./sidebarView";
 
 export class StoryView implements StoryViewPort {
     private readonly root: HTMLElement;
     private readonly textRenderer: TextRendererPort;
     private readonly qteView: QteViewPort;
     private readonly contentView: StoryContentView;
+    private readonly sidebar: SidebarView | undefined;
     private currentTextElements: HTMLElement[] = [];
     private currentSceneController: AbortController | null = null;
 
-    constructor(root: HTMLElement, textRenderer: TextRendererPort, qteView: QteViewPort) {
+    constructor(root: HTMLElement, textRenderer: TextRendererPort, qteView: QteViewPort, sidebar?: SidebarView) {
         this.root = root;
         this.textRenderer = textRenderer;
         this.qteView = qteView;
         this.contentView = new StoryContentView(textRenderer);
+        this.sidebar = sidebar;
     }
 
     public render(scene: StoryScene, options: StoryViewRenderOptions): void {
@@ -23,10 +26,20 @@ export class StoryView implements StoryViewPort {
         const content = this.contentView.create(
             scene,
             options.events,
-            options.activeEffects,
+            options.discoveries,
             options.onChoice,
             options.onEventChoice,
+            options.onRestart,
         );
+        this.sidebar?.render({
+            scene,
+            statuses: options.statuses,
+            manaUnlocked: options.manaUnlocked,
+            characterChoices: options.characterChoices,
+            effects: options.activeEffects,
+            discoveries: options.discoveries,
+            isDead: options.isDead,
+        });
         this.currentTextElements = content.textRequests.map(({ target }) => target);
         this.root.replaceChildren(content.element);
 

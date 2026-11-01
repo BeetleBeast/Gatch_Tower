@@ -14,10 +14,14 @@ import { TextAnimator } from "./ui/textRenderer/textAnimator";
 import { QteSequence } from "./domain/qte/qteSequence";
 import { BarQteView } from "./ui/qte/barQteView";
 import { RandomEncounters } from "./domain/encounters/randomEncounters";
+import { SidebarView } from "./ui/sidebarView";
 
 function bootstrap(): void {
     const appRoot = document.querySelector<HTMLElement>(".app");
     if (!appRoot) throw new Error("Could not start the game: the .app element is missing.");
+    const sidebarRoot = document.querySelector<HTMLElement>("#Side-Menu");
+    if (!sidebarRoot) throw new Error("Could not start the game: the #Side-Menu element is missing.");
+    const sidebar = new SidebarView(sidebarRoot, Object.values(storyScenes));
 
     const animationClock = new AnimationClock();
     const textAnimator = new TextAnimator({
@@ -29,7 +33,7 @@ function bootstrap(): void {
     const qteSequence = new QteSequence(animationClock);
     const game = new StartGame(
         new StartScreen(appRoot),
-        new StoryView(appRoot, textRenderer, new BarQteView(qteSequence)),
+        new StoryView(appRoot, textRenderer, new BarQteView(qteSequence), sidebar),
         new LocalSaveRepository(window.localStorage),
         new NewGameFactory("0_0"),
         new StoryEngine(storyScenes),

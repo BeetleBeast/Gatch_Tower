@@ -40,9 +40,9 @@ export type TextRenderOptionsInput =
     };
 
 interface TextColoringBase {
-    Background: string[];
+    Background?: string;
     duration: number;
-    Color: string[];
+    Color?: string;
 }
 
 export type TextColoringOptions =

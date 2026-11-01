@@ -8,6 +8,22 @@ Install dependencies with `npm install`, then run `npm run dev`. Vite opens the 
 
 Run `npm run build` to type-check the TypeScript and create a production build in `dist/`.
 
+### Random events
+
+Author random events in `src/content/Events.ts`. `StartGame.renderScene` calls `RandomEncounters.tryRandomEncounter(scene.id)` once when a scene is entered and passes the selected event(s) to `StoryView`.
+
+`includeOriginalScene: true` displays the event together with the original scene, including both sets of text and choices. `includeOriginalScene: false` displays the event alone. If multiple events are selected and any excludes the original scene, the original scene is hidden. Event choices use the same navigation and choice-effect handling as story choices. A choice with destination `{ type: "None" }` dismisses that event and keeps the player on the current scene without rerolling the remaining selected events.
+
+The selection is not persisted, so reloading or re-entering the same scene can select a different event. The presentation is separated into `src/ui/storyView.ts` (render lifecycle and QTE), `src/ui/storyContentView.ts` (scene composition), `src/ui/storyEventView.ts` (event markup), and `src/ui/storyChoiceList.ts` (shared choice buttons).
+
+### Story mechanics
+
+Story choices and variants can use conditions for character choices, discoveries, and status thresholds. Choices can also record a discovery or change a status. Discoveries are saved and reveal matching `hiddenText` on the scene; `allOf` combines multiple conditions.
+
+Health and Mana are bounded from 0 to 100. Comprehension has a minimum of 0. Pain, Fatigue, Fear, Stress, Trauma, Addiction, Sickness, Bleed, and Control are bounded influence meters that scenes can change through the existing `applyStatus` story effect. New games start with 0 Mana and 0 for each influence except Control, which starts at 70. Zero-valued statuses and influences are hidden, except Health remains visible. Mana is hidden until first gained, then stays visible even when depleted; this unlock state is saved. A scene can set `deathSceneId` to route choices that cause death or reduce Health to zero; the explicit saved death state prevents choices or events from returning the player to active gameplay. Scenes marked `gameOver` offer a new-game action. New games start with 100 Health and 0 Comprehension. The save repository migrates previous save versions to the current format.
+
+The persistent sidebar displays current statuses, the legacy influence meters, character choices, active effects, and discovered clues. Clue details remain available there after leaving the discovery scene. The sidebar can be collapsed. Settings, Saves, and Info buttons are present as disabled placeholders until their systems are available in the TypeScript game.
+
 ## 🎮 Game Concept
 
 **Title:** *Gatsha Tower*  

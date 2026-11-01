@@ -10,10 +10,12 @@ export interface StoryChoice {
     label: string;
     destination: SceneDestination;
     effects?: StoryEffect[];
+    condition?: StoryCondition;
 }
 export type StoryEffect =
     | { type: "setCharacterChoice"; record: Record<string, string>; }
     | { type: "applyStatus"; status: string; amount: number }
+    | { type: "discover"; discoveryId: string }
     | { type: "applyEffect"; effectId: string; kind: ActiveEffectKind; target: string; magnitude: number; durationChoices?: number }
     | { type: "removeEffect"; effectId: string };
 
@@ -30,6 +32,7 @@ export type SceneDestination =
     | { type: "scene"; sceneId: SceneId }
     | { type: "back" }
     | { type: 'next' }
+    | { type: "death" }
     | { type: 'None' };
 
 
@@ -44,6 +47,10 @@ export interface StoryScene {
     variants?: SceneVariant[];
     contentNotice?: string;
     qte?: QteConfig;
+    hiddenText?: { id: string; text: string }[];
+    deathSceneId?: SceneId;
+    gameOver?: boolean;
+    sidebarTitle?: string;
 }
 
 interface SceneVariant {
@@ -52,5 +59,9 @@ interface SceneVariant {
     choices: StoryChoice[];
 }
 
-export type StoryCondition = 
-    | { type: "characterChoice"; record: Record<string, string>; }; // idk if this is ok
+export type StoryCondition =
+    | { type: "characterChoice"; record: Record<string, string> }
+    | { type: "discovery"; discoveryId: string; discovered: boolean }
+    | { type: "statusAtLeast"; status: string; amount: number }
+    | { type: "statusBelow"; status: string; amount: number }
+    | { type: "allOf"; conditions: StoryCondition[] };

@@ -27,8 +27,8 @@ export class TextStyler {
         target: HTMLElement,
         coloring: Extract<TextColoringOptions, { OnlySnippet: false }>,
     ): void {
-        target.style.color = coloring.Color[0] ?? target.style.color;
-        target.style.backgroundColor = coloring.Background[0] ?? "";
+        target.style.color = coloring.Color ?? target.style.color;
+        target.style.backgroundColor = coloring.Background ?? "";
     }
 
     private applySnippetColors(
@@ -80,8 +80,8 @@ export class TextStyler {
         const highlight = document.createElement("span");
         highlight.dataset.textStyle = "true";
         highlight.textContent = match.text;
-        highlight.style.color = coloring.Color[match.colorIndex] ?? coloring.Color[0] ?? "";
-        highlight.style.backgroundColor = coloring.Background[match.colorIndex] ?? "";
+        highlight.style.color = coloring.Color ?? "";
+        highlight.style.backgroundColor = coloring.Background ?? "";
         return highlight;
     }
 }
