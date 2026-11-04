@@ -16,6 +16,12 @@ describe("RandomEncounters", () => {
         expect(encounters.tryRandomEncounter("0_0")).toEqual([ALL_EVENTS[0]]);
     });
 
+    it("does not offer teleportation to a chapter that has not been implemented", () => {
+        const encounters = new RandomEncounters(ALL_EVENTS, () => 0.99);
+
+        expect(encounters.tryRandomEncounter("1_0")).toBeNull();
+    });
+
     it("can select two events only when both allow multiple events", () => {
         const events = [createEvent(10, true), createEvent(11, true)];
         const rolls = [0.1, 0.2];

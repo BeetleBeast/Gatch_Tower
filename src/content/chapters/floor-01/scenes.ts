@@ -6,7 +6,6 @@ export const floor01Scenes: Readonly<Record<SceneId, StoryScene>> = {
         title: "Cave Exploration",
         text: "As you wander through the cave's labyrinth-like passages, you encounter a variety of pathways, each offering its own unique allure. One path is adorned with vibrant green moss, another lined with glittering crystals, while another disappears into shadowed depths. Further along, you find yourself following the course of an underground stream, and eventually, you stumble upon a cavern illuminated by bioluminescent fungi. Each pathway beckons with its own mysteries, inviting you to explore deeper into the heart of the cave's secrets.",
         choices: [
-            { id: "previous", label: "Previously", destination: { type: "back" } },
             { id: "mossyPassage", label: "The Mossy Passage", destination: { type: "scene", sceneId: "1_1" } },
             { id: "crystalTunnel", label: "The Crystal Tunnel", destination: { type: "scene", sceneId: "1_2" } },
             { id: "shadowedCorridor", label: "The Shadowed Corridor", destination: { type: "scene", sceneId: "1_3" } },

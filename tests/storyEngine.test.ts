@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { StoryEngine } from "../src/domain/story/storyEngine";
+import { storyScenes } from "../src/content/scenes";
 import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
 
 const scenes: Readonly<Record<SceneId, StoryScene>> = {
@@ -108,8 +109,29 @@ describe("StoryEngine", () => {
         expect(previous.sceneHistory).toEqual(["0_0"]);
         expect(previous.characterChoices).toEqual({ eyes: "lightgrey" });
 
-        const migratedSavePrevious = engine.choose(createState("0_2"), "previous");
-        expect(migratedSavePrevious.currentSceneId).toBe("0_1");
+        expect(engine.getSceneForState(createState("0_2")).choices.map((choice) => choice.id)).not.toContain("previous");
+        expect(() => engine.choose(createState("0_2"), "previous"))
+            .toThrow('Choice "previous" is not available in scene "0_2".');
+    });
+
+    it("does not offer a back choice without history and returns to the actual branch point", () => {
+        const engine = new StoryEngine(storyScenes);
+        const state = createState("1_2");
+
+        expect(engine.getSceneForState(state).choices.map((choice) => choice.id)).not.toContain("previous");
+        expect(() => engine.choose(state, "previous"))
+            .toThrow('Choice "previous" is not available in scene "1_2".');
+
+        const enteredCrystalBranch = engine.choose(createState("1_0"), "crystalTunnel");
+        const returnedToBranchPoint = engine.choose(enteredCrystalBranch, "previous");
+        expect(returnedToBranchPoint.currentSceneId).toBe("1_0");
+    });
+
+    it("does not allow returning to floor 0 after entering floor 1", () => {
+        const engine = new StoryEngine(storyScenes);
+        const state = { ...createState("1_0"), sceneHistory: ["0_9"] as SceneId[] };
+
+        expect(engine.getSceneForState(state).choices.map((choice) => choice.id)).not.toContain("previous");
     });
 
     it("orders scene numbers numerically rather than lexicographically", () => {

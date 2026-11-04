@@ -57,14 +57,14 @@ export class StoryEngine implements StoryEnginePort {
         return {
             ...scene,
             ...(variant ? { text: variant.text } : {}),
-            choices: choices.filter((choice) => !choice.condition || conditionMatches(choice.condition, state)),
+            choices: choices.filter((choice) => choiceIsAvailable(choice, state)),
         };
     }
 
     public getEventForState(event: Event, state: GameState): Event {
         return {
             ...event,
-            choices: event.choices.filter((choice) => !choice.condition || conditionMatches(choice.condition, state)),
+            choices: event.choices.filter((choice) => choiceIsAvailable(choice, state)),
         };
     }
 
@@ -91,10 +91,10 @@ export class StoryEngine implements StoryEnginePort {
 
         if (destination.type === "back") {
             const sceneHistory = [...state.sceneHistory];
-            const sceneId = sceneHistory.pop() ?? this.orderedSceneIds[this.orderedSceneIds.indexOf(currentScene.id) - 1];
-            
+            const sceneId = sceneHistory.pop();
+
             if (!sceneId) throw new Error(`There is no previous scene before "${currentScene.id}".`);
-            
+
             this.getScene(sceneId);
 
             return { sceneId, sceneHistory };
@@ -223,6 +223,11 @@ function conditionMatches(condition: StoryCondition, state: GameState): boolean 
         case "allOf":
             return condition.conditions.every((candidate) => conditionMatches(candidate, state));
     }
+}
+
+function choiceIsAvailable(choice: StoryChoice, state: GameState): boolean {
+    return (choice.destination.type !== "back" || state.sceneHistory.length > 0)
+        && (!choice.condition || conditionMatches(choice.condition, state));
 }
 
 function clampStatus(status: string, value: number): number {
