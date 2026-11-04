@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { StoryViewRenderOptions, TextRendererPort } from "../src/interfaces/index";
 import type { QteViewPort } from "../src/interfaces/index";
-import { StoryView } from "../src/ui/storyView";
-import { SidebarView } from "../src/ui/sidebarView";
+import { StoryView } from "../src/ui/story/storyView";
+import { SidebarView } from "../src/ui/sidebar/sidebarView";
 import type { Event, StoryScene } from "../src/types/index";
 import { storyScenes } from "../src/content/scenes";
 

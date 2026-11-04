@@ -1,4 +1,4 @@
-import type { StoryChoice } from "../types";
+import type { StoryChoice } from "../../types";
 
 export const STORY_CHOICE_COLORS: Readonly<Record<string, string>> = {
     blue: "#72a7ff",

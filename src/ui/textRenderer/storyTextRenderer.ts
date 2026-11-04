@@ -2,11 +2,11 @@ import type {
     TextAnimatorPort,
     TextRenderRequest,
     TextRendererPort,
-} from "../interfaces/index";
-import { DEFAULT_TEXT_RENDER_OPTIONS } from "../constants/index";
-import type { TextRenderOptions } from "../types/index";
-import { splitTextLines } from "./textRenderer/textFormatting";
-import { TextStyler } from "./textRenderer/textStyler";
+} from "../../interfaces/index";
+import { DEFAULT_TEXT_RENDER_OPTIONS } from "../../constants/index";
+import type { TextRenderOptions } from "../../types/index";
+import { splitTextLines } from "./textFormatting";
+import { TextStyler } from "./textStyler";
 
 interface RenderSession {
     elements: HTMLElement[];

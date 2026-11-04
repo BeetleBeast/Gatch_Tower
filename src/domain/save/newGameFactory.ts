@@ -1,5 +1,5 @@
 import type { GameState, SceneId } from "../../types";
-import { DEFAULT_GAME_STATUSES } from "../../types";
+import { DEFAULT_GAME_STATUSES } from "../../constants";
 import type { GameStateFactory } from "../../interfaces";
 
 export class NewGameFactory implements GameStateFactory {

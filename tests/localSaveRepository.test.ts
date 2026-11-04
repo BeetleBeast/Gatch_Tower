@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { LocalSaveRepository } from "../src/infrastructure/persistence/localSaveRepository";
-import { DEFAULT_GAME_STATUSES } from "../src/types/index";
+import { DEFAULT_GAME_STATUSES } from "../src/constants/index";
 import type { GameState } from "../src/types/index";
 
 describe("LocalSaveRepository", () => {

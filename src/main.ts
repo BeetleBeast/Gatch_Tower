@@ -3,9 +3,9 @@ import { LocalSaveRepository } from "./infrastructure/persistence/localSaveRepos
 import { StoryEngine } from "./domain/story/storyEngine";
 import { NewGameFactory } from "./domain/save/newGameFactory";
 import { storyScenes } from "./content/scenes";
-import { StartScreen } from "./ui/startScreen";
-import { StoryView } from "./ui/storyView";
-import { StoryTextRenderer } from "./ui/textRenderer";
+import { StartScreen } from "./ui/startScreen/startScreen";
+import { StoryView } from "./ui/story/storyView";
+import { StoryTextRenderer } from "./ui/textRenderer/storyTextRenderer";
 import { AnimationClock } from "./infrastructure/browser/animationClock";
 import { FadeEffect } from "./ui/textRenderer/effects/fadeEffect";
 import { TypewriterEffect } from "./ui/textRenderer/effects/typewriterEffect";
@@ -14,7 +14,7 @@ import { TextAnimator } from "./ui/textRenderer/textAnimator";
 import { QteSequence } from "./domain/qte/qteSequence";
 import { BarQteView } from "./ui/qte/barQteView";
 import { RandomEncounters } from "./domain/encounters/randomEncounters";
-import { SidebarView } from "./ui/sidebarView";
+import { SidebarView } from "./ui/sidebar/sidebarView";
 
 function bootstrap(): void {
     const appRoot = document.querySelector<HTMLElement>(".app");

@@ -1,6 +1,6 @@
-import type { ActiveEffect, StoryScene } from "../types";
-import { DEFAULT_GAME_STATUSES, GAME_INFLUENCE_STATUSES } from "../types";
-import { STORY_CHOICE_COLORS } from "./storyChoiceList";
+import type { ActiveEffect, StoryScene } from "../../types";
+import { DEFAULT_GAME_STATUSES, GAME_INFLUENCE_STATUSES } from "../../constants";
+import { STORY_CHOICE_COLORS } from "../story/storyChoiceList";
 
 export interface SidebarRenderOptions {
     scene: StoryScene;

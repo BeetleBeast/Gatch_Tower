@@ -7,7 +7,7 @@ export type Event = {
     text: string;
     position?: TextPosition;
     coloring?: TextColoringOptions;
-    
+
     weight: number;
 
     choices: StoryChoice[];
@@ -18,23 +18,20 @@ export type Event = {
     includeOriginalScene: boolean;
 };
 
-
-export type EventName  = 'Teleportation' | 'Test' | 'NoEvent'; // here are the names
+export type EventName = "Teleportation" | "Test" | "NoEvent";
 
 export type SceneLocations = {
     except?: number[];
 } & (
     | { smallerThan: number; biggerThan?: number }
     | { biggerThan: number; smallerThan?: number }
-) | 'All' | 'None';
-
-
+) | "All" | "None";
 
 type ChapterLocation = SceneLocations;
 
 export type StoryLocationDetails = {
     chapter: ChapterLocation;
     scene: SceneLocations;
-} 
+};
 
-type StoryLocation = StoryLocationDetails | 'All' | 'None' | SceneId;
+type StoryLocation = StoryLocationDetails | "All" | "None" | SceneId;

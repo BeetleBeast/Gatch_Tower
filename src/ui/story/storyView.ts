@@ -1,7 +1,7 @@
-import type { QteViewPort, StoryViewPort, StoryViewRenderOptions, TextRenderRequest, TextRendererPort } from "../interfaces";
-import type { QteSequenceResult, StoryScene } from "../types";
+import type { QteViewPort, StoryViewPort, StoryViewRenderOptions, TextRenderRequest, TextRendererPort } from "../../interfaces";
+import type { QteSequenceResult, StoryScene } from "../../types";
 import { StoryContentView } from "./storyContentView";
-import type { SidebarView } from "./sidebarView";
+import type { SidebarView } from "../sidebar/sidebarView";
 
 export class StoryView implements StoryViewPort {
     private readonly root: HTMLElement;

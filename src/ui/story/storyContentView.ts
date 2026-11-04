@@ -1,5 +1,5 @@
-import type { TextRendererPort, TextRenderRequest } from "../interfaces";
-import type { Event, StoryChoice, StoryScene } from "../types";
+import type { TextRendererPort, TextRenderRequest } from "../../interfaces";
+import type { Event, StoryChoice, StoryScene } from "../../types";
 import { createStoryChoiceList } from "./storyChoiceList";
 import { StoryEventView } from "./storyEventView";
 

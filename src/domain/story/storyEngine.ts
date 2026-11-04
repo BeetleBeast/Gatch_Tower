@@ -1,6 +1,6 @@
 import type { StoryEnginePort } from "../../interfaces";
 import { EffectEngine } from "../effects/effectEngine";
-import { STATUS_LIMITS } from "../../types/index";
+import { STATUS_LIMITS } from "../../constants/index";
 import type { Event, GameState, SceneId, StoryChoice, StoryCondition, StoryScene } from "../../types/index";
 import type { SceneDestination } from "../../types/story";
 

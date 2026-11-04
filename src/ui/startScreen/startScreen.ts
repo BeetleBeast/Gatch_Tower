@@ -1,4 +1,4 @@
-import type { StartScreenActions, StartScreenPort } from "../interfaces/index";
+import type { StartScreenActions, StartScreenPort } from "../../interfaces/index";
 
 export class StartScreen implements StartScreenPort {
     private readonly root: HTMLElement;

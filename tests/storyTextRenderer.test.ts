@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { TextAnimatorPort, TextRenderRequest } from "../src/interfaces/index";
 import { DEFAULT_TEXT_RENDER_OPTIONS } from "../src/constants/index";
-import { StoryTextRenderer } from "../src/ui/textRenderer";
+import { StoryTextRenderer } from "../src/ui/textRenderer/storyTextRenderer";
 
 function createAnimator(): TextAnimatorPort {
     return {
@@ -99,8 +99,8 @@ describe("StoryTextRenderer", () => {
                 Coloring: {
                     OnlySnippet: true,
                     snippet: ["red"],
-                    Color: ["red"],
-                    Background: [],
+                    Color: "red",
+                    Background: "transparent",
                     duration: 1,
                 },
             },

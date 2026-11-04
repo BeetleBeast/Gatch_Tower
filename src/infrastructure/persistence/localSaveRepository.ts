@@ -1,5 +1,5 @@
 import type { SaveRepository } from "../../interfaces/index";
-import { DEFAULT_GAME_STATUSES, STATUS_LIMITS } from "../../types/index";
+import { DEFAULT_GAME_STATUSES, STATUS_LIMITS } from "../../constants/index";
 import type { ActiveEffect, GameState, QteSequenceResult, SceneId } from "../../types/index";
 
 const SAVE_KEY = "gatch-tower.game.v6";
