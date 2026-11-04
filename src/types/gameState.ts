@@ -1,6 +1,6 @@
 import type { ActiveEffect, SceneId } from "./story";
 import type { QteSequenceResult } from "./qte";
-import type { Event } from "./events";
+import type { Event } from "./Events";
 
 export interface GameState {
     schemaVersion: 6;

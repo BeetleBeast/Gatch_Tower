@@ -1,4 +1,4 @@
-import { ALL_EVENTS } from "../../content/events";
+import { ALL_EVENTS } from "../../content/Events";
 import type { SceneId, SceneLocations, StoryLocationDetails } from "../../types";
 import type { Event } from "../../types";
 

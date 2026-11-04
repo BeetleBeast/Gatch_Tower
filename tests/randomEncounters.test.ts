@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ALL_EVENTS } from "../src/content/events";
+import { ALL_EVENTS } from "../src/content/Events";
 import { RandomEncounters } from "../src/domain/encounters/randomEncounters";
-import type { Event } from "../src/types/events";
+import type { Event } from "../src/types/Events";
 
 describe("RandomEncounters", () => {
     it("selects only events allowed at the current scene", () => {
