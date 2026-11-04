@@ -18,6 +18,8 @@ The selection is not persisted, so reloading or re-entering the same scene can s
 
 ### Story mechanics
 
+Story navigation is an explicit scene graph: every moving choice uses `{ type: "scene", sceneId: "..." }` to name its destination. Do not rely on scene numbering or use an implicit “next” destination; the story engine validates scene and variant edges (and registered event edges) when it starts, so missing targets fail immediately.
+
 Story choices and variants can use conditions for character choices, discoveries, and status thresholds. Choices can also record a discovery or change a status. Discoveries are saved and reveal matching `hiddenText` on the scene; `allOf` combines multiple conditions.
 
 Health and Mana are bounded from 0 to 100. Comprehension has a minimum of 0. Pain, Fatigue, Fear, Stress, Trauma, Addiction, Sickness, Bleed, and Control are bounded influence meters that scenes can change through the existing `applyStatus` story effect. New games start with 0 Mana and 0 for each influence except Control, which starts at 70. Zero-valued statuses and influences are hidden, except Health remains visible. Mana is hidden until first gained, then stays visible even when depleted; this unlock state is saved. A scene can set `deathSceneId` to route choices that cause death or reduce Health to zero; the explicit saved death state prevents choices or events from returning the player to active gameplay. Scenes marked `gameOver` offer a new-game action. New games start with 100 Health and 0 Comprehension. The save repository migrates previous save versions to the current format.

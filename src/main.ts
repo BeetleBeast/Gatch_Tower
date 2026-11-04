@@ -15,6 +15,7 @@ import { QteSequence } from "./domain/qte/qteSequence";
 import { BarQteView } from "./ui/qte/barQteView";
 import { RandomEncounters } from "./domain/encounters/randomEncounters";
 import { SidebarView } from "./ui/sidebar/sidebarView";
+import { ALL_EVENTS } from "./content/Events";
 
 function bootstrap(): void {
     const appRoot = document.querySelector<HTMLElement>(".app");
@@ -36,8 +37,8 @@ function bootstrap(): void {
         new StoryView(appRoot, textRenderer, new BarQteView(qteSequence), sidebar),
         new LocalSaveRepository(window.localStorage),
         new NewGameFactory("0_0"),
-        new StoryEngine(storyScenes),
-        new RandomEncounters()
+        new StoryEngine(storyScenes, ALL_EVENTS),
+        new RandomEncounters(ALL_EVENTS)
     );
 
     game.start();

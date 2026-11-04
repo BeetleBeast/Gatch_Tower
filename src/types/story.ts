@@ -31,7 +31,6 @@ export interface ActiveEffect {
 export type SceneDestination =
     | { type: "scene"; sceneId: SceneId }
     | { type: "back" }
-    | { type: 'next' }
     | { type: "death" }
     | { type: 'None' };
 

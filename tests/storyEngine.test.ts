@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { StoryEngine } from "../src/domain/story/storyEngine";
 import { storyScenes } from "../src/content/scenes";
+import { ALL_EVENTS } from "../src/content/Events";
 import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
 
 const scenes: Readonly<Record<SceneId, StoryScene>> = {
@@ -12,7 +13,7 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
             {
                 id: "continue",
                 label: "Continue",
-                destination: { type: "next" },
+                destination: { type: "scene", sceneId: "0_1" },
                 effects: [{ type: "setCharacterChoice", record: { eyes: "lightgrey" } }],
             },
             {
@@ -31,13 +32,13 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
             {
                 id: "continue",
                 label: "Continue",
-                destination: { type: "next" },
+                destination: { type: "scene", sceneId: "0_2" },
                 effects: [{ type: "applyStatus", status: "focus", amount: 2 }],
             },
             {
                 id: "focusBoost",
                 label: "Focus boost",
-                destination: { type: "next" },
+                destination: { type: "scene", sceneId: "0_2" },
                 effects: [{
                     type: "applyEffect",
                     effectId: "focus-boost",
@@ -55,7 +56,7 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
         text: "Later",
         choices: [
             { id: "previous", label: "Previously", destination: { type: "back" } },
-            { id: "continue", label: "Continue", destination: { type: "next" } },
+            { id: "continue", label: "Continue", destination: { type: "scene", sceneId: "1_0" } },
         ],
     },
     "1_0": {
@@ -64,7 +65,7 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
         text: "Final",
         choices: [
             { id: "previous", label: "Previously", destination: { type: "back" } },
-            { id: "continue", label: "Continue", destination: { type: "next" } },
+            { id: "continue", label: "Continue", destination: { type: "None" } },
         ],
     },
 };
@@ -87,7 +88,7 @@ function createState(currentSceneId: SceneId = "0_0"): GameState {
 }
 
 describe("StoryEngine", () => {
-    it("advances by numeric scene order and remembers the navigation path", () => {
+    it("follows an authored scene edge and remembers the navigation path", () => {
         const engine = new StoryEngine(scenes);
         const state = engine.choose(createState(), "continue");
 
@@ -134,7 +135,7 @@ describe("StoryEngine", () => {
         expect(engine.getSceneForState(state).choices.map((choice) => choice.id)).not.toContain("previous");
     });
 
-    it("orders scene numbers numerically rather than lexicographically", () => {
+    it("follows explicit edges regardless of scene numbering", () => {
         const outOfOrderScenes: Readonly<Record<SceneId, StoryScene>> = {
             "0_10": {
                 id: "0_10",
@@ -146,7 +147,7 @@ describe("StoryEngine", () => {
                 id: "0_9",
                 title: "Nine",
                 text: "Nine",
-                choices: [{ id: "continue", label: "Continue", destination: { type: "next" } }],
+                choices: [{ id: "continue", label: "Continue", destination: { type: "scene", sceneId: "1_0" } }],
             },
             "1_0": {
                 id: "1_0",
@@ -157,7 +158,7 @@ describe("StoryEngine", () => {
         };
         const engine = new StoryEngine(outOfOrderScenes);
 
-        expect(engine.choose(createState("0_9"), "continue").currentSceneId).toBe("0_10");
+        expect(engine.choose(createState("0_9"), "continue").currentSceneId).toBe("1_0");
     });
 
     it("uses explicit destinations and continues correctly after navigating back", () => {
@@ -174,6 +175,50 @@ describe("StoryEngine", () => {
         const continued = engine.choose(previous, "continue");
         expect(continued.currentSceneId).toBe("0_1");
         expect(continued.sceneHistory).toEqual(["0_0"]);
+    });
+
+    it("rejects scene and event edges that point to missing scenes", () => {
+        expect(() => new StoryEngine(storyScenes, ALL_EVENTS)).not.toThrow();
+
+        const invalidScene: StoryScene = {
+            id: "0_0",
+            title: "Broken edge",
+            text: "A broken edge.",
+            choices: [{ id: "continue", label: "Continue", destination: { type: "scene", sceneId: "0_1" } }],
+        };
+        expect(() => new StoryEngine({ "0_0": invalidScene }))
+            .toThrow('Destination scene "0_1" referenced by choice "continue" in scene "0_0" does not exist.');
+
+        const invalidVariantScene: StoryScene = {
+            id: "0_0",
+            title: "Broken variant",
+            text: "A broken variant edge.",
+            choices: [],
+            variants: [{
+                condition: { type: "statusAtLeast", status: "health", amount: 1 },
+                text: "Variant text.",
+                choices: [{
+                    id: "continue",
+                    label: "Continue",
+                    destination: { type: "scene", sceneId: "0_1" },
+                }],
+            }],
+        };
+        expect(() => new StoryEngine({ "0_0": invalidVariantScene }))
+            .toThrow('Destination scene "0_1" referenced by choice "continue" in scene "0_0" does not exist.');
+
+        const invalidEvent: Event = {
+            id: 10,
+            name: "Test",
+            text: "An event with a broken edge.",
+            weight: 1,
+            choices: [{ id: "continue", label: "Continue", destination: { type: "scene", sceneId: "2_0" } }],
+            allowed_scenes: "All",
+            allowMultipleEvent: false,
+            includeOriginalScene: true,
+        };
+        expect(() => new StoryEngine(scenes, [invalidEvent]))
+            .toThrow('Destination scene "2_0" referenced by event "Test" does not exist.');
     });
 
     it("applies random event choices through the same navigation and effect rules", () => {
@@ -353,7 +398,7 @@ describe("StoryEngine", () => {
                     choices: [{
                         id: "follow",
                         label: "Follow the mark",
-                        destination: { type: "next" },
+                        destination: { type: "scene", sceneId: "1_1" },
                         condition: {
                             type: "statusAtLeast",
                             status: "comprehension",
@@ -376,7 +421,7 @@ describe("StoryEngine", () => {
                     {
                         id: "follow",
                         label: "Follow the mark",
-                        destination: { type: "next" },
+                        destination: { type: "scene", sceneId: "1_1" },
                         condition: {
                             type: "allOf",
                             conditions: [
@@ -455,16 +500,14 @@ describe("StoryEngine", () => {
         }, "escape")).toThrow(/dead player cannot make/u);
     });
 
-    it("rejects unavailable choices, missing navigation destinations, and unknown scenes", () => {
+    it("rejects unavailable choices and unknown scenes", () => {
         const engine = new StoryEngine(scenes);
         const finalState = { ...createState("1_0"), sceneHistory: [] };
 
         expect(() => engine.choose(createState(), "missing")).toThrow(
             'Choice "missing" is not available in scene "0_0".',
         );
-        expect(() => engine.choose(finalState, "continue")).toThrow(
-            'There is no next scene after "1_0".',
-        );
+        expect(engine.choose(finalState, "continue").currentSceneId).toBe("1_0");
         expect(() => engine.getScene("9_9")).toThrow(
             'The story does not contain a scene with id "9_9".',
         );

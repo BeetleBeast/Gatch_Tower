@@ -82,7 +82,7 @@ describe("StoryView", () => {
             title: "Eye color",
             text: "Choose an eye color.",
             choices: [
-                { id: "blue", label: "Piercing blue", destination: { type: "next" } },
+                { id: "blue", label: "Piercing blue", destination: { type: "None" } },
                 { id: "previous", label: "Previously", destination: { type: "back" } },
             ],
         };
@@ -137,7 +137,7 @@ describe("StoryView", () => {
             id: "1_3",
             title: "Danger",
             text: "A shape moves in the dark.",
-            choices: [{ id: "continue", label: "Continue", destination: { type: "next" } }],
+            choices: [{ id: "continue", label: "Continue", destination: { type: "None" } }],
             qte: { amount: 1, durationMs: 2000, countdownSeconds: 0, input: "Space" },
         };
 
@@ -168,7 +168,7 @@ describe("StoryView", () => {
             choices: [{
                 id: "grey",
                 label: "Intense grey",
-                destination: { type: "next" },
+                destination: { type: "None" },
                 effects: [{ type: "setCharacterChoice", record: { eyes: "lightgrey" } }],
             }],
         };
@@ -329,7 +329,7 @@ describe("StoryView", () => {
             id: "0_0",
             title: "Opening",
             text: "The story continues.",
-            choices: [{ id: "continue", label: "Continue", destination: { type: "next" } }],
+            choices: [{ id: "continue", label: "Continue", destination: { type: "None" } }],
         };
 
         view.render(scene, createRenderOptions({ events: [event], onEventChoice }));
@@ -360,7 +360,7 @@ describe("StoryView", () => {
             id: "0_0",
             title: "Original scene must be hidden",
             text: "Original text must be hidden.",
-            choices: [{ id: "continue", label: "Original choice", destination: { type: "next" } }],
+            choices: [{ id: "continue", label: "Original choice", destination: { type: "None" } }],
         };
 
         view.render(scene, createRenderOptions({ events: [event] }));

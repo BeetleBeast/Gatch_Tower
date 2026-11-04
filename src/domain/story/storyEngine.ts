@@ -6,34 +6,59 @@ import type { SceneDestination } from "../../types/story";
 
 export class StoryEngine implements StoryEnginePort {
     private readonly scenes: Readonly<Record<SceneId, StoryScene>>;
-    private readonly orderedSceneIds: readonly SceneId[];
     private readonly effectEngine: EffectEngine;
     private readonly discoveryIds: ReadonlySet<string>;
     private readonly gameOverSceneId: SceneId | undefined;
 
-    constructor(scenes: Readonly<Record<SceneId, StoryScene>>) {
+    constructor(scenes: Readonly<Record<SceneId, StoryScene>>, events: readonly Event[] = []) {
         this.scenes = scenes;
         this.effectEngine = new EffectEngine();
-        this.orderedSceneIds = Object.values(scenes)
-            .map((scene) => scene.id)
-            .sort(compareSceneIds);
         const discoveryIds = new Set<string>();
         const gameOverScenes = Object.values(scenes).filter((scene) => scene.gameOver);
         if (gameOverScenes.length > 1) throw new Error("The story can define only one game-over scene.");
         this.gameOverSceneId = gameOverScenes[0]?.id;
-        for (const scene of Object.values(scenes)) {
+        for (const [sceneKey, scene] of Object.entries(scenes)) {
+            if (scene.id !== sceneKey) {
+                throw new Error(`Scene key "${sceneKey}" does not match its id "${scene.id}".`);
+            }
             if (scene.deathSceneId && !scenes[scene.deathSceneId]) {
                 throw new Error(`Death scene "${scene.deathSceneId}" referenced by "${scene.id}" does not exist.`);
             }
             if (scene.deathSceneId && !scenes[scene.deathSceneId]?.gameOver) {
                 throw new Error(`Death scene "${scene.deathSceneId}" must be marked as a game-over scene.`);
             }
+            this.validateChoices(scene.choices, scene);
+            for (const variant of scene.variants ?? []) this.validateChoices(variant.choices, scene);
             for (const discovery of scene.hiddenText ?? []) {
                 if (discoveryIds.has(discovery.id)) throw new Error(`Discovery id "${discovery.id}" is used more than once.`);
                 discoveryIds.add(discovery.id);
             }
         }
+        for (const event of events) {
+            for (const choice of event.choices) {
+                this.validateDestination(choice.destination, undefined, `event "${event.name}"`);
+            }
+        }
         this.discoveryIds = discoveryIds;
+    }
+
+    private validateChoices(choices: readonly StoryChoice[], sourceScene: StoryScene): void {
+        for (const choice of choices) {
+            this.validateDestination(choice.destination, sourceScene, `choice "${choice.id}" in scene "${sourceScene.id}"`);
+        }
+    }
+
+    private validateDestination(
+        destination: SceneDestination,
+        sourceScene: StoryScene | undefined,
+        sourceDescription: string,
+    ): void {
+        if (destination.type === "scene" && !this.scenes[destination.sceneId]) {
+            throw new Error(`Destination scene "${destination.sceneId}" referenced by ${sourceDescription} does not exist.`);
+        }
+        if (destination.type === "death" && sourceScene && !sourceScene.deathSceneId) {
+            throw new Error(`${sourceDescription} uses a death destination, but the scene does not define a death scene.`);
+        }
     }
 
     public getScene(sceneId: SceneId): StoryScene {
@@ -62,6 +87,9 @@ export class StoryEngine implements StoryEnginePort {
     }
 
     public getEventForState(event: Event, state: GameState): Event {
+        const sourceScene = this.getScene(state.currentSceneId);
+        this.validateChoices(event.choices, sourceScene);
+
         return {
             ...event,
             choices: event.choices.filter((choice) => choiceIsAvailable(choice, state)),
@@ -112,15 +140,7 @@ export class StoryEngine implements StoryEnginePort {
             };
         }
 
-        const currentIndex = this.orderedSceneIds.indexOf(currentScene.id);
-        const sceneId = this.orderedSceneIds[currentIndex + 1];
-
-        if (!sceneId) throw new Error(`There is no next scene after "${currentScene.id}".`);
-
-        return {
-            sceneId,
-            sceneHistory: [...state.sceneHistory, currentScene.id],
-        };
+        return assertNever(destination);
     }
 
     private applyEffects(state: GameState, choice: StoryChoice): Pick<GameState, "characterChoices" | "statuses" | "manaUnlocked" | "discoveries" | "effects"> {
@@ -236,10 +256,6 @@ function clampStatus(status: string, value: number): number {
     return Math.max(limits.min, Math.min(limits.max ?? Number.POSITIVE_INFINITY, value));
 }
 
-function compareSceneIds(left: SceneId, right: SceneId): number {
-    const [leftChapter, leftScene] = left.split("_").map(Number);
-    const [rightChapter, rightScene] = right.split("_").map(Number);
-
-    return (leftChapter ?? 0) - (rightChapter ?? 0)
-        || (leftScene ?? 0) - (rightScene ?? 0);
+function assertNever(value: never): never {
+    throw new Error(`Unsupported scene destination: ${JSON.stringify(value)}.`);
 }
