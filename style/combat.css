@@ -1,0 +1,118 @@
+.combat-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    width: min(100%, 38rem);
+    margin: 0 auto;
+}
+
+.combat-screen h1,
+.combat-screen p {
+    margin: 0;
+}
+
+.combat-counter {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.combat-units,
+.combat-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.combat-screen button {
+    color: #fff;
+    background: #24334a;
+    border: 1px solid #7995d9;
+    border-radius: 0.3rem;
+    padding: 0.45rem 0.7rem;
+}
+
+.combat-screen button:hover:not(:disabled),
+.combat-screen button[aria-pressed="true"] {
+    background: #36567a;
+}
+
+.combat-screen button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.combat-grid {
+    display: grid;
+    gap: 0.2rem;
+    width: min(100%, 28rem);
+    aspect-ratio: 1;
+    padding: 0.35rem;
+    background: #111a28;
+    border: 1px solid #607493;
+}
+
+.combat-cell {
+    min-width: 0;
+    padding: 0.15rem !important;
+    background: #35485c !important;
+    border-color: #667b92 !important;
+    font-size: clamp(0.55rem, 2.2vw, 0.85rem);
+    overflow-wrap: anywhere;
+}
+
+.combat-cell--wall {
+    background: #6b6259 !important;
+}
+
+.combat-cell--hazard {
+    background: #694d31 !important;
+}
+
+.combat-cell--moving {
+    background: #315b61 !important;
+}
+
+.combat-cell--player {
+    background: #276344 !important;
+}
+
+.combat-cell--enemy {
+    background: #753b43 !important;
+}
+
+.combat-cell--neutral {
+    background: #6a4a77 !important;
+}
+
+.combat-roster {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.combat-error {
+    min-height: 1.25em;
+    color: #ff9a9a;
+}
+
+.combat-outcome {
+    padding: 0.65rem 1rem;
+    border: 1px solid #7995d9;
+    border-radius: 0.3rem;
+}
+
+@media (max-width: 640px) {
+    .combat-grid {
+        width: min(100%, 22rem);
+    }
+
+    .combat-screen button {
+        padding: 0.4rem;
+    }
+}

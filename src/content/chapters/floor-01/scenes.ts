@@ -19,6 +19,7 @@ export const floor01Scenes: Readonly<Record<SceneId, StoryScene>> = {
         text: "The current area is enveloped in a verdant embrace, with lush green moss covering every surface. The air is cool and fresh, carrying the earthy scent of vegetation. Shafts of dim light filter through the canopy above, casting dappled patterns on the moss-covered ground.",
         choices: [
             { id: "previous", label: "Previously", destination: { type: "back" } },
+            { id: "fightCrawler", label: "Confront the cave crawler", destination: { type: "combat", encounterId: "mossCrawler" } },
             { id: "followMoss", label: "Follow the moss deeper into the passage", destination: { type: "scene", sceneId: "1_6" } },
         ],
     },

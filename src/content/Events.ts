@@ -38,9 +38,8 @@ export const ALL_EVENTS: Event[] = [
         },
         weight: 1,
         choices: [
-            { id: "1", label: "Accept", destination: { type: "scene", sceneId: "2_0" } },
+            { id: "1", label: "Accept", destination: { type: "None" } },
         ],
-        // The destination scene has not been authored yet.
         allowed_scenes: "None",
         allowMultipleEvent: true,
         includeOriginalScene: true,

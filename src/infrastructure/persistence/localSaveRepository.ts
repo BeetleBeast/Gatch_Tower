@@ -1,9 +1,9 @@
 import type { SaveRepository } from "../../interfaces/index";
 import { DEFAULT_GAME_STATUSES, STATUS_LIMITS } from "../../constants/index";
-import type { ActiveEffect, GameState, QteSequenceResult, SceneId } from "../../types/index";
+import type { ActiveCombat, ActiveEffect, GameState, QteSequenceResult, SceneId } from "../../types/index";
 
-const SAVE_KEY = "gatch-tower.game.v6";
-const PREVIOUS_SAVE_KEYS = ["gatch-tower.game.v5", "gatch-tower.game.v4", "gatch-tower.game.v3", "gatch-tower.game.v2", "gatch-tower.game.v1"] as const;
+const SAVE_KEY = "gatch-tower.game.v7";
+const PREVIOUS_SAVE_KEYS = ["gatch-tower.game.v6", "gatch-tower.game.v5", "gatch-tower.game.v4", "gatch-tower.game.v3", "gatch-tower.game.v2", "gatch-tower.game.v1"] as const;
 
 export class LocalSaveRepository implements SaveRepository {
     private readonly storage: Storage;
@@ -46,7 +46,8 @@ function migrateGameState(value: unknown): GameState | null {
     const candidate = value as Record<string, unknown>;
     if ((candidate.schemaVersion !== 1 && candidate.schemaVersion !== 2
         && candidate.schemaVersion !== 3 && candidate.schemaVersion !== 4
-        && candidate.schemaVersion !== 5 && candidate.schemaVersion !== 6)
+        && candidate.schemaVersion !== 5 && candidate.schemaVersion !== 6
+        && candidate.schemaVersion !== 7)
         || !isSceneId(candidate.currentSceneId)
         || !isStringRecord(candidate.choicesMade)) {
         return null;
@@ -60,6 +61,8 @@ function migrateGameState(value: unknown): GameState | null {
     const savedDeadFlag = candidate.isDead ?? false;
     const effects = candidate.effects ?? {};
     const qteResults = candidate.qteResults ?? {};
+    const activeCombat = candidate.activeCombat ?? null;
+    if (!isActiveCombat(activeCombat)) return null;
     if (!Array.isArray(sceneHistory)
         || !sceneHistory.every(isSceneId)
         || !isStringRecord(characterChoices)
@@ -69,7 +72,9 @@ function migrateGameState(value: unknown): GameState | null {
         || !isStringArray(discoveries)
         || typeof savedDeadFlag !== "boolean"
         || !isActiveEffectsRecord(effects)
-        || !isQteResultsRecord(qteResults)) {
+        || !isQteResultsRecord(qteResults)
+        || (candidate.schemaVersion === 7 && candidate.activeCombat === undefined)
+        || (candidate.combatMessage !== undefined && typeof candidate.combatMessage !== "string")) {
         return null;
     }
 
@@ -83,7 +88,7 @@ function migrateGameState(value: unknown): GameState | null {
     migrateLegacyQteResults(migratedStatuses, migratedQteResults);
 
     return {
-        schemaVersion: 6,
+        schemaVersion: 7,
         currentSceneId: candidate.currentSceneId,
         sceneHistory,
         choicesMade: candidate.choicesMade,
@@ -95,7 +100,60 @@ function migrateGameState(value: unknown): GameState | null {
         effects,
         events: {},
         qteResults: migratedQteResults,
+        activeCombat,
+        ...(typeof candidate.combatMessage === "string" ? { combatMessage: candidate.combatMessage } : {}),
     };
+}
+
+function isActiveCombat(value: unknown): value is ActiveCombat | null {
+    if (value === null) return true;
+    if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+    const combat = value as Record<string, unknown>;
+    const width = combat.width;
+    const height = combat.height;
+    if (typeof combat.encounterId !== "string" || combat.encounterId.trim() === ""
+        || !isNonNegativeInteger(combat.seed)
+        || !isPositiveInteger(width) || width > 8
+        || !isPositiveInteger(height) || height > 8
+        || !Array.isArray(combat.cells) || !Array.isArray(combat.units)
+        || !isPositiveInteger(combat.playerActions)
+        || !isNonNegativeInteger(combat.playerActionsRemaining)
+        || combat.playerActionsRemaining > combat.playerActions
+        || (combat.phase !== "player" && combat.phase !== "enemy" && combat.phase !== "neutral")
+        || !isPositiveInteger(combat.movingCellInterval)
+        || !isNonNegativeInteger(combat.actionsSinceTerrainMove)
+        || (combat.result !== undefined && combat.result !== "victory" && combat.result !== "retreat" && combat.result !== "defeat")) {
+        return false;
+    }
+
+    const validCells = combat.cells.every((cell) => {
+        if (typeof cell !== "object" || cell === null || Array.isArray(cell)) return false;
+        const candidate = cell as Record<string, unknown>;
+        return isNonNegativeInteger(candidate.x) && candidate.x < width
+            && isNonNegativeInteger(candidate.y) && candidate.y < height
+            && (candidate.kind === "wall" || candidate.kind === "hazard" || candidate.kind === "moving");
+    });
+    const validUnits = combat.units.every((unit) => {
+        if (typeof unit !== "object" || unit === null || Array.isArray(unit)) return false;
+        const candidate = unit as Record<string, unknown>;
+        if (typeof candidate.position !== "object" || candidate.position === null || Array.isArray(candidate.position)) return false;
+        const position = candidate.position as Record<string, unknown>;
+        return typeof candidate.id === "string" && candidate.id.trim() !== ""
+            && typeof candidate.name === "string" && candidate.name.trim() !== ""
+            && (candidate.side === "player" || candidate.side === "enemy" || candidate.side === "neutral")
+            && isNonNegativeNumber(candidate.health)
+            && isPositiveInteger(candidate.actions)
+            && isNonNegativeInteger(candidate.actionsRemaining)
+            && candidate.actionsRemaining <= candidate.actions
+            && isPositiveNumber(candidate.damage)
+            && isNonNegativeInteger(position.x) && position.x < width
+            && isNonNegativeInteger(position.y) && position.y < height;
+    });
+    return validCells
+        && validUnits
+        && combat.units.some((unit) => typeof unit === "object" && unit !== null
+            && (unit as Record<string, unknown>).id === "player"
+            && (unit as Record<string, unknown>).side === "player");
 }
 
 function migrateLegacyQteResults(
@@ -203,4 +261,16 @@ function isQteResultsRecord(value: unknown): value is Record<SceneId, QteSequenc
 
 function isNonNegativeInteger(value: unknown): value is number {
     return typeof value === "number" && Number.isInteger(value) && value >= 0;
+}
+
+function isPositiveInteger(value: unknown): value is number {
+    return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+function isNonNegativeNumber(value: unknown): value is number {
+    return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isPositiveNumber(value: unknown): value is number {
+    return typeof value === "number" && Number.isFinite(value) && value > 0;
 }

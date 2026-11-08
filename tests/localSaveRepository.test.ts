@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { LocalSaveRepository } from "../src/infrastructure/persistence/localSaveRepository";
 import { DEFAULT_GAME_STATUSES } from "../src/constants/index";
 import type { GameState } from "../src/types/index";
+import { CombatEngine } from "../src/domain/combat/combatEngine";
+import { COMBAT_ENCOUNTERS } from "../src/content/combatEncounters";
 
 describe("LocalSaveRepository", () => {
     it("migrates existing version 1 saves with empty game-system state", () => {
@@ -15,7 +17,7 @@ describe("LocalSaveRepository", () => {
         const repository = new LocalSaveRepository(storage);
 
         expect(repository.load()).toEqual({
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: "0_2",
             sceneHistory: [],
             choicesMade: { "0_1": "continue" },
@@ -27,9 +29,10 @@ describe("LocalSaveRepository", () => {
             effects: {},
             events: {},
             qteResults: {},
+            activeCombat: null,
         });
-        expect(JSON.parse(storage.getItem("gatch-tower.game.v6") ?? "null")).toMatchObject({
-            schemaVersion: 6,
+        expect(JSON.parse(storage.getItem("gatch-tower.game.v7") ?? "null")).toMatchObject({
+            schemaVersion: 7,
             currentSceneId: "0_2",
         });
     });
@@ -39,7 +42,7 @@ describe("LocalSaveRepository", () => {
         storage.clear();
         const repository = new LocalSaveRepository(storage);
         const state: GameState = {
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: "0_1",
             sceneHistory: ["0_0"],
             choicesMade: { "0_0": "blue" },
@@ -53,6 +56,7 @@ describe("LocalSaveRepository", () => {
             qteResults: {
                 "1_3": { result: "perfect", score: 2, perfectCount: 1, successCount: 0, failCount: 0 },
             },
+            activeCombat: new CombatEngine().createCombat(COMBAT_ENCOUNTERS.mossCrawler!),
         };
 
         repository.save(state);
@@ -73,11 +77,33 @@ describe("LocalSaveRepository", () => {
         const state = new LocalSaveRepository(storage).load();
 
         expect(state).toMatchObject({
-            schemaVersion: 6,
+            schemaVersion: 7,
             statuses: { health: 100, mana: 0 },
             manaUnlocked: true,
         });
-        expect(storage.getItem("gatch-tower.game.v6")).not.toBeNull();
+        expect(storage.getItem("gatch-tower.game.v7")).not.toBeNull();
+    });
+
+    it("migrates version 6 saves to the combat-aware schema", () => {
+        const storage = window.localStorage;
+        storage.clear();
+        storage.setItem("gatch-tower.game.v6", JSON.stringify({
+            schemaVersion: 6,
+            currentSceneId: "1_1",
+            choicesMade: {},
+            statuses: { health: 70, mana: 0 },
+            manaUnlocked: true,
+        }));
+
+        const state = new LocalSaveRepository(storage).load();
+
+        expect(state).toMatchObject({
+            schemaVersion: 7,
+            currentSceneId: "1_1",
+            statuses: { health: 70 },
+            activeCombat: null,
+        });
+        expect(storage.getItem("gatch-tower.game.v7")).not.toBeNull();
     });
 
     it("migrates version 4 saves with the new death-state field", () => {
@@ -98,7 +124,7 @@ describe("LocalSaveRepository", () => {
         const state = new LocalSaveRepository(storage).load();
 
         expect(state).toMatchObject({
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: "1_6",
             statuses: { health: 0, mana: 0, comprehension: 0 },
             discoveries: ["moss-figure"],
@@ -106,7 +132,7 @@ describe("LocalSaveRepository", () => {
             manaUnlocked: false,
         });
         expect(state?.statuses.pain).toBe(0);
-        expect(storage.getItem("gatch-tower.game.v6")).not.toBeNull();
+        expect(storage.getItem("gatch-tower.game.v7")).not.toBeNull();
     });
 
     it("rejects saves with malformed state fields", () => {

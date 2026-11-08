@@ -26,6 +26,7 @@ export class StoryContentView {
         onChoice: (choiceId: string) => void,
         onEventChoice: (event: Event, choice: StoryChoice) => void,
         onRestart: () => void,
+        combatMessage?: string,
     ): StoryContent {
         const element = document.createElement("section");
         element.className = "main";
@@ -36,6 +37,13 @@ export class StoryContentView {
         let qteContainer: HTMLElement | null = null;
 
         if (includeOriginalScene) {
+            if (combatMessage) {
+                const outcome = document.createElement("p");
+                outcome.className = "combat-outcome";
+                outcome.setAttribute("role", "status");
+                outcome.textContent = combatMessage;
+                element.append(outcome);
+            }
             element.append(this.createSceneTitle(scene.title));
             const sceneText = this.createTextElement();
             element.append(sceneText);

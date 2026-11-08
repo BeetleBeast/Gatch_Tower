@@ -11,7 +11,7 @@ export class NewGameFactory implements GameStateFactory {
 
     public create(): GameState {
         return {
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: this.initialSceneId,
             sceneHistory: [],
             choicesMade: {},
@@ -23,6 +23,7 @@ export class NewGameFactory implements GameStateFactory {
             effects: {},
             qteResults: {},
             events: {},
+            activeCombat: null,
         };
     }
 }

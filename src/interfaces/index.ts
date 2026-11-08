@@ -5,6 +5,7 @@ export type { StoryEnginePort } from "./storyEngine";
 export type { QteViewPort } from "./qteView";
 export type { StoryViewPort, StoryViewRenderOptions } from "./storyView";
 export type { RandomEncounterPort } from "./randomEncounters";
+export type { CombatViewActions } from "./combatView";
 export type {
     AnimationClockPort,
     TextAnimatorPort,

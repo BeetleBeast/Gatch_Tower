@@ -1,4 +1,4 @@
-import type { Event, GameState, SceneId, StoryScene } from "../types/index";
+import type { CombatOutcomeDefinition, CombatResult, Event, GameState, SceneId, StoryScene } from "../types/index";
 
 export interface StoryEnginePort {
     getScene(sceneId: SceneId): StoryScene;
@@ -6,4 +6,5 @@ export interface StoryEnginePort {
     getEventForState(event: Event, state: GameState): Event;
     choose(state: GameState, choiceId: string): GameState;
     chooseEvent(state: GameState, event: Event, choiceId: string): GameState;
+    completeCombat(state: GameState, result: CombatResult, outcome: CombatOutcomeDefinition): GameState;
 }

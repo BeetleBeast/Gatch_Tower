@@ -13,3 +13,15 @@ export type {
     TextTiming,
 } from "./text";
 export type { Event, SceneLocations, StoryLocationDetails } from "./Events";
+export type {
+    ActiveCombat,
+    CombatCell,
+    CombatEncounterDefinition,
+    CombatOutcomeDefinition,
+    CombatPhase,
+    CombatResult,
+    CombatSide,
+    CombatUnit,
+    CombatUnitDefinition,
+    GridPosition,
+} from "./combat";

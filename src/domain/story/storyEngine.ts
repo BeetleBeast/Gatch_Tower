@@ -1,7 +1,7 @@
 import type { StoryEnginePort } from "../../interfaces";
 import { EffectEngine } from "../effects/effectEngine";
 import { STATUS_LIMITS } from "../../constants/index";
-import type { Event, GameState, SceneId, StoryChoice, StoryCondition, StoryScene } from "../../types/index";
+import type { CombatOutcomeDefinition, CombatResult, Event, GameState, SceneId, StoryChoice, StoryCondition, StoryScene } from "../../types/index";
 import type { SceneDestination } from "../../types/story";
 
 export class StoryEngine implements StoryEnginePort {
@@ -117,6 +117,10 @@ export class StoryEngine implements StoryEnginePort {
             };
         }
 
+        if (destination.type === "combat") {
+            return { sceneId: currentScene.id, sceneHistory: [...state.sceneHistory] };
+        }
+
         if (destination.type === "back") {
             const sceneHistory = [...state.sceneHistory];
             const sceneId = sceneHistory.pop();
@@ -194,6 +198,44 @@ export class StoryEngine implements StoryEnginePort {
         return this.applyChoice(state, choice, `event:${event.id}:${choiceId}`);
     }
 
+    public completeCombat(state: GameState, result: CombatResult, outcome: CombatOutcomeDefinition): GameState {
+        if (!state.activeCombat) throw new Error("There is no active combat to complete.");
+        const sceneId = outcome.destination ?? state.currentSceneId;
+        this.getScene(sceneId);
+        const statuses = { ...state.statuses };
+        const player = state.activeCombat.units.find((unit) => unit.id === "player");
+        statuses.health = clampStatus("health", player?.health ?? (statuses.health ?? 0));
+        for (const [status, amount] of Object.entries(outcome.statusRewards ?? {})) {
+            if (!Number.isFinite(amount)) throw new RangeError(`Combat reward for "${status}" must be finite.`);
+            statuses[status] = clampStatus(status, (statuses[status] ?? 0) + amount);
+        }
+
+        const isDead = outcome.gameOver === true || (statuses.health ?? 0) <= 0;
+        if (isDead) statuses.health = 0;
+        const finalSceneId = isDead ? this.gameOverSceneId : sceneId;
+        if (isDead && !finalSceneId) throw new Error("The story does not define a game-over scene for combat defeat.");
+        const discoveries = [...state.discoveries];
+        for (const discovery of outcome.discoveries ?? []) {
+            if (!discovery.trim()) throw new Error("Combat discoveries must have non-empty ids.");
+            if (!this.discoveryIds.has(discovery)) throw new Error(`Discovery "${discovery}" is not defined by any scene.`);
+            if (!discoveries.includes(discovery)) discoveries.push(discovery);
+        }
+
+        const { combatMessage: _combatMessage, ...stateWithoutCombatMessage } = state;
+        return {
+            ...stateWithoutCombatMessage,
+            currentSceneId: finalSceneId ?? sceneId,
+            sceneHistory: sceneId === state.currentSceneId
+                ? [...state.sceneHistory]
+                : [...state.sceneHistory, state.currentSceneId],
+            statuses: isDead ? { ...statuses, health: 0 } : statuses,
+            discoveries,
+            isDead,
+            activeCombat: null,
+            ...(outcome.message !== undefined ? { combatMessage: outcome.message } : {}),
+        };
+    }
+
     private applyChoice(state: GameState, choice: StoryChoice, recordedChoiceId: string): GameState {
         const scene = this.getScene(state.currentSceneId);
         const destination = this.resolveDestination(choice.destination, state, scene);
@@ -208,8 +250,9 @@ export class StoryEngine implements StoryEnginePort {
             ? [...destination.sceneHistory, scene.id]
             : destination.sceneHistory;
 
+        const { combatMessage: _combatMessage, ...stateWithoutCombatMessage } = state;
         return {
-            ...state,
+            ...stateWithoutCombatMessage,
             currentSceneId: sceneId ?? destination.sceneId,
             sceneHistory,
             choicesMade: {

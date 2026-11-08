@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { StoryEngine } from "../src/domain/story/storyEngine";
+import { CombatEngine } from "../src/domain/combat/combatEngine";
 import { storyScenes } from "../src/content/scenes";
 import { ALL_EVENTS } from "../src/content/Events";
 import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
@@ -72,7 +73,7 @@ const scenes: Readonly<Record<SceneId, StoryScene>> = {
 
 function createState(currentSceneId: SceneId = "0_0"): GameState {
     return {
-        schemaVersion: 6,
+        schemaVersion: 7,
         currentSceneId,
         sceneHistory: [],
         choicesMade: {},
@@ -84,6 +85,7 @@ function createState(currentSceneId: SceneId = "0_0"): GameState {
         effects: {},
         events: {},
         qteResults: {},
+        activeCombat: null,
     };
 }
 
@@ -219,6 +221,37 @@ describe("StoryEngine", () => {
         };
         expect(() => new StoryEngine(scenes, [invalidEvent]))
             .toThrow('Destination scene "2_0" referenced by event "Test" does not exist.');
+    });
+
+    it("lets a defeat outcome choose a nonfatal story consequence", () => {
+        const state = createState();
+        const encounter = {
+            id: "loss",
+            title: "Loss",
+            description: "Test.",
+            map: { width: 3, height: 3, seed: 1 },
+            player: { health: 100, actions: 1, damage: 1 },
+            enemies: [{ id: "enemy", name: "Enemy", side: "enemy" as const, health: 1, actions: 1, damage: 1 }],
+            outcomes: { victory: {}, retreat: {}, defeat: {} },
+        };
+        const combat = new CombatEngine().createCombat(encounter);
+        const player = combat.units.find((unit) => unit.id === "player")!;
+        player.health = 0;
+        state.activeCombat = { ...combat, result: "defeat" };
+
+        const result = new StoryEngine(scenes).completeCombat(state, "defeat", {
+            destination: "0_1",
+            message: "You were driven back, but survived.",
+            statusRewards: { health: 10 },
+        });
+
+        expect(result).toMatchObject({
+            currentSceneId: "0_1",
+            statuses: { health: 10 },
+            isDead: false,
+            activeCombat: null,
+            combatMessage: "You were driven back, but survived.",
+        });
     });
 
     it("applies random event choices through the same navigation and effect rules", () => {

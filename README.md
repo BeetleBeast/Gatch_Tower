@@ -26,6 +26,14 @@ Health and Mana are bounded from 0 to 100. Comprehension has a minimum of 0. Pai
 
 The persistent sidebar displays current statuses, the legacy influence meters, character choices, active effects, and discovered clues. Clue details remain available there after leaving the discovery scene. The sidebar can be collapsed. Settings, Saves, and Info buttons are present as disabled placeholders until their systems are available in the TypeScript game.
 
+### Grid combat prototype
+
+Story content starts a battle with a choice destination such as `{ type: "combat", encounterId: "mossCrawler" }`. Define encounters in `src/content/combatEncounters.ts`; each definition supplies map settings, units, and separate victory, retreat, and defeat outcomes. Outcomes can display a message, move to a scene, grant status rewards, reveal existing discoveries, or explicitly set `gameOver: true`.
+
+The current battlefield is a compact seeded grid (3–8 tiles per side). Use a fixed `seed` for a repeatable map or `randomizeSeed: true` to choose and save a seed when the battle begins. Units can move one tile in any of the eight directions, but cannot move diagonally between blocked tiles; basic attacks target an adjacent hostile. Movable walls can be pushed with Interact, hazards are pass-through and currently harmless, and moving terrain shifts after a configurable number of combat actions.
+
+The protagonist and temporary allies share the visible team action counter. A move, attack, interaction, or retreat costs one action. Direct allies manually by selecting them; otherwise, remaining team actions are spent by ally AI when ending the team turn. Each enemy and neutral threat has its own authored action count. Ordinary enemies act after the player team; neutral threats act afterward and may attack either side. Battle state and procedural seeds are saved, and older TypeScript saves migrate to the combat-aware save format.
+
 ## 🎮 Game Concept
 
 **Title:** *Gatsha Tower*  
@@ -152,7 +160,7 @@ The persistent sidebar displays current statuses, the legacy influence meters, c
 
 - [ ] add a better intro.
 
-- [ ] Add enemy system with AI and combat logic.
+- [x] Add an initial content-authored, grid-based combat system.
 
 ### Far Future
 

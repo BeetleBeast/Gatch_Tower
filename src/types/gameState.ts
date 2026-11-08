@@ -1,9 +1,10 @@
 import type { ActiveEffect, SceneId } from "./story";
 import type { QteSequenceResult } from "./qte";
 import type { Event } from "./Events";
+import type { ActiveCombat } from "./combat";
 
 export interface GameState {
-    schemaVersion: 6;
+    schemaVersion: 7;
     currentSceneId: SceneId;
     sceneHistory: SceneId[];
     choicesMade: Record<SceneId, string>;
@@ -15,4 +16,6 @@ export interface GameState {
     effects: Record<string, ActiveEffect>;
     events: Record<string, Event>;
     qteResults: Record<SceneId, QteSequenceResult>;
+    activeCombat: ActiveCombat | null;
+    combatMessage?: string;
 }

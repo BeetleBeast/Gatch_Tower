@@ -30,6 +30,7 @@ export interface ActiveEffect {
 
 export type SceneDestination =
     | { type: "scene"; sceneId: SceneId }
+    | { type: "combat"; encounterId: string }
     | { type: "back" }
     | { type: "death" }
     | { type: 'None' };

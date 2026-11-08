@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import type { GameStateFactory, SaveRepository, StartScreenActions, StoryViewPort } from "../src/interfaces/index";
+import type { GameStateFactory, SaveRepository, StartScreenActions, StoryViewPort, StoryViewRenderOptions } from "../src/interfaces/index";
 import { StartGame } from "../src/app/startGame";
 import { StoryEngine } from "../src/domain/story/storyEngine";
 import { NewGameFactory } from "../src/domain/save/newGameFactory";
 import type { Event, GameState, SceneId, StoryScene } from "../src/types/index";
+import type { CombatEncounterDefinition } from "../src/types/index";
 
 describe("StartGame", () => {
     it("starts new games with no Mana and a locked Mana display", () => {
@@ -15,7 +16,7 @@ describe("StartGame", () => {
 
     it("keeps a completed QTE result when the player advances the scene", () => {
         const initialState: GameState = {
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: "1_3",
             sceneHistory: [],
             choicesMade: {},
@@ -27,6 +28,7 @@ describe("StartGame", () => {
             effects: {},
             events: {},
             qteResults: {},
+            activeCombat: null,
         };
         const scenes: Readonly<Record<SceneId, StoryScene>> = {
             "1_3": {
@@ -94,7 +96,7 @@ describe("StartGame", () => {
             includeOriginalScene: true,
         };
         const initialState: GameState = {
-            schemaVersion: 6,
+            schemaVersion: 7,
             currentSceneId: "0_0",
             sceneHistory: [],
             choicesMade: {},
@@ -106,6 +108,7 @@ describe("StartGame", () => {
             effects: {},
             events: {},
             qteResults: {},
+            activeCombat: null,
         };
         const scene: StoryScene = { id: "0_0", title: "Opening", text: "Story text", choices: [] };
         const scenes: Readonly<Record<SceneId, StoryScene>> = { "0_0": scene };
@@ -133,6 +136,81 @@ describe("StartGame", () => {
         expect(renderOptions).toHaveLength(2);
         expect(renderOptions[1]?.events).toEqual([]);
         expect(eventSelector.tryRandomEncounter).toHaveBeenCalledTimes(1);
+    });
+
+    it("starts a story-authored battle, saves actions, and applies its authored victory outcome", () => {
+        const scenes: Readonly<Record<SceneId, StoryScene>> = {
+            "0_0": {
+                id: "0_0",
+                title: "The passage",
+                text: "A creature blocks the way.",
+                choices: [{ id: "fight", label: "Fight", destination: { type: "combat", encounterId: "test" } }],
+            },
+            "0_1": { id: "0_1", title: "Beyond", text: "The path is clear.", choices: [] },
+            "0_2": { id: "0_2", title: "Game over", text: "You fall.", choices: [], gameOver: true },
+        };
+        const encounter: CombatEncounterDefinition = {
+            id: "test",
+            title: "Test Battle",
+            description: "Fight.",
+            map: { width: 3, height: 3, seed: 7 },
+            player: { health: 100, actions: 1, damage: 10 },
+            enemies: [{ id: "target", name: "Target", side: "enemy", health: 10, actions: 1, damage: 1, position: { x: 1, y: 1 } }],
+            outcomes: {
+                victory: { destination: "0_1", message: "You win.", statusRewards: { health: 5 } },
+                retreat: { destination: "0_0" },
+                defeat: { destination: "0_2" },
+            },
+        };
+        const initialState: GameState = {
+            schemaVersion: 7,
+            currentSceneId: "0_0",
+            sceneHistory: [],
+            choicesMade: {},
+            characterChoices: {},
+            statuses: { health: 80, mana: 0 },
+            manaUnlocked: false,
+            discoveries: [],
+            isDead: false,
+            effects: {},
+            events: {},
+            qteResults: {},
+            activeCombat: null,
+        };
+        const savedStates: GameState[] = [];
+        const renderOptions: StoryViewRenderOptions[] = [];
+        let combatActions: Parameters<NonNullable<StoryViewPort["renderCombat"]>>[2] | undefined;
+        const storyView: StoryViewPort = {
+            render: vi.fn((_scene, options) => renderOptions.push(options)),
+            renderCombat: vi.fn((_encounter, _combat, actions) => {
+                combatActions = actions;
+            }),
+            showError: vi.fn(),
+        };
+        const startActions: StartScreenActions[] = [];
+        const game = new StartGame(
+            { show: (actions) => startActions.push(actions), showMessage: vi.fn(), hide: vi.fn() },
+            storyView,
+            { load: () => null, save: (state) => savedStates.push(state) },
+            { create: () => initialState },
+            new StoryEngine(scenes),
+            { tryRandomEncounter: () => null },
+            { test: encounter },
+        );
+
+        game.start();
+        startActions[0]?.onNewGame();
+        renderOptions[0]?.onChoice("fight");
+        expect(combatActions).toBeDefined();
+        expect(savedStates.at(-1)?.activeCombat?.encounterId).toBe("test");
+
+        combatActions?.onAttack("player", "target");
+        expect(renderOptions.at(-1)?.combatMessage).toBe("You win.");
+        expect(savedStates.at(-1)).toMatchObject({
+            currentSceneId: "0_1",
+            activeCombat: null,
+            statuses: { health: 85 },
+        });
     });
 });
 

@@ -2,12 +2,16 @@ import type { QteViewPort, StoryViewPort, StoryViewRenderOptions, TextRenderRequ
 import type { QteSequenceResult, StoryScene } from "../../types";
 import { StoryContentView } from "./storyContentView";
 import type { SidebarView } from "../sidebar/sidebarView";
+import type { ActiveCombat, CombatEncounterDefinition } from "../../types";
+import type { CombatViewActions } from "../../interfaces";
+import { CombatView } from "../combat/combatView";
 
 export class StoryView implements StoryViewPort {
     private readonly root: HTMLElement;
     private readonly textRenderer: TextRendererPort;
     private readonly qteView: QteViewPort;
     private readonly contentView: StoryContentView;
+    private readonly combatView: CombatView;
     private readonly sidebar: SidebarView | undefined;
     private currentTextElements: HTMLElement[] = [];
     private currentSceneController: AbortController | null = null;
@@ -17,6 +21,7 @@ export class StoryView implements StoryViewPort {
         this.textRenderer = textRenderer;
         this.qteView = qteView;
         this.contentView = new StoryContentView(textRenderer);
+        this.combatView = new CombatView(root);
         this.sidebar = sidebar;
     }
 
@@ -30,6 +35,7 @@ export class StoryView implements StoryViewPort {
             options.onChoice,
             options.onEventChoice,
             options.onRestart,
+            options.combatMessage,
         );
         this.sidebar?.render({
             scene,
@@ -47,6 +53,12 @@ export class StoryView implements StoryViewPort {
         if (scene.qte && content.qteContainer) {
             this.playQte(scene, content.qteContainer, content.choiceButtons, options.onQteResult);
         }
+
+    }
+
+    public renderCombat(encounter: CombatEncounterDefinition, combat: ActiveCombat, actions: CombatViewActions): void {
+        this.cancelCurrentScene();
+        this.combatView.render(encounter, combat, actions);
     }
 
     private cancelCurrentScene(): void {
